@@ -2,21 +2,24 @@ import re
 from pathlib import Path
 from parse_subtitle_content import parse_subtitle_content
 
-def consolidate_subtitles(extracted_files, output_path=None):
+def consolidate_subtitles(extracted_files, output_path=None, source_path=None):
     """
     ## combines all subtitle files into one organized document
     creates markdown format with proper course structure
     """
     if output_path is None:
-        output_path = Path('consolidated_course.md')
+        output_path = Path('formatted.md')
     else:
         output_path = Path(output_path)
     
     ## sort files by course structure
     sorted_files = sort_by_course_structure(extracted_files)
     
-    ## extract course name from first file
-    course_name = extract_course_name(sorted_files[0]) if sorted_files else "Course"
+    ## extract course name from source path if provided, otherwise from first file
+    if source_path:
+        course_name = extract_course_name(source_path)
+    else:
+        course_name = extract_course_name(sorted_files[0]) if sorted_files else "Course"
     
     consolidated_content = []
     consolidated_content.append(f"# {course_name}\n")
@@ -38,7 +41,9 @@ def consolidate_subtitles(extracted_files, output_path=None):
         ## parse and add subtitle content
         try:
             content = parse_subtitle_content(file_path)
-            if content.strip():
+            if content.strip() and not content.startswith('[Error'):
+                consolidated_content.append(content + "\n")
+            elif content.startswith('[Error'):
                 consolidated_content.append(content + "\n")
         except Exception as e:
             consolidated_content.append(f"[Error parsing {file_path.name}: {e}]\n")
@@ -69,21 +74,20 @@ def sort_by_course_structure(file_paths):
     
     return sorted(file_paths, key=extract_sort_key)
 
-def extract_course_name(file_path):
+def extract_course_name(source_path):
     """
-    ## extracts course name from file path
+    ## extracts course name from source directory path
+    uses the actual course folder name, not output paths
     """
-    ## look for main course folder name in path
-    parts = Path(file_path).parts
+    source_path = Path(source_path) if isinstance(source_path, str) else source_path
     
-    ## find course-like folder (contains letters and might have numbers)
-    for part in parts:
-        if len(part) > 10 and any(c.isalpha() for c in part):
-            ## clean up the name
-            course_name = part.replace('_', ' ').replace('-', ' ')
-            return course_name
+    ## get the actual course folder name
+    course_name = source_path.name
     
-    return "Course"
+    ## clean up the name
+    course_name = course_name.replace('_', ' ').replace('-', ' ')
+    
+    return course_name or "Course"
 
 def extract_structure_info(file_path):
     """

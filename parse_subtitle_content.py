@@ -4,25 +4,41 @@ from pathlib import Path
 def parse_subtitle_content(file_path):
     """
     ## extracts clean text content from subtitle files
-    supports srt, vtt, ass formats
+    supports srt, vtt, ass formats with robust edge case handling
     """
     file_path = Path(file_path)
-    content = file_path.read_text(encoding='utf-8', errors='ignore')
     
-    if file_path.suffix.lower() == '.srt' or 'srt' in file_path.name:
-        return parse_srt(content)
-    elif file_path.suffix.lower() == '.vtt' or 'vtt' in file_path.name:
-        return parse_vtt(content)
-    elif file_path.suffix.lower() in ['.ass', '.ssa'] or 'ass' in file_path.name:
-        return parse_ass(content)
-    else:
-        ## fallback: try to extract any text lines
-        return parse_generic(content)
+    try:
+        ## try different encodings
+        content = None
+        for encoding in ['utf-8', 'latin-1', 'cp1252', 'utf-16']:
+            try:
+                content = file_path.read_text(encoding=encoding)
+                break
+            except (UnicodeDecodeError, UnicodeError):
+                continue
+        
+        if content is None:
+            return f"[Error: Could not decode {file_path.name}]"
+            
+        ## detect format and parse
+        if file_path.suffix.lower() == '.srt' or 'srt' in file_path.name:
+            return parse_srt(content)
+        elif file_path.suffix.lower() == '.vtt' or 'vtt' in file_path.name:
+            return parse_vtt(content)
+        elif file_path.suffix.lower() in ['.ass', '.ssa'] or 'ass' in file_path.name:
+            return parse_ass(content)
+        else:
+            ## fallback: try to extract any text lines
+            return parse_generic(content)
+            
+    except Exception as e:
+        return f"[Error parsing {file_path.name}: {str(e)}]"
 
 def parse_srt(content):
     """
-    ## parses srt format subtitles
-    removes sequence numbers and timestamps
+    ## parses srt format subtitles with edge case handling
+    removes sequence numbers and timestamps, handles multi-line text
     """
     lines = content.strip().split('\n')
     text_lines = []
@@ -31,19 +47,32 @@ def parse_srt(content):
     while i < len(lines):
         line = lines[i].strip()
         
-        ## skip sequence numbers
-        if line.isdigit():
+        ## skip empty lines
+        if not line:
             i += 1
             continue
             
-        ## skip timestamp lines
-        if '-->' in line:
+        ## skip sequence numbers (pure digits)
+        if re.match(r'^\d+$', line):
             i += 1
             continue
             
-        ## collect text content
-        if line and not line.isdigit():
-            text_lines.append(line)
+        ## skip timestamp lines (flexible pattern matching)
+        if re.search(r'\d{1,2}:\d{2}:\d{2}[,\.]\d{3}\s*-->\s*\d{1,2}:\d{2}:\d{2}[,\.]\d{3}', line):
+            i += 1
+            continue
+            
+        ## collect text content (anything that's not timestamp or sequence)
+        if line and not re.match(r'^\d+$', line) and '-->' not in line:
+            ## handle multi-line text blocks
+            text_block = [line]
+            j = i + 1
+            while j < len(lines) and lines[j].strip() and not re.match(r'^\d+$', lines[j].strip()) and '-->' not in lines[j]:
+                text_block.append(lines[j].strip())
+                j += 1
+            text_lines.append(' '.join(text_block))
+            i = j
+            continue
         
         i += 1
     
@@ -51,8 +80,8 @@ def parse_srt(content):
 
 def parse_vtt(content):
     """
-    ## parses vtt format subtitles
-    removes webvtt headers and timestamps
+    ## parses vtt format subtitles with edge case handling
+    removes webvtt headers and timestamps, handles cue settings
     """
     lines = content.strip().split('\n')
     text_lines = []
@@ -60,18 +89,29 @@ def parse_vtt(content):
     for line in lines:
         line = line.strip()
         
-        ## skip vtt headers
-        if line.startswith('WEBVTT') or line.startswith('NOTE'):
+        ## skip empty lines
+        if not line:
             continue
             
-        ## skip timestamp lines
-        if '-->' in line:
+        ## skip vtt headers and metadata
+        if line.startswith(('WEBVTT', 'NOTE', 'STYLE', 'REGION')):
             continue
             
-        ## skip empty lines and cue settings
-        if not line or line.startswith('<'):
+        ## skip timestamp lines - more flexible pattern for VTT format
+        if re.search(r'\d{1,2}:\d{2}\.\d{3}\s*-->\s*\d{1,2}:\d{2}\.\d{3}', line):
+            continue
+        if re.search(r'\d{1,2}:\d{2}:\d{2}[,\.]\d{3}\s*-->\s*\d{1,2}:\d{2}:\d{2}[,\.]\d{3}', line):
             continue
             
+        ## skip cue settings and positioning
+        if re.match(r'^(align|line|position|size|vertical):', line) or line.startswith('<'):
+            continue
+            
+        ## skip lines that are just numbers (cue identifiers)
+        if re.match(r'^\d+$', line):
+            continue
+            
+        ## collect actual text content
         text_lines.append(line)
     
     return ' '.join(text_lines)
