@@ -1,0 +1,349 @@
+WEBVTT
+
+00:00.150 --> 00:04.440
+So I thought we start with the client server architecture.
+
+00:05.190 --> 00:07.770
+This is the revolution that started it all.
+
+00:08.070 --> 00:16.350
+You know, how can I put my server and my client in different location where different core pieces of
+
+00:16.350 --> 00:17.730
+code can live somewhere else?
+
+00:17.970 --> 00:22.620
+And I need to call certain piece to execute somewhere else.
+
+00:23.220 --> 00:24.450
+A revolution, indeed.
+
+00:24.690 --> 00:27.330
+Now, we don't have this big mainframe.
+
+00:27.340 --> 00:28.550
+We don't need them anymore.
+
+00:28.560 --> 00:29.520
+You know where it runs?
+
+00:29.520 --> 00:30.090
+Everything.
+
+00:30.270 --> 00:36.450
+We can just have cheap commodity hardware sitting on the client and move them.
+
+00:36.450 --> 00:39.630
+Move their workload that are really heavy on the server.
+
+00:39.870 --> 00:41.030
+That's basically it, you know.
+
+00:41.070 --> 00:45.150
+So if you think about it, machines are expensive, applications are complex.
+
+00:46.140 --> 00:49.280
+How can I separate the application into multiple component?
+
+00:49.290 --> 00:54.750
+Doesn't necessarily just do you know, just let's break down the application that is running on a single
+
+00:54.750 --> 00:56.070
+machine into two components.
+
+00:56.320 --> 01:02.850
+If you think about it, microservices kind of inherited or borrowed from this model kind of, you know,
+
+01:02.850 --> 01:10.200
+because we have we used to have this big monoliths service and we broke it into multiple smaller microservices
+
+01:10.200 --> 01:12.570
+and let them call each other effectively.
+
+01:12.900 --> 01:17.820
+That's the same, you know, original classic concept.
+
+01:18.450 --> 01:21.360
+Let's, let's break our application into multiple components.
+
+01:22.080 --> 01:23.160
+Let them call each other.
+
+01:23.400 --> 01:24.690
+And that's the beauty here.
+
+01:25.200 --> 01:30.810
+Expensive workload can be done on the server where you can anything that is expensive.
+
+01:30.840 --> 01:37.440
+What do you say when we say expensive here.We really mean Ram takes a lot of Ram or takes a lot of CPU
+
+01:37.440 --> 01:42.540
+or takes a lot of latency, whatever that means, right?
+
+01:42.720 --> 01:46.980
+Reading to desk, you know, takes time to do all this computation.
+
+01:47.520 --> 01:55.740
+Let's move them to a a server, a machine that is a really beefy that has good resources.
+
+01:55.980 --> 02:02.820
+And then let's keep the caller in a smaller, you know, tablet or, you know, I thin out a client,
+
+02:02.820 --> 02:03.300
+if you will.
+
+02:03.450 --> 02:04.680
+Now, that's that's the beauty here.
+
+02:05.320 --> 02:08.790
+The clients call servers to perform expensive tasks.
+
+02:09.420 --> 02:10.770
+So simple, so elegant.
+
+02:11.040 --> 02:13.380
+A remote procedural call was born.
+
+02:13.440 --> 02:16.230
+This is what what what what we refer to our RBC.
+
+02:16.710 --> 02:17.070
+Right.
+
+02:17.100 --> 02:21.050
+RBC calls has been there since was sixties seventies.
+
+02:21.060 --> 02:25.590
+You know the idea of let's make a call by to a remote call.
+
+02:25.920 --> 02:28.440
+You know, previously there was no standard.
+
+02:28.440 --> 02:30.210
+You know, let's just let's whatever.
+
+02:30.210 --> 02:34.290
+Let's just send it across there, the wire.
+
+02:34.290 --> 02:36.380
+And there's absolutely no no standard.
+
+02:36.660 --> 02:43.110
+You as long as you can make it to the server, you've done it, you know, but those standards started
+
+02:43.110 --> 02:43.640
+to build up.
+
+02:43.650 --> 02:50.010
+And this is there's another important technical concept to, you know, J RBC.
+
+02:50.490 --> 02:56.870
+G RBC actually borrowed also from this concept, you know, where the Google, a remote called procedure,
+
+02:57.060 --> 03:05.790
+you know, kind of used to be to to build upon this concept but make it the universal I believe now
+
+03:05.790 --> 03:12.570
+it's a job is is there is a universal effectively communication between any two components if you are.
+
+03:12.840 --> 03:14.910
+So what are the benefits of clients over architecture?
+
+03:15.930 --> 03:19.050
+Servers have DVR, where the clients have community hardware.
+
+03:19.050 --> 03:22.800
+So you can have a lot of clients call a single server, if you will.
+
+03:23.670 --> 03:31.260
+So in this case, you kind of centralize the work and you can you kind of scale better, you know?
+
+03:31.560 --> 03:39.000
+Clients that I built, I swear, this is the same concept as microservices because this is the same,
+
+03:39.270 --> 03:42.570
+you know, advantages to microservices, like let's scale them better.
+
+03:42.750 --> 03:48.090
+Don't get me wrong, I don't necessarily in favor of microservices.
+
+03:48.120 --> 03:50.550
+I've been very critical of this technology.
+
+03:50.550 --> 03:55.140
+You know, I talked about it in my YouTube channel, but there are benefits definitely, you know.
+
+03:55.140 --> 03:58.720
+But I think we're we're a little bit overdo it with microservices.
+
+03:59.070 --> 04:00.060
+But that's another topic.
+
+04:00.390 --> 04:05.130
+So yeah, so the idea here is just really scale better clients that calls.
+
+04:05.400 --> 04:11.010
+Yeah, you can do as many clients because now they are lighter, they start faster because they're they
+
+04:11.010 --> 04:15.300
+don't they don't have all this application logic that I used to have.
+
+04:15.300 --> 04:17.070
+You know, the binaries are smaller.
+
+04:17.460 --> 04:19.860
+My God, this is so much better.
+
+04:19.860 --> 04:22.740
+You know, just move it around so clients go.
+
+04:23.310 --> 04:24.090
+But here's the thing.
+
+04:24.930 --> 04:28.920
+Clients can still perform lightweight tasks.
+
+04:29.460 --> 04:33.510
+This is the this is the trend with edge computing.
+
+04:33.510 --> 04:40.620
+If you heard about it, you know, even clients that Iot devices that are literally just censoring data
+
+04:40.620 --> 04:46.590
+and then sending requests somewhere else, they can't perform, perform compute logic.
+
+04:46.980 --> 04:52.620
+You know, unfortunately, all of these Iot devices are just mining Bitcoin at this moment.
+
+04:52.710 --> 04:55.080
+But regardless, you get the idea, right?
+
+04:55.080 --> 04:58.230
+You can you can do work in the client site as well.
+
+04:58.500 --> 04:59.850
+Now people are moving here.
+
+04:59.880 --> 05:02.040
+This is like, okay, let's do more client side logic.
+
+05:02.040 --> 05:03.570
+But that's the beauty here.
+
+05:03.720 --> 05:05.910
+Client no longer required dependencies.
+
+05:06.060 --> 05:06.900
+What does that mean?
+
+05:07.620 --> 05:14.850
+The application when you built it, when it was a monolith in one machine, it records all these dependencies,
+
+05:14.850 --> 05:22.140
+all his libraries, all these, you know, calling to desks, calling to whatever, you know, printer,
+
+05:22.410 --> 05:29.070
+all this stuff, all these dependencies or no, the server responsibility.
+
+05:29.070 --> 05:32.730
+I mean, if you want to talk to a database, you need a database driver.
+
+05:32.910 --> 05:38.130
+Now, at least Oracle, a SQL Server does, you know, for example, that means you have to install
+
+05:38.130 --> 05:40.140
+this runtime in your application.
+
+05:40.140 --> 05:41.190
+I'm just an example here.
+
+05:41.760 --> 05:45.870
+So if you move the server, you know, somewhere else.
+
+05:46.870 --> 05:47.290
+Right.
+
+05:47.830 --> 05:53.850
+The server only needs to talk to the De Beers, so it needs that dependency while the client is lightweight,
+
+05:53.860 --> 05:54.820
+it just makes the call.
+
+05:55.680 --> 05:56.020
+Yeah.
+
+05:56.290 --> 05:59.590
+And we're going to talk about what does that mean, making a call in a minute.
+
+06:00.550 --> 06:05.020
+So that's that's really powerful, if you think about it, you know, and that's where the three tier
+
+06:05.020 --> 06:09.940
+architecture, when it comes to the database and moving the server, it kind of it's got I consider
+
+06:10.000 --> 06:13.630
+the three tier architecture is going as a special case over there clients over if you will.
+
+06:13.960 --> 06:14.530
+However.
+
+06:15.790 --> 06:16.330
+However.
+
+06:17.680 --> 06:19.590
+We need a beautiful communication model.
+
+06:19.600 --> 06:24.670
+We cannot we cannot let this be the wild, wild west, my friends.
+
+06:24.670 --> 06:25.210
+We cannot.
+
+06:25.810 --> 06:26.380
+We need.
+
+06:26.380 --> 06:27.880
+And we need a standard.
+
+06:28.120 --> 06:28.590
+Okay.
+
+06:29.230 --> 06:29.800
+Got it.
+
+06:29.830 --> 06:31.060
+Client server is awesome.
+
+06:31.480 --> 06:32.800
+I need a network.
+
+06:33.190 --> 06:38.920
+You know, I need to send a call, send some data from one machine to another.
+
+06:38.920 --> 06:43.060
+But how should I connect them with a telephone wire and then send data?
+
+06:43.090 --> 06:43.330
+How.
+
+06:43.330 --> 06:44.110
+How do I do that?
+
+06:44.290 --> 06:44.620
+Well.
+
+06:47.450 --> 06:49.490
+You can do it any way you want.
+
+06:49.940 --> 06:56.960
+You know, if you figured out how to transpose, if you will, the bits into radio or electric signal,
+
+06:56.960 --> 06:59.810
+you can do it anything you want, but there is no standard.
+
+06:59.990 --> 07:03.980
+So we need a standard so we all can understand each other, you know, very critical.
+
+07:05.120 --> 07:07.280
+How about we jump into the next lecture?

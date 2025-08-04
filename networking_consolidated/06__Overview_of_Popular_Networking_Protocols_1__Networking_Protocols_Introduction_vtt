@@ -1,0 +1,115 @@
+WEBVTT
+
+00:00.060 --> 00:00.810
+Welcome, guys.
+
+00:00.810 --> 00:09.260
+This is a brand new section on my networking course and I called it overview of Popular Networking Protocols.
+
+00:09.270 --> 00:17.790
+Now that you are in a place in the course that you already know that what an IP protocol is, what a
+
+00:17.940 --> 00:27.360
+TCP protocol is, what a UDP understand that anything, any protocol out there must be built on top
+
+00:27.360 --> 00:35.580
+of these three protocols unless it's very low level, then it's built on a layer on a lower layer protocol
+
+00:35.580 --> 00:36.180
+than that.
+
+00:36.570 --> 00:43.770
+But most of our protocol that you work with out there on a daily basis, HTTP built on top of TCP which
+
+00:43.770 --> 00:55.740
+is built on top of the IP CDB to build on top of TCP which is built on top of IP DNS built on top of
+
+00:55.770 --> 00:58.230
+UDP which is built on top of IP.
+
+00:59.430 --> 01:00.180
+What else?
+
+01:02.440 --> 01:07.660
+As such, built on top, directly on top of TCP, which is built on top of IP.
+
+01:08.350 --> 01:12.310
+And there are many, many other examples as I as I can think about it.
+
+01:12.610 --> 01:18.400
+Quick SDB three, SDB three is built on top of quick with a brand new protocol that is built on top
+
+01:18.400 --> 01:20.470
+of what UDP.
+
+01:20.620 --> 01:21.580
+Exactly.
+
+01:21.580 --> 01:23.890
+So UDP is built on top of IP.
+
+01:25.390 --> 01:27.760
+So many other examples that comes to my mind.
+
+01:27.760 --> 01:36.160
+If I if I can remember a lot of TLS, TLS is built on top of TCP, although it is kind of a protocol
+
+01:36.160 --> 01:36.880
+independent.
+
+01:36.910 --> 01:39.100
+It is by default built on top of TCP.
+
+01:39.130 --> 01:47.780
+So that includes HTTPS, which is best built on top of TLS that uses TCP.
+
+01:48.370 --> 01:55.330
+So TLS is basically the encryption protocol that allows to encrypt to communication.
+
+01:55.330 --> 02:05.920
+So what I'm going to do in this section is give a brief overview of each of these protocols and why
+
+02:06.100 --> 02:07.150
+why brief now?
+
+02:07.600 --> 02:16.060
+Because each of these protocols that I talked about deserve to be honest hours of content, you know,
+
+02:17.770 --> 02:23.590
+many, many lectures, tens of lectures, because they are so in-depth and there is so much history.
+
+02:23.590 --> 02:30.490
+And as this protocol evolve and I won't do their justice if I started just, you know, talking about
+
+02:30.490 --> 02:36.340
+them, you know, like in detail here, this is not the venue for it.
+
+02:36.340 --> 02:39.640
+I think they deserve to be their own courses.
+
+02:39.640 --> 02:42.910
+Then in the future maybe I'll start working on that.
+
+02:43.120 --> 02:51.880
+But for that it's they do deserve an honorable mention to be mentioned in this course at least, and
+
+02:51.880 --> 02:58.030
+given like an overview, maybe five, 10 minutes, very high level summary.
+
+02:58.030 --> 02:59.620
+I won't go into details.
+
+02:59.890 --> 03:06.130
+I'll pick one protocol and you're going to see lectures filled as you progress through the course.
+
+03:06.610 --> 03:12.340
+Whenever I have time, I'm going to add more lectures and based on your, you know, requests.
+
+03:12.340 --> 03:12.760
+Really.
+
+03:12.760 --> 03:16.360
+So how about we jump into this section, guys?
+
+03:16.750 --> 03:17.440
+Enjoy.

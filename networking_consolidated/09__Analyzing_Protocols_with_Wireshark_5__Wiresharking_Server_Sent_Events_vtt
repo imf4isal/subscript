@@ -1,0 +1,334 @@
+WEBVTT
+
+00:00.060 --> 00:01.280
+What is going on, guys?
+
+00:01.290 --> 00:08.310
+My name is Hussein and welcome to another episode of Wire Shark Them All where we basically wireshark
+
+00:08.370 --> 00:17.730
+every single protocol in existence today we're wireshark working server sent events so it's it's kind
+
+00:17.730 --> 00:25.710
+of a derivative of the HTTP protocol, but it's a fancy little tool that allows the server to send events
+
+00:25.710 --> 00:26.910
+to the client.
+
+00:27.210 --> 00:27.570
+Right.
+
+00:27.750 --> 00:29.220
+So it's a uni directional.
+
+00:29.220 --> 00:37.770
+So I have here a Node.js server listening on port 1880 and it doubles as a server sent event server
+
+00:37.860 --> 00:39.390
+and it's running on express.
+
+00:39.390 --> 00:45.810
+And if you make a call to that to certain endpoint is going to stream certain events unlimited.
+
+00:46.320 --> 00:52.740
+So what I'm going to do is I have Wireshark here already put in the necessary filtering and ready to
+
+00:52.740 --> 00:53.700
+rock and roll.
+
+00:53.730 --> 00:55.020
+How about we jump into it?
+
+00:55.020 --> 01:02.550
+So I'm going to go a new batch here and I'm going to curl curl supports server sent events because it's
+
+01:02.550 --> 01:06.030
+just literally transfer chunk encoded.
+
+01:06.030 --> 01:06.660
+That's it.
+
+01:06.900 --> 01:08.700
+So I'm going to do a HTTP.
+
+01:09.620 --> 01:17.630
+Slash slash Raspberry Pi one my Raspberry Pi, which my God, it helped me a lot in all my videos.
+
+01:17.960 --> 01:18.290
+Right?
+
+01:18.290 --> 01:20.870
+This piece of PC, this machine.
+
+01:20.870 --> 01:27.500
+So I'm going to do a just curl and HTTP and raspberry and slash stream I've always started doing and
+
+01:27.500 --> 01:30.200
+we started receiving unlimited stream.
+
+01:30.200 --> 01:32.290
+So this is going to go forever, right?
+
+01:32.420 --> 01:34.610
+I'm going to let it go for a little bit.
+
+01:34.610 --> 01:40.340
+And as I you can see, you can start seeing all these packets come in, write all of them.
+
+01:40.370 --> 01:40.850
+Right.
+
+01:41.000 --> 01:46.970
+And I'm going to wait for a little bit until it reaches like 20 and I'm going to kill it right now.
+
+01:47.600 --> 01:48.770
+And then that's it.
+
+01:48.770 --> 01:49.490
+That's enough.
+
+01:49.490 --> 01:50.000
+That's enough.
+
+01:50.000 --> 01:53.150
+Beckett, this is what we got from the server.
+
+01:53.480 --> 01:56.720
+How about we jump into it, guys, and let's just look through what we got.
+
+01:57.140 --> 01:59.670
+First, three beautiful things.
+
+01:59.670 --> 02:01.130
+Send Snack Act.
+
+02:01.130 --> 02:07.340
+That's the client, which is more ten, and the 81 is the server and three way handshake.
+
+02:07.340 --> 02:08.390
+That's a normal thing.
+
+02:08.390 --> 02:17.090
+The first thing after the three way handshake is we want to establish a pure TCP connection.
+
+02:17.090 --> 02:20.630
+And does the does Wireshark help us?
+
+02:20.630 --> 02:21.380
+Yes, it does.
+
+02:21.380 --> 02:21.830
+Right.
+
+02:22.100 --> 02:28.490
+It actually tells us like, hey, this is the jet stream that you send we about to send to Kroll, and
+
+02:28.490 --> 02:29.090
+that's it.
+
+02:29.390 --> 02:31.310
+This is just a normal call.
+
+02:31.310 --> 02:39.380
+But the response that comes back from this git request is the tricky part here, which tells Curl to
+
+02:39.380 --> 02:45.710
+act like a client, a dump client that receives server side events.
+
+02:46.130 --> 02:51.830
+So we're acknowledgement here, the server acknowledges that request and the server start pushing stuff.
+
+02:52.010 --> 02:52.760
+That's it.
+
+02:53.210 --> 02:59.480
+The first data that it pushes is the largest biol is 184.
+
+03:00.150 --> 03:06.750
+BYT And it includes all the stuff that we discuss in the in the server center events.
+
+03:06.750 --> 03:13.530
+So powered by headers and content type text event stream, it has to be text event stream and that triggers
+
+03:13.530 --> 03:20.820
+the server sent events, the client to start to stop everything and just start listening for events.
+
+03:20.820 --> 03:26.880
+All right, then the date and all that to keep alive had to be alive over and transfer chunked encoding
+
+03:26.910 --> 03:27.420
+chunk.
+
+03:27.420 --> 03:33.360
+We're sending chunk because we don't we can we cannot use the content length guys like can we now because
+
+03:33.360 --> 03:38.250
+we don't know what, what is the size of the response that we're going to get back from the server.
+
+03:38.250 --> 03:44.690
+So it just took a chunk of events and the first one is a little bit better largest one, but that's
+
+03:44.700 --> 03:45.340
+bathhouse.
+
+03:45.390 --> 03:46.740
+That's pretty much it.
+
+03:46.740 --> 03:53.820
+The second thing we're sending, what was that was a bunch of hellos and a number that keeps increasing.
+
+03:53.940 --> 04:01.950
+So if you calculate that's the client acknowledging this first event that we received.
+
+04:01.950 --> 04:02.550
+Right.
+
+04:02.550 --> 04:10.200
+And then the server sends a 20 byte packet, which is extremely small.
+
+04:10.200 --> 04:17.760
+And that's one advantage of the server side sent events to compare to like web socket, which is like
+
+04:17.790 --> 04:21.440
+a little bit larger payload because we have web socket headers and stuff.
+
+04:21.600 --> 04:23.580
+That's that hello one.
+
+04:24.270 --> 04:32.610
+And then the client acknowledges it and then Hello two and still it is 20 bytes and you can see the
+
+04:32.610 --> 04:33.450
+same pattern.
+
+04:33.450 --> 04:40.110
+That is a three transmission but same better duplicating acknowledge it push, acknowledge, push,
+
+04:40.140 --> 04:46.260
+acknowledge, push, acknowledge every time everything is server sending this stuff 2020, 20, 20,
+
+04:46.260 --> 04:46.970
+20, 21.
+
+04:47.160 --> 04:47.610
+There you go.
+
+04:47.610 --> 04:48.660
+We got 22.
+
+04:49.050 --> 04:49.860
+Why did we get it?
+
+04:49.860 --> 04:50.310
+22.
+
+04:50.310 --> 04:52.470
+Because we reached 11 essentially.
+
+04:52.470 --> 04:58.620
+So two extra byte for a single measly digit.
+
+04:58.680 --> 04:59.180
+Hmm.
+
+04:59.220 --> 05:02.070
+That's probably because it's a Unicode, I guess.
+
+05:02.070 --> 05:05.400
+Yeah, that's probably so two bytes instead of one.
+
+05:05.880 --> 05:06.150
+So.
+
+05:06.150 --> 05:07.110
+Yeah, same thing.
+
+05:07.110 --> 05:08.760
+Same thing, same thing.
+
+05:08.760 --> 05:09.390
+Look at that.
+
+05:10.370 --> 05:11.930
+That's very interesting.
+
+05:12.240 --> 05:14.240
+I just kept sending the packets.
+
+05:14.240 --> 05:18.320
+And this is just Wireshark trying to make sense of what is whatever is coming back.
+
+05:18.320 --> 05:24.590
+But it cannot obviously, because it's like it's not really a step per se.
+
+05:24.620 --> 05:25.940
+These are just packets, right?
+
+05:26.060 --> 05:29.030
+And here's when we actually killed the connection in the client side.
+
+05:29.030 --> 05:30.890
+The client says, Hey, Fennec.
+
+05:31.250 --> 05:33.530
+And then the server says, Fennec.
+
+05:33.680 --> 05:37.200
+And then the client says, Arching your fin.
+
+05:37.280 --> 05:37.940
+That's it.
+
+05:37.970 --> 05:39.410
+That's server side events.
+
+05:39.500 --> 05:40.900
+It's really lightweight.
+
+05:40.910 --> 05:43.550
+That's one of the beautiful things of it.
+
+05:43.550 --> 05:45.340
+It's it's really, really lightweight.
+
+05:45.350 --> 05:47.540
+The packet sizes are really small.
+
+05:47.540 --> 05:54.560
+So if you if you design your own protocol using server side event, you could save a lot of packet sizes
+
+05:54.560 --> 05:57.050
+compared to like web sockets or HTTP.
+
+05:57.080 --> 05:57.500
+Right.
+
+05:57.740 --> 05:58.190
+Yeah.
+
+05:58.190 --> 06:02.600
+The only, the only hat you're going to get is the first one.
+
+06:02.600 --> 06:03.260
+What is it?
+
+06:03.770 --> 06:05.060
+This one, which is like 184.
+
+06:05.060 --> 06:07.940
+It's not really that big either, right, guys?
+
+06:08.150 --> 06:12.100
+So that was like server sent events, wireshark ing them.
+
+06:12.290 --> 06:13.610
+Help you enjoy this video.
+
+06:13.640 --> 06:14.810
+I'm going to see you in the next one.
+
+06:14.810 --> 06:15.890
+You guys stay awesome.
+
+06:15.920 --> 06:16.310
+Goodbye.

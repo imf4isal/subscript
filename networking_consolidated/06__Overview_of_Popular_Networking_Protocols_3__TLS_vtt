@@ -1,0 +1,1426 @@
+WEBVTT
+
+00:00.060 --> 00:10.140
+Transport layer, security or TLS is one of the basic, fundamental way to encrypt communication between
+
+00:10.140 --> 00:11.250
+any two party.
+
+00:11.550 --> 00:19.080
+We have to build a standard for encryption because we can't send just IP packets with data that is plain,
+
+00:19.080 --> 00:23.910
+you know, text that everybody in the crowd can read.
+
+00:23.910 --> 00:27.600
+So we needed to encrypt it and you can encrypt it anywhere you want, right?
+
+00:27.960 --> 00:29.340
+But we need a standard.
+
+00:29.340 --> 00:30.420
+The standards are good.
+
+00:30.960 --> 00:31.260
+Yeah.
+
+00:31.260 --> 00:32.850
+So this was invented.
+
+00:32.850 --> 00:36.240
+So this is the topic of today's lecture.
+
+00:36.240 --> 00:42.330
+And obviously I can't go into much details because TLS is is really rich.
+
+00:42.330 --> 00:48.770
+There is so much history when it comes to TLS and I think it deserves its own course to be on.
+
+00:48.840 --> 00:55.380
+So maybe I'll do it from the future, but it's worth maybe 30, 30 minutes discussion and going through
+
+00:55.380 --> 00:56.580
+that, maybe less.
+
+00:56.910 --> 00:57.660
+Let's find out.
+
+00:57.870 --> 01:05.430
+So in this luck, so we're going to discuss a TLS through a HTTP while you can build TLS on.
+
+01:05.430 --> 01:12.960
+Literally any protocol, anything that comes from layer seven down to the TLS layer can be encrypted.
+
+01:12.960 --> 01:21.060
+And it's arguable that TLS which layer sits on, I believe the best way to if you want to shove it into
+
+01:21.060 --> 01:27.090
+an OCI model, it can be layer five because it's stateful, because it has state left and right and
+
+01:27.090 --> 01:31.170
+right with file descriptors of the TCP handshake.
+
+01:31.170 --> 01:31.620
+Right?
+
+01:32.190 --> 01:39.750
+So while DCB is layer four, the session variables and the window sizes and that we talked about lives
+
+01:39.750 --> 01:43.050
+in session five in the session layer which is layer five.
+
+01:43.050 --> 01:43.440
+Right.
+
+01:43.680 --> 01:48.150
+And that's kind of fits there because it has some sort of a session.
+
+01:48.150 --> 01:50.940
+Right, a session that is agreed upon.
+
+01:50.940 --> 01:56.400
+So that's if you want to fit it again, this is not written on a stone like, oh, it has to be layer
+
+01:56.400 --> 01:56.870
+five.
+
+01:57.150 --> 02:00.030
+It's all, you know, intellectual, if you will.
+
+02:00.840 --> 02:01.880
+Then we'll go from.
+
+02:01.910 --> 02:04.920
+I'm going to talk about what Vanilla HTP looks like without encryption.
+
+02:04.920 --> 02:10.470
+Now I'm going to talk about HTTP s, right, which is basically HTTP over TLS.
+
+02:10.620 --> 02:17.190
+If you want to break it down, then we're going to talk about TLS 1.2 handshake, how it actually works
+
+02:17.190 --> 02:18.030
+on 1.2.
+
+02:18.060 --> 02:21.600
+You might say the same about the one version one version one one.
+
+02:21.600 --> 02:22.590
+What happened to those?
+
+02:22.590 --> 02:24.690
+Those are unsecure and no longer used.
+
+02:24.720 --> 02:26.190
+They are no longer recommended.
+
+02:26.190 --> 02:32.010
+So I thought I thought maybe let's just talk about what is actually popular and then I'm going to talk
+
+02:32.010 --> 02:39.510
+about Diffie Hellman, which is a special key exchange algorithm that actually found a lot of flaws
+
+02:39.510 --> 02:47.700
+at 1.2, 1.2 was improved to support the fee element, but it still supports some other, if you will,
+
+02:47.700 --> 02:50.070
+unsecure or not really.
+
+02:51.370 --> 02:51.730
+Yeah.
+
+02:51.790 --> 02:55.470
+To the top of the chain forward secrecy kind of a thing.
+
+02:55.480 --> 03:00.610
+But this actually is one of the best algorithms to exchange keys.
+
+03:00.610 --> 03:05.650
+And then we're going to talk about how to also monitor is currently the best candidate for everything
+
+03:05.650 --> 03:10.750
+you know Walt there's 1.2 is still used actually for backward compatibility, things like that.
+
+03:11.260 --> 03:15.190
+So how HTTP works, here's a server listening on pause 80.
+
+03:15.370 --> 03:19.690
+It is a client and this indicates the TCP handshake that we talked about.
+
+03:20.050 --> 03:22.630
+So this is where we open a connection.
+
+03:22.630 --> 03:25.000
+We opened a TCP connection.
+
+03:25.000 --> 03:28.720
+So we have established the sense and accent, right?
+
+03:29.350 --> 03:32.590
+And then we have an open connection and here's where we actually close it.
+
+03:32.590 --> 03:36.070
+So before we close the connection, we want to send a request.
+
+03:36.070 --> 03:37.780
+And this request looks like this, right?
+
+03:37.810 --> 03:42.430
+Hey, get slash and http one one or two.
+
+03:42.430 --> 03:47.860
+Right, over, over or the version is then you put the headers and then the headers on the body.
+
+03:48.040 --> 03:51.460
+If you have a body get usually don't have bodies.
+
+03:51.460 --> 04:01.840
+So send that that gets that moves into an TCP segment and that or more than one TCP segment based on
+
+04:01.840 --> 04:03.700
+the MTU, obviously.
+
+04:04.570 --> 04:09.370
+And then we will move down the stack and then move that into an IP packet.
+
+04:09.370 --> 04:10.690
+And we talked about all of that.
+
+04:11.380 --> 04:17.230
+The segment is received here, the request is understood at the application layer and the application
+
+04:17.230 --> 04:23.650
+will just respond back with the headers, more response headers, index.html, whatever it is, right
+
+04:24.130 --> 04:31.750
+content effectively the body and this becomes one or more segments and it depends on the algorithm of
+
+04:31.750 --> 04:39.910
+the TCP whether we should send all these segments at once or one by one based on how the congestion
+
+04:39.910 --> 04:42.100
+control is at that level.
+
+04:42.610 --> 04:45.280
+Usually when we start it's slow, right?
+
+04:45.280 --> 04:48.070
+That's why we talked about we're going to talk about slow start.
+
+04:48.100 --> 04:50.170
+I don't know where this lecture is going to be.
+
+04:50.170 --> 04:50.590
+Right.
+
+04:50.590 --> 04:53.590
+So that's why it depends like where is going to set.
+
+04:53.590 --> 04:54.820
+I think we already talked.
+
+04:54.850 --> 04:57.400
+We're going to talk about that slow start later.
+
+04:57.400 --> 04:59.110
+But we did mention it definitely.
+
+05:01.180 --> 05:01.840
+So that's it.
+
+05:01.840 --> 05:03.610
+So TBS, what do we do?
+
+05:03.640 --> 05:04.230
+Right.
+
+05:04.240 --> 05:07.000
+Whatever we explain before this is unencrypted.
+
+05:07.000 --> 05:09.660
+So anyone in the middle, right?
+
+05:09.670 --> 05:15.670
+Like a router, like an ISP where all the IP packets will go through.
+
+05:15.700 --> 05:17.650
+We'll see this request.
+
+05:17.800 --> 05:18.910
+Not nice, right?
+
+05:19.240 --> 05:20.430
+We need to encrypt them.
+
+05:20.440 --> 05:21.310
+So the same thing.
+
+05:21.310 --> 05:22.420
+We open a connection.
+
+05:23.640 --> 05:26.550
+And we do a handshake first.
+
+05:27.150 --> 05:35.030
+And the goal of this handshake is to share a symmetric key share encryption key.
+
+05:35.040 --> 05:38.280
+The same key should exist on both the client and the server.
+
+05:38.670 --> 05:46.590
+And once we have these keys, we're going to use them to encrypt our get request effectively.
+
+05:48.480 --> 05:50.730
+And this is the critical part here.
+
+05:51.630 --> 05:55.960
+How can we get the same key as the symmetric encryption algorithm, right?
+
+05:56.010 --> 06:01.380
+Where at the same key is encrypted, the same key decrypts, and nobody in the middle will have this
+
+06:01.380 --> 06:03.180
+should have this key.
+
+06:04.390 --> 06:05.680
+Nobody should.
+
+06:06.190 --> 06:08.550
+So it will be encrypted here.
+
+06:08.560 --> 06:10.330
+Nobody in the middle will understand what it is.
+
+06:10.780 --> 06:17.950
+The server will get that encrypted request and that will decrypt it with the key and then we send it
+
+06:17.950 --> 06:18.400
+back.
+
+06:18.460 --> 06:23.240
+The question is, how do we actually exchange that key?
+
+06:23.260 --> 06:23.830
+Is the.
+
+06:24.530 --> 06:25.340
+Is the key.
+
+06:25.850 --> 06:26.990
+No pun intended.
+
+06:27.380 --> 06:29.780
+We encrypt with symmetric key algorithm.
+
+06:29.800 --> 06:38.490
+So my question is like, well, I'm saying when we talk some security courses back in uni, but what
+
+06:38.900 --> 06:41.990
+does does it have to be like at the same key?
+
+06:42.020 --> 06:43.400
+Do I have to encrypt with the same key?
+
+06:43.480 --> 06:44.060
+Not really.
+
+06:44.060 --> 06:49.550
+There are symmetric key algorithms and there is asymmetric key algorithm, but symmetric key algorithms
+
+06:49.550 --> 06:57.470
+are way much faster than asymmetric because symmetric key is usually use XOR and it uses the key to
+
+06:57.470 --> 07:04.280
+x, all the content which is extremely fast because you're exploring blocks of content based on whether
+
+07:04.280 --> 07:06.620
+your symmetric algorithm is block based or not.
+
+07:06.890 --> 07:09.290
+And then you're going to get an encrypted content.
+
+07:09.290 --> 07:12.920
+And if nobody has the key, nobody can actually decrypt it, right?
+
+07:12.920 --> 07:14.060
+And that's the goal of this.
+
+07:14.060 --> 07:14.960
+So it's very fast.
+
+07:15.290 --> 07:18.800
+Asymmetric is where you have a key.
+
+07:19.670 --> 07:21.300
+That encrypts.
+
+07:21.320 --> 07:24.800
+And another key that actually decrypts, right.
+
+07:24.800 --> 07:28.220
+You cannot use the same key that encrypts to decrypt all.
+
+07:28.220 --> 07:30.920
+You cannot use the key that decrypts to encrypt.
+
+07:31.190 --> 07:32.020
+Does that make sense?
+
+07:32.030 --> 07:38.420
+And this is also popular, but it's very slow because it always relies on exponential stuff.
+
+07:38.540 --> 07:42.740
+So anyway, anyway, we have exponential is going to be slower to compute.
+
+07:42.740 --> 07:43.220
+Right?
+
+07:43.730 --> 07:48.950
+And you need more CPU, more processing, more energy.
+
+07:49.260 --> 07:49.780
+Yeah.
+
+07:50.480 --> 07:52.190
+So that's why we always use symmetric key.
+
+07:52.190 --> 07:53.720
+So if anybody asks.
+
+07:53.930 --> 08:00.470
+But the problem with symmetric key is we're going to share the key because you cannot just send the
+
+08:00.470 --> 08:03.050
+key across the board because anyone can grab it.
+
+08:03.050 --> 08:03.590
+Right.
+
+08:03.830 --> 08:11.540
+And that's the really the gist of the situation is how to exchange the key without getting caught.
+
+08:11.560 --> 08:11.990
+Right.
+
+08:13.230 --> 08:17.310
+And also the goal of the DLC is also to authenticate the server and do other stuff as well.
+
+08:17.340 --> 08:23.840
+Like, hey, I want to make sure that you are who you say, who you are and the server to do that.
+
+08:23.880 --> 08:30.930
+They send you back a certificate and the certificate has always rely on this p API, the public key
+
+08:30.930 --> 08:31.630
+infrastructure.
+
+08:31.650 --> 08:37.620
+It's like asymmetric key algorithms where you can you have the public key make sure that it's actually
+
+08:37.620 --> 08:43.170
+me that signed the certificate and it will go back to check if the certificate authority is actually
+
+08:43.170 --> 08:48.360
+who signed this key and they will verify the certificate authority goes back up to the root.
+
+08:48.360 --> 08:54.750
+And this is not our topic, but that's just a general overview of authentication extensions during the
+
+08:54.750 --> 08:55.620
+TLS client.
+
+08:55.620 --> 08:57.000
+Hello, which is the key exchange.
+
+08:57.000 --> 09:01.380
+We talk we have so many extensions packed in this client ALO.
+
+09:02.190 --> 09:08.550
+We have SNI server name and indication we can't talk about.
+
+09:08.550 --> 09:14.190
+That is going to take a long time but rather not so pre pre shared key.
+
+09:14.190 --> 09:20.070
+So where hey I already establish a connection prior right with the server.
+
+09:20.070 --> 09:22.440
+So here is the pre shared key.
+
+09:22.440 --> 09:25.290
+So I'm going to encrypt my encryption.
+
+09:25.290 --> 09:33.600
+My my, my, my communication from from this first step there is no round back and forth.
+
+09:33.600 --> 09:35.230
+So this is called zero RTT.
+
+09:35.280 --> 09:36.690
+So there is no roundtrips at all.
+
+09:36.690 --> 09:39.690
+So extension is very it's another thing as well.
+
+09:40.830 --> 09:41.340
+All right.
+
+09:41.340 --> 09:46.860
+Let's talk about the last 1.2 again, guys, I'm going to avoid the math here.
+
+09:47.580 --> 09:49.470
+First of all, I'm not that great in math.
+
+09:49.470 --> 09:57.510
+So I kind of I think I think it's really irrelevant for us network engineers, but I'll mention it for
+
+09:57.510 --> 09:58.950
+those interested, obviously.
+
+09:59.820 --> 10:03.090
+So then at one point too, you open a connection, you close it.
+
+10:03.090 --> 10:04.950
+This is against the HTTPS connection.
+
+10:04.950 --> 10:06.720
+But I want you to pay attention to here.
+
+10:06.720 --> 10:13.140
+We're going to use RSA, one of the most popular asymmetric key encryption algorithm.
+
+10:13.140 --> 10:19.020
+If you are in RSA, you have a public key and you have a private key, right?
+
+10:19.020 --> 10:24.030
+A private key is not never shared, but the public key is can be shared effectively.
+
+10:24.030 --> 10:28.590
+And that's where the certificate actually contain the public key of the server.
+
+10:28.590 --> 10:30.030
+So with that in mind.
+
+10:30.860 --> 10:35.780
+What the what the server will do after opening the connection, the TCP connection immediately.
+
+10:35.780 --> 10:38.690
+The first thing we can get is to do a TLS client.
+
+10:38.690 --> 10:39.170
+Hello.
+
+10:39.530 --> 10:41.030
+And in the last client.
+
+10:41.030 --> 10:41.300
+Hello.
+
+10:41.330 --> 10:43.460
+We're going to request an encryption.
+
+10:44.660 --> 10:45.170
+Request.
+
+10:45.170 --> 10:47.000
+So, hey, I want to I want to encrypt.
+
+10:47.630 --> 10:48.260
+That's it.
+
+10:48.260 --> 10:49.700
+Says, Hey, I want to encrypt.
+
+10:49.700 --> 10:58.730
+And I'm going to use let's use RSA as a key exchange algorithm and let's use a as as a symmetric key
+
+10:58.730 --> 11:05.870
+algorithm or Cha-Cha as a symmetric key because there are two algorithms, one for to exchange the key,
+
+11:05.870 --> 11:11.210
+as we talked about, and one for the actual encryption, which is supposed to be symmetric, which is
+
+11:11.210 --> 11:11.780
+faster.
+
+11:12.350 --> 11:18.560
+So now the server will reply back is like, okay, here's, here's my cert and here's my public key
+
+11:19.310 --> 11:23.570
+client generate for me a pre master.
+
+11:23.840 --> 11:28.250
+Or you can think of it as just generate your symmetric key and send it to me.
+
+11:28.430 --> 11:30.930
+Like I was saying, you cannot just send it across the wall.
+
+11:30.980 --> 11:31.850
+Well, you can.
+
+11:31.850 --> 11:32.780
+We're going to show how.
+
+11:33.230 --> 11:38.780
+And so what the client will do is we'll generate this yellow key, right, which is the golden key,
+
+11:38.780 --> 11:42.590
+which is the symmetric key, which we want the client and the server to have.
+
+11:42.620 --> 11:42.900
+Right.
+
+11:42.920 --> 11:44.990
+So the client should have it here.
+
+11:45.410 --> 11:46.850
+Maybe we can fix that.
+
+11:46.850 --> 11:53.930
+So the client will generate the symmetric key and then we'll take this service public key, encrypt
+
+11:53.930 --> 11:55.010
+that symmetric key.
+
+11:55.010 --> 11:56.870
+It's actually not the actual symmetric key.
+
+11:56.870 --> 11:58.910
+It's a pre master, right?
+
+11:58.910 --> 12:05.750
+It's the input to generate the symmetric key but might as well it's this is just explanation purposes.
+
+12:06.380 --> 12:11.600
+So we're going to take that and then encrypt it and then send it across the wire.
+
+12:11.600 --> 12:17.000
+So anyone in the middle, if they get this, they will not understand anything.
+
+12:17.000 --> 12:17.510
+They will.
+
+12:17.510 --> 12:22.400
+L Sure they're going to see an encrypted symmetric key, what is supposed to be because we we have a
+
+12:22.400 --> 12:29.540
+label for this TLS handshake that's called change cipher -- and finish.
+
+12:29.540 --> 12:30.440
+I'm done here.
+
+12:30.440 --> 12:33.800
+So there's one roundtrip and then the second one is where we finish here.
+
+12:33.950 --> 12:41.240
+But we get to if somebody snipped here and got this key, they can't decrypt it because they don't have
+
+12:41.240 --> 12:42.770
+the corresponding private keys.
+
+12:43.070 --> 12:48.410
+So the server will get this and they will use the private key to decrypt that content.
+
+12:48.410 --> 12:52.070
+And as a result, how did you like that information?
+
+12:52.070 --> 12:52.400
+Huh?
+
+12:52.670 --> 12:53.600
+That's awesome.
+
+12:54.440 --> 13:02.030
+The the private key will be used to decrypt that content and then they the server will get the private
+
+13:02.030 --> 13:04.760
+key as a result, the symmetric key.
+
+13:04.760 --> 13:09.590
+So now both of them have to have it and nobody else in the middle can actually get it.
+
+13:10.520 --> 13:17.750
+And then this was a Helga, I got it done and then the encryption can happen using this symmetric key,
+
+13:17.750 --> 13:18.290
+right?
+
+13:18.290 --> 13:22.580
+Again, we don't want to use the public key because we could do this right?
+
+13:22.580 --> 13:23.090
+We could.
+
+13:23.120 --> 13:23.690
+We could.
+
+13:23.720 --> 13:28.550
+We could kill this thing, this yellow key, this golden key.
+
+13:28.550 --> 13:32.790
+And we to let's just use all of the public key for every content that's encrypted.
+
+13:32.840 --> 13:35.720
+That's the client, the encrypted with the public key.
+
+13:36.020 --> 13:42.590
+And then this the server will decrypted with the private key that is so slow, especially for a large
+
+13:42.590 --> 13:47.690
+pool, you're sending out a large 16 K JavaScript file that's going to be so slow.
+
+13:47.960 --> 13:49.600
+You don't want to do that, right?
+
+13:49.760 --> 13:52.130
+Yeah, we do it for Tiny Data.
+
+13:52.250 --> 13:54.110
+That's why I said you get away with it.
+
+13:54.120 --> 13:54.600
+It's a touch.
+
+13:54.620 --> 13:58.250
+I believe it uses private public key encryption, but.
+
+13:58.490 --> 14:01.310
+But it can because we're sending commands.
+
+14:01.310 --> 14:01.640
+Right.
+
+14:01.640 --> 14:06.200
+And this is not like sending huge data right now.
+
+14:06.200 --> 14:08.780
+Let's see what transferring files that's can't get slower.
+
+14:08.780 --> 14:12.890
+But sure, but yeah, the encryption can happen now.
+
+14:13.190 --> 14:13.840
+No problem.
+
+14:13.850 --> 14:17.260
+It was the problem with this right before we go to the phenomenon.
+
+14:17.300 --> 14:18.980
+Well, the problem with this is.
+
+14:19.650 --> 14:21.160
+Something called a.
+
+14:21.860 --> 14:24.530
+Forward secrecy or perfect forward secrecy.
+
+14:25.160 --> 14:29.960
+And let's assume I'm an attacker that happened to be in the middle.
+
+14:29.960 --> 14:31.140
+I am an ISP, right?
+
+14:31.160 --> 14:37.310
+I like to use the ISP because ISP all the IP packets passes through the ISP.
+
+14:37.580 --> 14:37.760
+Right.
+
+14:37.850 --> 14:39.980
+So ISP sees everything.
+
+14:39.980 --> 14:40.460
+Yes.
+
+14:40.460 --> 14:42.860
+Encrypted, but the ISP right.
+
+14:42.950 --> 14:45.020
+Can record everything.
+
+14:45.020 --> 14:51.380
+Let's say I'm recording all this configuration, I'm saving it to disk and I have a terabytes worth
+
+14:51.380 --> 14:56.450
+of content communication between all clients and the server.
+
+14:56.450 --> 15:02.000
+I have all the communication recorded for the past year to say Who cares?
+
+15:02.000 --> 15:04.490
+Sure, you can have it, but you can't see anything.
+
+15:04.490 --> 15:04.910
+You can.
+
+15:04.910 --> 15:05.390
+You can.
+
+15:05.390 --> 15:09.500
+You can run all the quantum computer against it to break it, but you can't.
+
+15:09.500 --> 15:11.240
+It's going to take you years to break it.
+
+15:11.240 --> 15:12.500
+Millions of years.
+
+15:13.040 --> 15:13.700
+Hmm.
+
+15:14.750 --> 15:17.450
+What if I get the private key of the server?
+
+15:18.050 --> 15:18.620
+How?
+
+15:18.650 --> 15:20.060
+You can't just get it right.
+
+15:20.060 --> 15:22.070
+You're an ISP, you don't have access to the server.
+
+15:23.600 --> 15:24.980
+It happened once.
+
+15:25.250 --> 15:32.060
+There was something called Heartbleed Openness Bug, which is the this is the library that people use
+
+15:32.150 --> 15:37.880
+to do all this mumbo jumbo, this TLS and encryption because you can't write this code for yourself,
+
+15:37.880 --> 15:39.200
+you can try it.
+
+15:39.200 --> 15:48.350
+It's so complex, you know, but people use libraries and that library had a bug and that bug was.
+
+15:50.130 --> 15:56.490
+While able people were able to extract where the private key was loaded into the server memory and people
+
+15:56.490 --> 16:05.520
+were able to use certain crash open SSL and leak part of the memory from the server and part of the
+
+16:05.520 --> 16:06.080
+memory.
+
+16:06.090 --> 16:10.380
+There's going to be a lot of junk, but part of that junk is gold.
+
+16:10.500 --> 16:11.500
+What is that gold?
+
+16:11.520 --> 16:12.510
+It's a private key.
+
+16:12.510 --> 16:17.100
+So people managed to get the private key of servers.
+
+16:18.000 --> 16:18.550
+Right.
+
+16:18.600 --> 16:20.160
+I just realized that I'm covering the page.
+
+16:20.460 --> 16:21.570
+I'm not really covering anything.
+
+16:21.570 --> 16:22.000
+That's good.
+
+16:22.020 --> 16:22.440
+Yeah.
+
+16:22.680 --> 16:28.410
+So people was able to get the privacy.
+
+16:28.410 --> 16:31.230
+At the moment, the ISP can get the key.
+
+16:32.210 --> 16:33.530
+What can they do?
+
+16:33.560 --> 16:37.070
+I'm not saying that I speech are bad because I'm just giving an example of you.
+
+16:37.490 --> 16:38.300
+Do you understand?
+
+16:38.930 --> 16:45.610
+Because of this perfect example, someone in Starbucks happened to hijack the router, right?
+
+16:45.620 --> 16:48.220
+And all the packets will go through that outer, right.
+
+16:48.230 --> 16:51.380
+All the package that goes to the Internet will go to that outer.
+
+16:52.090 --> 16:53.060
+Another example.
+
+16:53.270 --> 17:02.120
+But yeah, once we have that private key, I'll do a loop and exchange every single, you know, decrypt
+
+17:02.120 --> 17:03.440
+all this thing.
+
+17:03.440 --> 17:10.700
+Because now I have the private key I'm going to look for for each change cipher call, go decrypt it,
+
+17:10.700 --> 17:13.790
+get the cemetery key, and then decrypt the communication.
+
+17:13.790 --> 17:18.890
+Because even if the symmetric key is different right for each session.
+
+17:19.640 --> 17:20.280
+I don't care.
+
+17:20.300 --> 17:21.590
+The private key is the same.
+
+17:21.590 --> 17:25.730
+So I will get the symmetric key for each session and I'll decrypt it.
+
+17:27.140 --> 17:28.570
+That was really bad.
+
+17:28.580 --> 17:37.310
+So people try to avoid as much as possible using RSA as a key exchange algorithm because of this, because
+
+17:37.310 --> 17:45.830
+it lacks forward secrecy, because in the future someone might go and go back to a recorded conversation
+
+17:45.830 --> 17:48.730
+and if the private key is leaked, that could be a problem.
+
+17:49.790 --> 17:53.750
+And that's basically why people don't use the RSA.
+
+17:53.780 --> 17:58.820
+Now, people also try to use make sure the private key is as short as possible.
+
+17:58.820 --> 18:04.100
+That means whatever whoever generates the certificate should be as short as three months.
+
+18:04.100 --> 18:08.060
+Or sometimes Cloudflare gives like two weeks to get more security.
+
+18:08.060 --> 18:13.720
+So even if someone did hack it, they only have two weeks worth of things to steal.
+
+18:13.730 --> 18:14.330
+But yeah.
+
+18:14.990 --> 18:15.830
+So that's it.
+
+18:17.410 --> 18:21.370
+So made diffi helmet, which is a better key exchange algorithm.
+
+18:21.370 --> 18:21.590
+Right.
+
+18:21.640 --> 18:26.410
+And I started giving the math portion of here, but the key here.
+
+18:27.260 --> 18:30.890
+For Diffi Hellman is to generate a symmetric key.
+
+18:31.190 --> 18:31.820
+Right.
+
+18:32.240 --> 18:34.280
+You need two private keys.
+
+18:34.680 --> 18:36.710
+You generate a private number.
+
+18:36.950 --> 18:38.030
+A key is a number.
+
+18:38.990 --> 18:40.040
+Computers deal with number.
+
+18:40.040 --> 18:40.400
+Right?
+
+18:40.730 --> 18:45.020
+So we generate two private numbers and one can be public.
+
+18:45.710 --> 18:51.620
+If you combine the three together, you get the golden key, this private key.
+
+18:52.220 --> 18:53.570
+Has to be private.
+
+18:53.600 --> 18:55.280
+This private key has to be private.
+
+18:55.310 --> 18:56.640
+This can be public.
+
+18:56.660 --> 19:01.480
+So what you do is like you make one party, the client generates this private key, let's call it X,
+
+19:01.490 --> 19:04.250
+and the server generates the other private key, which is why.
+
+19:04.830 --> 19:05.260
+Right.
+
+19:05.270 --> 19:09.040
+And they keep it next to each other.
+
+19:09.050 --> 19:09.580
+Right.
+
+19:10.070 --> 19:16.850
+But the public key, which is a public number, it's actually two numbers that can be all that can be
+
+19:16.850 --> 19:17.200
+shared.
+
+19:17.210 --> 19:17.870
+That's fine.
+
+19:18.110 --> 19:20.750
+And that's the that's the key here.
+
+19:21.700 --> 19:26.300
+Now, if you happen once, all the three are together, you get the key.
+
+19:26.320 --> 19:27.340
+All right, that's.
+
+19:27.610 --> 19:28.750
+That's not really enough.
+
+19:28.780 --> 19:29.270
+Look.
+
+19:29.290 --> 19:30.670
+Put it into perspective.
+
+19:30.880 --> 19:34.510
+Here's another development thing here.
+
+19:35.140 --> 19:41.650
+If you combine the private key, one of the private key, the blue key with the public key, this is
+
+19:41.650 --> 19:42.820
+an unbreakable thing.
+
+19:42.820 --> 19:43.810
+Nobody can break it.
+
+19:43.810 --> 19:45.850
+So you can and this can be public.
+
+19:45.850 --> 19:48.160
+You can share this fine.
+
+19:48.160 --> 19:52.060
+And nobody can get the private key if you combine them together.
+
+19:52.090 --> 19:54.340
+It's like it's like you merge something and that's it.
+
+19:54.340 --> 19:55.840
+You cannot merge it.
+
+19:56.260 --> 19:57.540
+Same thing with this key.
+
+19:57.550 --> 20:00.040
+And that might get a little confusing.
+
+20:00.040 --> 20:02.110
+But here's the math here.
+
+20:02.110 --> 20:03.100
+We can explain it.
+
+20:03.100 --> 20:05.380
+So the public key is G, right?
+
+20:05.380 --> 20:05.680
+Right.
+
+20:05.680 --> 20:06.460
+The public number.
+
+20:06.460 --> 20:12.160
+So you you basically raise G to the power X again, exponentials are slow.
+
+20:12.520 --> 20:16.060
+That's why development is can be slow for large data.
+
+20:16.450 --> 20:18.130
+So G.
+
+20:18.810 --> 20:23.160
+It's recommended to be a prime and has to be a prime has to be right.
+
+20:23.160 --> 20:29.880
+And then due to the power x, you you raise it to the power of that private key and then you do a modular
+
+20:29.880 --> 20:35.490
+in and it has to be a large number and it has to be a prime to get an actual value of it.
+
+20:35.730 --> 20:38.190
+This is the unbreakable thing.
+
+20:38.190 --> 20:41.070
+Once you get this, you cannot get X out of it.
+
+20:41.070 --> 20:42.270
+You cannot do a log.
+
+20:42.270 --> 20:47.130
+You know, you can do all the math you want, you can do a log G to the power g, but you cannot because
+
+20:47.130 --> 20:48.840
+you did a modular on it.
+
+20:49.080 --> 20:50.430
+It's gone, right.
+
+20:50.430 --> 20:54.420
+It's very hard to break this without spending a lot of compute.
+
+20:54.930 --> 20:55.680
+Compute.
+
+20:55.680 --> 20:56.600
+This is the same thing here.
+
+20:56.610 --> 21:01.830
+G to the y modular end can be broken, but it is the key.
+
+21:02.720 --> 21:05.990
+If you merge all the three, then you get the golden.
+
+21:05.990 --> 21:08.270
+How power of the math.
+
+21:08.300 --> 21:10.900
+Take this thing due to the power x module in.
+
+21:10.910 --> 21:15.770
+If you raise the whole thing to the power y, let's assume you have y you you are the server.
+
+21:16.040 --> 21:18.140
+The client can send you this portion.
+
+21:18.140 --> 21:20.210
+Nobody can sniff it, they can't sniff it.
+
+21:20.210 --> 21:22.490
+They cannot extract anything to the power.
+
+21:22.490 --> 21:24.650
+Y and because of math.
+
+21:25.520 --> 21:29.000
+G to the power X to the power y is equal g to the bar x, y.
+
+21:29.030 --> 21:29.570
+Right.
+
+21:30.050 --> 21:34.300
+And this is actually the symmetric key, right?
+
+21:34.640 --> 21:38.570
+It's the input to the symmetry key algorithm that generates the symmetric key.
+
+21:39.650 --> 21:41.300
+Same thing g to the power roy modular.
+
+21:41.300 --> 21:42.830
+N All raised the power.
+
+21:42.830 --> 21:47.740
+X You put that and then you multiply x and y and that's the key.
+
+21:47.750 --> 21:49.940
+That's, that's the math behind it if you're interested.
+
+21:51.720 --> 22:02.010
+TLS 1.3 again, etc. 1.3 but at 1.2 has an option to use Diffie Element or even better elliptic curve
+
+22:02.010 --> 22:06.390
+development, which is an even better algorithm than development write development developments that
+
+22:06.390 --> 22:09.150
+secure can be broken with certain.
+
+22:09.210 --> 22:11.190
+It depends on the key size as well.
+
+22:11.880 --> 22:13.200
+So now what do we do?
+
+22:13.230 --> 22:15.030
+We combine the keys, as we said, right?
+
+22:15.450 --> 22:19.920
+The client generates the private key, the blue key, and the generates also the public key, which
+
+22:19.920 --> 22:22.050
+is the the G and the N, right.
+
+22:22.170 --> 22:29.700
+It combines them with which the raises to the power you take G to a power x and then modulo n, and
+
+22:29.700 --> 22:32.720
+then you send that nobody can they can take this.
+
+22:32.730 --> 22:36.270
+Sure they can know that g and even that is not enough for them.
+
+22:36.650 --> 22:36.970
+Right.
+
+22:36.990 --> 22:44.160
+They can they can read this, but they cannot understand they cannot get the blue right again once they
+
+22:44.160 --> 22:48.180
+get the X that that could get the X that can decrypt it, but they can't.
+
+22:48.570 --> 22:50.630
+So the server will receive this part.
+
+22:50.670 --> 22:51.270
+Okay.
+
+22:51.600 --> 22:52.290
+And then.
+
+22:53.060 --> 23:01.760
+Well the survey will do is will generate its own private part of the diffi element, which is the Y
+
+23:01.790 --> 23:02.510
+as we talked about.
+
+23:02.510 --> 23:02.870
+Right.
+
+23:02.870 --> 23:07.130
+And then take this and combine it with the three.
+
+23:07.160 --> 23:12.920
+What do you get which basically take this and raise it to the power of Y and you get a beautiful symmetric
+
+23:12.920 --> 23:13.310
+key.
+
+23:13.370 --> 23:15.380
+Now we got the symmetry key.
+
+23:15.590 --> 23:19.280
+What does the client need to generate its own symmetric key?
+
+23:19.310 --> 23:20.660
+It needs this, right.
+
+23:21.170 --> 23:23.990
+But you cannot just send that plane, right.
+
+23:24.140 --> 23:31.310
+What you can do instead is you take this and combine it with the red key, which you have the server
+
+23:31.310 --> 23:32.040
+got from here.
+
+23:32.060 --> 23:33.800
+Now this is combined.
+
+23:33.830 --> 23:34.990
+Nobody can break it.
+
+23:35.000 --> 23:43.580
+So that's g to the bottom of y modulo n and then you send that the server will get this, the client
+
+23:43.580 --> 23:47.570
+will get this, and then the client will take this part and raise it to the part of what?
+
+23:47.570 --> 23:48.560
+To X?
+
+23:48.740 --> 23:52.040
+And that basically will give you the private key.
+
+23:52.430 --> 23:53.690
+No, the symmetric is sorry.
+
+23:53.720 --> 23:58.940
+And then you basically do the exchange, you encrypt it and the server can decrypt with the same key.
+
+23:58.940 --> 23:59.530
+And we're done.
+
+23:59.540 --> 24:00.760
+And that is the algorithm again.
+
+24:00.770 --> 24:01.160
+Right?
+
+24:01.190 --> 24:08.210
+So g to the power x module in the power of y that is done by the server because the server has the Y
+
+24:08.660 --> 24:15.560
+right and this is unbreakable g to double Y to double in power x is done by the client because the client
+
+24:15.560 --> 24:16.250
+has the x.
+
+24:16.640 --> 24:17.570
+Got it.
+
+24:17.600 --> 24:18.260
+Got it.
+
+24:18.650 --> 24:21.230
+Again, I'm covering part of it, but it's just the server.
+
+24:21.230 --> 24:22.760
+It's not not a big deal.
+
+24:23.510 --> 24:26.840
+And now I think I can I can disappear.
+
+24:27.110 --> 24:27.410
+All right.
+
+24:27.410 --> 24:28.580
+So let's summarize.
+
+24:28.580 --> 24:31.640
+We talked about the vanilla TV.
+
+24:32.790 --> 24:33.630
+Right how it works.
+
+24:33.630 --> 24:34.860
+We talked about TPS.
+
+24:34.860 --> 24:38.250
+We talk about TLS 1.2, how it is actually two roundtrips.
+
+24:38.250 --> 24:38.670
+Right.
+
+24:38.700 --> 24:42.360
+Because the first answer is just to agree on what what are we going to use?
+
+24:42.360 --> 24:47.010
+Hey, what key exchange you got it going to use and what symmetric key are going to use to address 1.3?
+
+24:47.010 --> 24:53.100
+Just remove that says hey, it's always better to use the Fidelman right or elliptic of the development.
+
+24:53.460 --> 25:00.030
+And in the first handshake and in the first handshake immediately send these parameters.
+
+25:00.030 --> 25:02.370
+Don't even don't negotiate.
+
+25:02.370 --> 25:07.890
+Just just send your parts of the exchange and the server will immediately know that.
+
+25:07.890 --> 25:08.310
+Right.
+
+25:08.550 --> 25:10.650
+And so that's the power of development here.
+
+25:10.650 --> 25:12.240
+You can do it in a single handshake.
+
+25:12.240 --> 25:13.230
+There is no exchange.
+
+25:13.230 --> 25:18.060
+The first one was like just like, you know, just negotiation that is just removed, right?
+
+25:18.300 --> 25:21.210
+So to us, 1.3 is way faster than at 1.2, right?
+
+25:21.210 --> 25:24.690
+Because there is no external round trip that we have to do.
+
+25:24.690 --> 25:33.480
+And we know like any roundtrip that TLS 1.3 and 1.2 is content to the TCP layer.
+
+25:33.480 --> 25:33.930
+Right.
+
+25:34.410 --> 25:35.310
+And we talked about that.
+
+25:35.310 --> 25:39.510
+So segments, you better really know how large this things are.
+
+25:39.540 --> 25:40.020
+Right.
+
+25:40.030 --> 25:45.390
+And and the payload that comes back from the server, by the way, it has a certificate.
+
+25:45.390 --> 25:47.920
+This is really large, right?
+
+25:47.940 --> 25:50.480
+There is a specific ref.
+
+25:50.490 --> 25:56.460
+See a request for comments to actually compress the certificate which is not today is not compressed.
+
+25:56.460 --> 26:00.450
+So this is a lot of segments send back.
+
+26:00.750 --> 26:04.860
+Yeah, I draw one arrow, but there are so many segments here.
+
+26:04.860 --> 26:05.240
+Right.
+
+26:05.400 --> 26:08.490
+And we talked about all of that stuff as well.
+
+26:08.640 --> 26:09.730
+And it's one, right.
+
+26:09.810 --> 26:12.180
+But it can also be zero with zero RTT.
+
+26:12.180 --> 26:22.800
+The client can send the the everything including the pre pre shared something that is agreed upon.
+
+26:22.800 --> 26:27.390
+They can immediately encrypt in the first handshake, right.
+
+26:27.390 --> 26:30.570
+If they want to, if they have communicated before.
+
+26:30.570 --> 26:37.350
+So they can agree on some some pre master -- and the server can look it up and use that to to get
+
+26:37.350 --> 26:38.340
+the key immediately.
+
+26:38.550 --> 26:46.470
+So it's a little bit stateful but yeah, I guys hope you enjoyed this TLS lecture and let's have any
+
+26:46.470 --> 26:52.080
+questions you might have, but in the section question Q&amp;A, I try to answer all of these questions
+
+26:52.080 --> 26:57.390
+and I pick some of these questions to present as lectures which are very, very valuable.
+
+26:57.450 --> 26:58.980
+See you in the next one.
+
+26:59.010 --> 26:59.580
+Stay awesome.

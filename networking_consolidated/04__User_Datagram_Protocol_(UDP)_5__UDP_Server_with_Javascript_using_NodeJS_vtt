@@ -1,0 +1,469 @@
+WEBVTT
+
+00:00.090 --> 00:06.240
+All right, guys, now that we understand the basic fundamentals of the UDP protocol.
+
+00:06.540 --> 00:07.740
+I apologize for my voice.
+
+00:07.740 --> 00:15.510
+It's very early in the morning and what we wanted to do is to build one UDP server and I'm going to
+
+00:15.510 --> 00:21.970
+use multiple languages in this course and I'm going to use a very, very high level language assembly.
+
+00:22.180 --> 00:28.890
+And he was a very kind of low level language and I put JavaScript because I'm comfortable with it as
+
+00:28.890 --> 00:33.780
+one UDP server and I'm going to make another lecture to do a C in the future.
+
+00:34.020 --> 00:41.180
+Or where C is is very low level as lower as it gets to assembly where you're allocating buffers and
+
+00:41.360 --> 00:42.170
+it's different.
+
+00:42.170 --> 00:45.360
+So how about we go ahead and build the UDP server?
+
+00:45.870 --> 00:53.460
+I'm going to go ahead and open a project here and I'm going to create a folder and I'm going to call
+
+00:53.460 --> 00:55.740
+it an auction course.
+
+00:57.980 --> 01:01.100
+That's going to set my project up here.
+
+01:01.550 --> 01:03.950
+Yeah, it's called this UDP server.
+
+01:04.980 --> 01:10.080
+And JavaScript, and I'm going to use Node.js for that.
+
+01:10.830 --> 01:11.090
+So.
+
+01:11.730 --> 01:15.720
+So if you want to follow along, make sure to have Node.js installed.
+
+01:15.720 --> 01:18.240
+And Visual Studio Code is my editor in this case.
+
+01:18.630 --> 01:24.360
+So I'm going to go ahead and create a new index done MGC folder.
+
+01:24.990 --> 01:32.220
+And what we're going to do here is we're going to need a library that supports the data gram creation,
+
+01:32.220 --> 01:35.100
+which is the socket for the UDP.
+
+01:35.130 --> 01:35.400
+Right.
+
+01:35.760 --> 01:40.500
+This is called import diagram from diagram.
+
+01:41.370 --> 01:42.840
+We're going to install this in a minute.
+
+01:43.350 --> 01:45.030
+But because this doesn't exist.
+
+01:45.120 --> 01:45.420
+Right.
+
+01:46.610 --> 01:47.270
+By default.
+
+01:48.080 --> 01:54.020
+But what we're going to do here is get to create a socket using that library.
+
+01:54.560 --> 01:59.480
+And we talked about sockets in this course right at the corner of the socket.
+
+01:59.480 --> 02:03.050
+It tells you what kind of type of this socket is.
+
+02:03.080 --> 02:03.350
+Right.
+
+02:03.590 --> 02:10.010
+And I'm interested in you have two types here, UDP four, which is the IPv4 version of UDP and UDP
+
+02:10.010 --> 02:10.340
+six.
+
+02:10.610 --> 02:12.980
+I'm going to go with you to be before because it's just simpler.
+
+02:14.660 --> 02:16.820
+The next thing we're going to do is now this is a socket.
+
+02:16.820 --> 02:18.250
+It doesn't have any meaning.
+
+02:18.260 --> 02:18.590
+Right.
+
+02:19.040 --> 02:24.290
+This is think of it like of the file descriptor that we talked about again or building a server here.
+
+02:24.290 --> 02:24.590
+Right.
+
+02:24.830 --> 02:26.810
+So it's going to listen on our commands.
+
+02:27.500 --> 02:36.080
+So the thing we're going to do is going to do socket, double bind and the bind command tells us what
+
+02:36.080 --> 02:37.490
+port the owner bind to.
+
+02:38.030 --> 02:39.620
+What do you want to listen to?
+
+02:39.620 --> 02:42.230
+And we talked about this, the address as well.
+
+02:42.710 --> 02:50.540
+And so I'm going to go ahead and listen on .5500, you know, just random port I picked and I'm only
+
+02:50.540 --> 02:58.850
+interested on listening on the local host loopback IPV four version and careful not just doing this
+
+02:59.200 --> 03:06.590
+right the default address what is the default address here and option is that an optional address?
+
+03:07.370 --> 03:10.940
+If it does not specify, the upper system will attempt to listen on all addresses.
+
+03:11.330 --> 03:12.470
+Just be careful of that.
+
+03:12.710 --> 03:15.710
+We don't want to haphazardly list on all addresses.
+
+03:15.720 --> 03:21.830
+I think I believe I talk about this at the end of the course, know where there's a danger about this
+
+03:21.830 --> 03:26.780
+because your computer might have multiple network addresses.
+
+03:28.030 --> 03:34.360
+One is the local horse, which is the loopback, which are literally an IP address that is just sent
+
+03:34.360 --> 03:35.080
+to itself.
+
+03:35.890 --> 03:36.760
+Others might be.
+
+03:37.000 --> 03:39.450
+You had the Wi-Fi IP address.
+
+03:39.730 --> 03:41.740
+Yeah, the Ethernet IP IP address.
+
+03:42.250 --> 03:43.750
+You might have a public IP address.
+
+03:43.750 --> 03:50.860
+So if you're building like an admin, local or only API, you don't want to listen in on addresses so
+
+03:50.860 --> 03:53.680
+people can access it from the wild, wild internet.
+
+03:53.890 --> 03:54.670
+You don't want to do that.
+
+03:55.090 --> 03:57.670
+So always be specific about this.
+
+03:57.790 --> 03:58.060
+Yeah.
+
+03:58.060 --> 03:59.890
+If you're testing and building a small app.
+
+03:59.890 --> 04:00.370
+Sure.
+
+04:01.180 --> 04:04.750
+So that's why we're listing on the next thing is what do we want?
+
+04:04.760 --> 04:08.190
+What are we going to do when we receive a message?
+
+04:08.890 --> 04:12.340
+So in an event of a message, I'm going to add a handler effectively.
+
+04:12.730 --> 04:14.860
+When we get a message, give me that message.
+
+04:14.860 --> 04:22.300
+This is how it functions working JavaScript and this is the info object which will have the socket that
+
+04:22.900 --> 04:23.980
+information itself.
+
+04:24.250 --> 04:28.960
+So I don't know why they just used one object, but this is how the API is built.
+
+04:29.440 --> 04:32.200
+So info will have the socket that is coming from the client.
+
+04:32.490 --> 04:38.920
+Know where it has the source, the ip address, the source port, all the beautiful stuff.
+
+04:38.920 --> 04:39.130
+Right.
+
+04:39.730 --> 04:47.680
+So I'm going to do a console that look print message here that says, okay, my server got let's do
+
+04:47.680 --> 04:48.250
+the thing.
+
+04:48.880 --> 04:49.450
+That's my.
+
+04:50.540 --> 04:53.510
+My server got an datagram.
+
+04:54.350 --> 04:55.840
+This is the data message.
+
+04:55.850 --> 04:56.180
+Right.
+
+04:56.960 --> 05:00.260
+And from from where info.
+
+05:01.550 --> 05:02.270
+And for that what?
+
+05:02.720 --> 05:05.270
+There is info to address family port size.
+
+05:05.540 --> 05:06.590
+The size of the packet.
+
+05:06.860 --> 05:07.430
+The port.
+
+05:07.430 --> 05:09.740
+That's the source port of their client.
+
+05:09.740 --> 05:11.480
+That the random what we talked about.
+
+05:11.490 --> 05:11.740
+Right.
+
+05:12.170 --> 05:17.300
+And the address which is the IP address of the client and the family, which is IPV four, IPV six.
+
+05:18.020 --> 05:19.340
+It's called family for some reason.
+
+05:20.570 --> 05:23.270
+And then we also need to put the port here.
+
+05:23.300 --> 05:25.130
+I think that's pretty much it.
+
+05:26.820 --> 05:27.780
+So we're ready.
+
+05:28.140 --> 05:36.620
+So now if I go, I'm going to go to create a new terminal here and I want to install my right.
+
+05:37.830 --> 05:44.070
+I'm going to initialize my AMPM here and I'm going to install diagram just to make sure everything is
+
+05:44.700 --> 05:45.690
+happy and dandy.
+
+05:45.690 --> 05:46.980
+And let's go ahead and debug.
+
+05:49.810 --> 05:50.540
+I'm going to put not.
+
+05:50.540 --> 05:51.380
+Yes.
+
+05:51.380 --> 05:54.020
+And we are up and running.
+
+05:54.020 --> 05:54.830
+We should be up and running.
+
+05:55.100 --> 05:55.970
+So how do we test this?
+
+05:57.170 --> 06:03.410
+We're going to use a utility that effectively establishes TCP connection, datagram connection.
+
+06:03.680 --> 06:08.440
+And this utility is available on almost all operating systems and it's called net cat, right?
+
+06:09.020 --> 06:15.230
+You can decide to build another Node.js client or JavaScript client or any language client that connect
+
+06:15.230 --> 06:15.410
+to it.
+
+06:15.410 --> 06:16.510
+But I find this easier.
+
+06:16.910 --> 06:22.490
+So if you do net cat and do slash view, that means you are in the UDP mode and then you specify the
+
+06:22.490 --> 06:23.570
+address and the port.
+
+06:24.530 --> 06:30.800
+So I want to connect to a127001, which is localhost and 5500.
+
+06:30.800 --> 06:31.700
+That was my board, right?
+
+06:32.060 --> 06:34.250
+i500 and the message.
+
+06:34.550 --> 06:39.860
+So when you hit enter, you're now entering the interactive terminal and you say, okay, I'm going
+
+06:39.860 --> 06:42.110
+to send a message called I.
+
+06:43.370 --> 06:51.800
+Enter immediately we get trigger write to this is a debug breakpoint I put is the beauty look at this
+
+06:52.070 --> 06:54.950
+we got three bytes, the first by this edge.
+
+06:54.980 --> 06:56.810
+The second byte is I.
+
+06:57.130 --> 06:57.540
+I.
+
+06:58.070 --> 06:59.990
+The third one is the courage return, which is ten.
+
+07:00.260 --> 07:01.750
+And that tells you the leg.
+
+07:01.760 --> 07:03.830
+That tells you that all that other stuff as well.
+
+07:03.860 --> 07:04.970
+I don't know why I can't expand.
+
+07:04.970 --> 07:06.110
+Did you get the point?
+
+07:07.110 --> 07:08.580
+His email address.
+
+07:08.580 --> 07:09.720
+Family Board.
+
+07:09.870 --> 07:10.290
+Look at this.
+
+07:10.500 --> 07:14.760
+The LOC report 53618 and the size which is three bytes.
+
+07:16.640 --> 07:17.240
+And he can do that.
+
+07:17.570 --> 07:18.200
+And he is it then.
+
+07:19.130 --> 07:20.810
+My server got a diagram.
+
+07:20.810 --> 07:22.850
+Hi from WaPo blah blah blah.
+
+07:23.690 --> 07:25.160
+Like I can't continue as anything.
+
+07:25.490 --> 07:26.300
+Saying also.
+
+07:27.870 --> 07:30.290
+We will get it to you.
+
+07:30.390 --> 07:31.170
+We just.
+
+07:31.170 --> 07:31.830
+Just like that.
+
+07:31.830 --> 07:34.920
+Built a UDP server.
+
+07:35.190 --> 07:36.780
+A very simple, very elegant.
+
+07:36.990 --> 07:39.090
+But not Node.js.
+
+07:39.090 --> 07:44.270
+The API that has on here has built most of this stuff for us.
+
+07:44.280 --> 07:47.400
+You know, we didn't have to worry about buffers.
+
+07:47.400 --> 07:52.640
+It didn't have to worry about, you know, file descriptors and all that stuff.
+
+07:52.650 --> 07:58.410
+You know, we didn't have to worry about looping and accepting all of this stuff that's done for us,
+
+07:58.410 --> 07:58.740
+you know?
+
+07:59.130 --> 08:05.070
+And when we write a C code, you you'll see how this is actually a little bit more complicated than
+
+08:05.340 --> 08:07.380
+this song and small code.
+
+08:07.710 --> 08:12.630
+And if you go to the help of the datagram, you can find multiple events like event.
+
+08:12.630 --> 08:20.610
+When we first run the server, right, when we first successfully listen to the port and all that stuff,
+
+08:20.610 --> 08:20.880
+you know.
+
+08:21.180 --> 08:21.570
+All right.
+
+08:21.630 --> 08:24.060
+That's what I want to talk about on the UDP server.
+
+08:24.170 --> 08:24.900
+Hope you enjoyed it.
+
+08:25.260 --> 08:26.610
+I'm going to make the code available.
+
+08:26.610 --> 08:31.350
+Obviously, you guys, for you as a as a source code, you can just download it here and there.
+
+08:31.440 --> 08:33.690
+GitHub repo as well.
+
+08:34.590 --> 08:35.370
+Let's jump into it.

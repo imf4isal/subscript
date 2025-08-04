@@ -1,0 +1,352 @@
+WEBVTT
+
+00:00.090 --> 00:01.320
+Hey, guys, what's going on?
+
+00:01.440 --> 00:07.940
+It won't be a cause if we didn't inspect the most important tools in networking.
+
+00:07.950 --> 00:09.120
+That's Wireshark.
+
+00:09.480 --> 00:17.700
+Wireshark is a tool that allows us to sniff packets, segments, frames, really anything as going out
+
+00:17.700 --> 00:22.920
+from your computer out into the wild, wild internet or any other machine for that matter.
+
+00:23.550 --> 00:27.880
+And today we're going to Wireshark, UDP.
+
+00:27.900 --> 00:34.770
+You know, to to kind of verify what we have been, you know, talking about all this time, you know,
+
+00:35.250 --> 00:36.930
+and so go ahead and install Wireshark.
+
+00:36.930 --> 00:44.280
+It's really straightforward, you know, just don't go to our dot com download the approach version
+
+00:44.280 --> 00:50.680
+for your operating system and once you're on it, you're going to listen, you're going to capture,
+
+00:50.700 --> 00:55.190
+you start capturing to a certain interface I'm now capturing on my way, right?
+
+00:55.260 --> 00:58.300
+Anything on my Wi-Fi interface I'm going to capture.
+
+00:58.680 --> 01:03.730
+So today what I'm going to do is I am going to start capturing.
+
+01:04.470 --> 01:06.000
+So I'm going to start capturing.
+
+01:06.510 --> 01:08.790
+And obviously let's not save anything.
+
+01:09.150 --> 01:14.280
+But this is going to capture a whole everything.
+
+01:14.490 --> 01:16.740
+That's a lot of information, right?
+
+01:17.160 --> 01:18.660
+So I want to filter that.
+
+01:18.810 --> 01:21.060
+So I need to filter all that stuff, right?
+
+01:21.060 --> 01:24.960
+So I want it only to capture a UDP packet, single UDP packet.
+
+01:25.200 --> 01:26.100
+What does say UDP?
+
+01:26.730 --> 01:28.500
+Give me a UDP server DNS.
+
+01:28.500 --> 01:28.710
+Right.
+
+01:28.710 --> 01:30.690
+Any DNS server is actually UDP server.
+
+01:30.840 --> 01:31.080
+Yeah.
+
+01:31.620 --> 01:40.680
+Unless it's D.O.A., which means it's a B, TCP is devious over the DNS, but we're going to go with
+
+01:40.690 --> 01:42.930
+the simple DNS server.
+
+01:44.490 --> 01:50.670
+So one of the simplest ideas of again, our tool and it's CAT, we're going to do a UDP version, we'll
+
+01:50.670 --> 01:52.020
+get to connect to eight, eight, eight, eight.
+
+01:52.080 --> 01:54.060
+That's that Google DNS server.
+
+01:54.450 --> 01:54.690
+Yeah.
+
+01:55.080 --> 01:57.750
+On Port 53, that's the default DNS port.
+
+01:58.170 --> 02:00.420
+And I'm going to send the message test.
+
+02:01.600 --> 02:02.110
+But guess what?
+
+02:02.590 --> 02:03.280
+It's there.
+
+02:04.420 --> 02:06.760
+It's going to be buried with all these packets, you know.
+
+02:07.090 --> 02:13.120
+So I'm going to do is actually filter and you can do the filtering like this IP editor, which is address.
+
+02:13.680 --> 02:19.690
+I'm interested in the eight, eight, eight eight address, which is that's the destination address
+
+02:19.690 --> 02:25.780
+that we went to write this way or only show our beautiful data that we sent.
+
+02:26.230 --> 02:28.300
+Obviously, it's not really a great.
+
+02:29.110 --> 02:30.700
+It's a malformed DNS packet.
+
+02:31.030 --> 02:31.690
+That's fine.
+
+02:32.080 --> 02:34.250
+We don't really care about actual protocol here.
+
+02:34.270 --> 02:39.370
+We really want to take a look at the length and be like, I like the source and all that stuff.
+
+02:39.370 --> 02:42.580
+So just like that, let's ignore the last one here.
+
+02:42.850 --> 02:43.390
+But look at this.
+
+02:44.020 --> 02:46.150
+We have a frame layer too.
+
+02:46.660 --> 02:56.230
+That's a that's also layer two, but it's the Wireshark effectively explain things and try to pass things
+
+02:56.230 --> 02:58.210
+so that it's more readable for us.
+
+02:58.390 --> 03:00.460
+You know, they're going to see this all the time.
+
+03:00.460 --> 03:07.060
+So frame as the frame how it looks like it's 47 bytes, Ethernet, which is the frame, really the protocol
+
+03:07.060 --> 03:12.880
+itself, Internet protocol version four, which is that layer three, right, Internet IP layer.
+
+03:13.450 --> 03:15.700
+And then user data protocol, which is layer four.
+
+03:16.290 --> 03:21.970
+And it gives you a nice summary of the information, information that we really care about and obviously
+
+03:21.970 --> 03:24.040
+the application layer, what is this thing?
+
+03:24.610 --> 03:31.060
+Wireshark tries as much as possible to port and understand what this thing is about, so we will all
+
+03:31.060 --> 03:31.480
+figure it out.
+
+03:31.480 --> 03:34.000
+Oh no, this is actually a domain name system.
+
+03:34.450 --> 03:37.390
+I know that because I know this port will figure out.
+
+03:37.600 --> 03:40.450
+I know this port and I know this IP, so we'll figure it out.
+
+03:40.450 --> 03:41.800
+What is the content of this?
+
+03:41.800 --> 03:49.030
+But here's the the biggest thing here is actually the source Mac and the destination Mac is shown here
+
+03:49.840 --> 03:53.890
+and this is shown by the frame, right?
+
+03:53.920 --> 03:59.140
+Because in the frame, in the layer to really care about the source Mac and the destination Mac very
+
+03:59.140 --> 04:03.520
+powerful concept and layer two, this is what we care about.
+
+04:03.910 --> 04:08.530
+If we go to the IP layer, the destination is eight, eight, eight, eight.
+
+04:09.010 --> 04:11.890
+The source is 1921682552144.
+
+04:11.890 --> 04:13.540
+That's my private IP address.
+
+04:14.020 --> 04:20.530
+Well, technically speaking, if you capture outside the router, it will be my public IP address of
+
+04:20.530 --> 04:21.000
+that out there.
+
+04:21.160 --> 04:26.890
+But this I'm capturing on the device, this is what Wireshark seizes and the user data go.
+
+04:27.280 --> 04:30.940
+What do we care about the layer for the export destination port?
+
+04:30.940 --> 04:36.130
+So that's the random port that is was assigned and that's the destination port.
+
+04:36.400 --> 04:39.010
+So Google didn't even bother replying to me.
+
+04:39.610 --> 04:39.970
+Right.
+
+04:39.970 --> 04:45.520
+In this particular case, they find this very, very interesting to talk about all these kind of things.
+
+04:46.210 --> 04:50.080
+So it's, it's, it's fascinating to explain all that stuff.
+
+04:50.080 --> 04:50.290
+So.
+
+04:53.990 --> 04:56.720
+Let's unpack layer three and a little bit.
+
+04:56.720 --> 04:58.610
+Read more information about it.
+
+04:58.640 --> 04:59.450
+What do we have here?
+
+04:59.900 --> 05:03.950
+Most of the stuff we kind of talked about, some of the stuff we do like the flags.
+
+05:04.370 --> 05:05.630
+There are no flags set.
+
+05:05.930 --> 05:10.190
+We don't have any don't fragment bits or anything like that.
+
+05:10.610 --> 05:10.870
+All right.
+
+05:11.840 --> 05:12.470
+Time to live.
+
+05:13.320 --> 05:14.240
+You guys remember this one?
+
+05:14.240 --> 05:16.940
+Remember the title in the IP packet?
+
+05:17.420 --> 05:20.840
+How long can this packet survive as an IP back here?
+
+05:21.320 --> 05:23.450
+64 is the is the value.
+
+05:23.450 --> 05:26.450
+That said, after 64 hops, this will die.
+
+05:28.650 --> 05:37.320
+The protocol, which is a value of 17, indicates that hey in me as an IP packet, I have the UDP protocol.
+
+05:38.310 --> 05:44.850
+Very fascinating that Jason talked about all that stuff that verifies all that stuff, you know, and
+
+05:44.850 --> 05:47.160
+for some reason the validation is disabled.
+
+05:47.160 --> 05:47.860
+I don't know why.
+
+05:48.000 --> 05:53.820
+Probably it's a side effect of the capturing logic source address and destination address.
+
+05:54.720 --> 05:57.810
+So that's all the information that we really care about.
+
+05:57.810 --> 06:03.570
+It's not much you don't you see there isn't any sense in echoed anything like that because it's just
+
+06:03.570 --> 06:07.950
+pure UDP logic, you know, fascinating stuff.
+
+06:08.560 --> 06:10.740
+If we go to the user data again, what do we have here?
+
+06:11.340 --> 06:14.520
+The data gram of the UDP is really small.
+
+06:14.520 --> 06:15.870
+It's eight bytes.
+
+06:15.880 --> 06:16.140
+Right.
+
+06:16.470 --> 06:18.720
+It has the source and the station port.
+
+06:19.060 --> 06:19.320
+Right.
+
+06:21.460 --> 06:21.660
+As.
+
+06:21.850 --> 06:24.480
+And that takes most of the bite, really.
+
+06:26.470 --> 06:28.690
+It has the length of the content, which is 30.
+
+06:28.690 --> 06:36.970
+And I believe that's what I what I sent the content and plus other stuff time stamps it's stamping the
+
+06:37.570 --> 06:41.590
+all the information in the data and the payload itself.
+
+06:41.590 --> 06:42.910
+So the payload is actually five.
+
+06:42.920 --> 06:44.230
+That's what I sent with.
+
+06:44.230 --> 06:45.430
+The total length is 13.
+
+06:45.430 --> 06:48.470
+So it adds more stuff to my packet, right.
+
+06:49.120 --> 06:50.430
+So yeah, that's what I want to talk about.
+
+06:50.440 --> 06:52.960
+Just showing you this the raw UDP.
+
+06:53.410 --> 06:57.640
+How about we jump into it and do another one on TCP this time?

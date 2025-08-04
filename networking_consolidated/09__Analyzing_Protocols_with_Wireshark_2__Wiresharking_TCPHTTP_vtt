@@ -1,0 +1,967 @@
+WEBVTT
+
+00:00.180 --> 00:00.990
+All right, guys.
+
+00:00.990 --> 00:04.710
+So we did want to know UDP, Wireshark and UDP.
+
+00:04.980 --> 00:10.440
+How about we do a Wireshark TCP, and what is the best thing to Wireshark TCP?
+
+00:10.720 --> 00:13.350
+Then just do a simple HTTP request.
+
+00:13.380 --> 00:14.280
+So let's kind of do that.
+
+00:14.400 --> 00:15.390
+Let's go ahead and do that.
+
+00:15.900 --> 00:18.690
+So I'm going to close this old request here.
+
+00:19.020 --> 00:20.940
+I'm going to do a curl on.
+
+00:21.990 --> 00:23.910
+Example dot com, not the secure one.
+
+00:23.910 --> 00:27.570
+We're going to do another video just as soon as you secure HGTV.
+
+00:28.000 --> 00:31.350
+I'm going to do the example that's coming, but I need the IP address of example dot com.
+
+00:31.530 --> 00:33.570
+And what's the IP address of example?
+
+00:33.570 --> 00:40.200
+I was going so I'm going to call example or com, but I'm really interested in the IP address of example
+
+00:40.200 --> 00:40.740
+dot com.
+
+00:40.830 --> 00:41.160
+Right.
+
+00:41.730 --> 00:43.980
+Because I don't want all the other garbage.
+
+00:43.980 --> 00:44.190
+Right.
+
+00:44.580 --> 00:46.280
+This is the IP address of example that comes.
+
+00:46.280 --> 00:52.920
+So let's go and copy it because it definitely made it in my Wireshark but is going to be lost with all
+
+00:52.920 --> 00:54.240
+the other stuff.
+
+00:54.720 --> 01:02.220
+So I'm going to filter this and let's go ahead and clear it and start over clear and then go to a curl.
+
+01:02.640 --> 01:06.630
+SDP example dot com hit enter.
+
+01:07.290 --> 01:08.490
+Look at this.
+
+01:08.790 --> 01:10.370
+We received all the information.
+
+01:10.380 --> 01:11.520
+Here's what I'm interested in.
+
+01:11.670 --> 01:12.000
+Okay.
+
+01:13.480 --> 01:13.840
+As.
+
+01:15.120 --> 01:16.680
+It's TCP now.
+
+01:17.430 --> 01:19.230
+It's not it's not UDP.
+
+01:19.560 --> 01:21.010
+So there is work at the beginning.
+
+01:21.030 --> 01:23.490
+So those send their sequences.
+
+01:23.490 --> 01:25.080
+You know, the sequence starts with zero.
+
+01:25.670 --> 01:30.960
+And this is called the relative sequence because it never actually starts with a zero.
+
+01:31.320 --> 01:32.970
+It starts with an actual large number.
+
+01:33.300 --> 01:39.540
+But Wireshark, to make our life easier, they, they make it a relative sequence to the through the
+
+01:39.540 --> 01:40.110
+handshake.
+
+01:40.560 --> 01:45.300
+So they start from zero and show us the relative because it's way easier to read the relative.
+
+01:45.630 --> 01:48.660
+And you can, I believe, do right click and show the whatever the.
+
+01:49.140 --> 01:51.890
+So do somewhere here you can show the actual values.
+
+01:52.110 --> 01:53.860
+I don't really care about the actual values.
+
+01:54.630 --> 01:57.190
+But look at this, the sin sin act.
+
+01:57.270 --> 01:58.770
+And then let's go through it.
+
+01:58.830 --> 01:59.460
+Overview.
+
+01:59.520 --> 02:00.630
+Sin Sinek.
+
+02:01.620 --> 02:02.490
+That's the handshake.
+
+02:02.880 --> 02:10.920
+See the local board talking to the 84th 80, which is this TV that 80, talking to the local board and
+
+02:10.920 --> 02:13.490
+then the local park talking to 80.
+
+02:13.500 --> 02:16.950
+So that's us again and then us sending.
+
+02:17.700 --> 02:17.970
+Right.
+
+02:18.030 --> 02:23.820
+You can also see it in the source and destination here, us sending a get request, which is the content
+
+02:24.180 --> 02:25.440
+which all fit into our segment.
+
+02:25.620 --> 02:25.920
+Right.
+
+02:26.610 --> 02:30.750
+And that will be sent will acknowledge that request.
+
+02:30.960 --> 02:37.920
+And then there is some more acknowledgement happening and then that we are going to send some more information.
+
+02:38.400 --> 02:41.850
+We're going to acknowledge the content of this is the content that we get added delivered.
+
+02:42.060 --> 02:42.410
+Right.
+
+02:43.260 --> 02:51.120
+And then finally we get Wireshark tries to help us by actually passing and show us at record about the
+
+02:51.360 --> 02:53.010
+result that we received.
+
+02:53.790 --> 02:54.660
+Let's start over.
+
+02:54.660 --> 02:57.600
+And then finally, the end of the day, fennec.
+
+02:57.810 --> 02:59.790
+Then this is the fin.
+
+02:59.850 --> 03:00.180
+Right.
+
+03:01.780 --> 03:03.100
+This is the four way handshake.
+
+03:04.000 --> 03:04.220
+All right.
+
+03:04.750 --> 03:05.320
+V-neck.
+
+03:05.650 --> 03:06.340
+V-neck.
+
+03:06.700 --> 03:11.890
+And then it's actually fin, and then fin and then ach and then ach.
+
+03:11.890 --> 03:14.470
+But wash our groups things together.
+
+03:14.650 --> 03:14.980
+Right.
+
+03:15.280 --> 03:19.770
+And maybe it's the way this is actually sent, you know, just save and peccadillo.
+
+03:19.780 --> 03:20.050
+I do.
+
+03:20.050 --> 03:23.610
+Said first and then ach, just send Fenner together.
+
+03:23.620 --> 03:23.950
+Right.
+
+03:24.700 --> 03:27.370
+And then finally act as though we opened the connection.
+
+03:27.370 --> 03:30.690
+We sent the data, we received the data from the server, and we closed the connection.
+
+03:30.700 --> 03:32.050
+Let's go let's go through this.
+
+03:32.500 --> 03:33.400
+Let's break it down.
+
+03:34.120 --> 03:41.230
+A beautiful frame with all the low level information about this, not really interested about the Ethernet.
+
+03:41.470 --> 03:42.280
+What is that about?
+
+03:42.280 --> 03:43.090
+The source frame?
+
+03:43.420 --> 03:44.380
+The destination frame.
+
+03:44.830 --> 03:46.390
+What do you think this is going to?
+
+03:46.750 --> 03:47.710
+This is my daughter.
+
+03:47.710 --> 03:50.770
+This is not this is not the example that go mac address.
+
+03:51.100 --> 03:52.000
+This is my adapter.
+
+03:52.000 --> 03:52.900
+We talked about this right.
+
+03:53.140 --> 03:57.670
+If if your IP address is not in the same subnet, you send it to your router.
+
+03:57.670 --> 03:59.470
+So that's my Mac address of my daughter.
+
+04:00.430 --> 04:03.730
+And then let's expand on the Internet.
+
+04:04.030 --> 04:05.350
+Look at this beauty.
+
+04:06.040 --> 04:06.730
+What do we have here?
+
+04:06.760 --> 04:07.210
+Version.
+
+04:08.290 --> 04:09.310
+I have the burden.
+
+04:09.310 --> 04:09.550
+Right.
+
+04:10.060 --> 04:10.780
+There's room for.
+
+04:13.890 --> 04:16.710
+The length of that or the internet length header 20 bytes.
+
+04:17.750 --> 04:18.600
+Which is number five.
+
+04:18.620 --> 04:18.830
+Right.
+
+04:18.830 --> 04:22.610
+So we didn't add an extra options or anything like that.
+
+04:22.610 --> 04:22.790
+Right.
+
+04:22.790 --> 04:29.510
+So twice is the default here IP header wise differentiate service field.
+
+04:29.800 --> 04:34.460
+Remember with that, to be honest, it will tell you like how I am easy and capable.
+
+04:34.460 --> 04:35.480
+I'm not easy and capable.
+
+04:35.480 --> 04:38.000
+That explicit congestion notification.
+
+04:38.000 --> 04:39.230
+Right, that we talked about that as well.
+
+04:40.520 --> 04:41.690
+Do we support this or not?
+
+04:41.690 --> 04:43.010
+Hey, I'm not supporting it.
+
+04:43.790 --> 04:51.650
+And I thought the length was the length of this IP packet ID zero because we don't have any fragments.
+
+04:52.250 --> 04:52.910
+But look at this.
+
+04:53.120 --> 04:56.930
+The flag, there is a flag, a set don't fragment.
+
+04:56.930 --> 05:06.800
+So curl which is the client that uses we use to fetch a vedge decided to set this bit to don't fragment
+
+05:07.520 --> 05:14.120
+again we're in the first segment since all right so they don't want to fragment probably for good reason
+
+05:14.510 --> 05:15.080
+time to live.
+
+05:15.440 --> 05:16.610
+Only 64 hops.
+
+05:16.850 --> 05:17.540
+64 hops.
+
+05:17.810 --> 05:18.350
+And look at this.
+
+05:18.650 --> 05:19.730
+The protocol six.
+
+05:20.000 --> 05:21.290
+What was the UDP 15?
+
+05:22.250 --> 05:22.490
+Right.
+
+05:23.330 --> 05:27.620
+So now the IP is aware that we're on TCP land.
+
+05:28.430 --> 05:32.840
+So the IP has a header that tells you, okay, this, this, this value.
+
+05:33.350 --> 05:38.600
+That's the protocol that is inside me and the source and the destination IP.
+
+05:39.650 --> 05:43.280
+Transmission control was the source board decision for this is them.
+
+05:43.670 --> 05:48.560
+At this point, this is what we really care about as as as engineers with software engineers, if you
+
+05:48.560 --> 05:53.990
+think about right, because I use the source board to uniquely identify that so I can add it to an array
+
+05:54.170 --> 05:58.250
+and I can look through my connections and identify the clients this way.
+
+05:58.670 --> 06:00.320
+That's how I identify it and that's pretty much it.
+
+06:01.430 --> 06:08.510
+This is a sequence numbers and we talked about this is the zero is the first sequence number from the
+
+06:08.510 --> 06:09.080
+client side.
+
+06:09.590 --> 06:14.630
+The actual robot you look at that is so large, you know, it's a huge number.
+
+06:15.320 --> 06:16.130
+That's the wrong number.
+
+06:16.130 --> 06:21.710
+But the one shark shows us the relative one and the next second was number two.
+
+06:21.710 --> 06:25.010
+Also relative acknowledgment zero because we don't have acknowledgement here.
+
+06:25.250 --> 06:29.200
+And the flags, look at all these beautiful flags, conjecture, window resumes.
+
+06:29.210 --> 06:31.160
+Nope, echo ECN.
+
+06:31.160 --> 06:32.240
+Nope, nope.
+
+06:32.790 --> 06:33.980
+Acknowledged push.
+
+06:33.980 --> 06:34.850
+Nope, reset.
+
+06:34.940 --> 06:35.240
+Nope.
+
+06:36.320 --> 06:43.630
+But then Yasar said, we're in the sin land or spinning window.
+
+06:43.650 --> 06:45.950
+Guys, this is a very critical the window side.
+
+06:45.950 --> 06:54.170
+Remember this, the flow control stuff so this tells the client still on the server that, hey, we
+
+06:54.170 --> 06:57.200
+have a huge Windows 64, right?
+
+06:57.740 --> 07:04.640
+We have 64 key window size, not really that big if you think about scheme of things, you know, but
+
+07:04.970 --> 07:06.590
+this is it options.
+
+07:06.590 --> 07:07.250
+What do we have?
+
+07:07.730 --> 07:08.570
+Look at that.
+
+07:09.020 --> 07:11.660
+The TCP, it is the maximum segments.
+
+07:11.660 --> 07:13.550
+I didn't know that it's actually an option.
+
+07:13.550 --> 07:16.010
+The maximum segment size is 146 60.
+
+07:16.550 --> 07:17.450
+Guys do remember that.
+
+07:17.930 --> 07:20.150
+It's actually tells you, oh, that's fascinating.
+
+07:21.200 --> 07:29.030
+This is telling the server that, by the way, this is my maximum segment size and and this is probably
+
+07:29.030 --> 07:32.480
+calculated for my end to you it is five 1500, right.
+
+07:32.480 --> 07:33.950
+That's I can't go beyond that.
+
+07:33.980 --> 07:38.390
+Fortunately, I, I really want an empty or rather than 1500.
+
+07:38.390 --> 07:39.530
+I want to see what happens.
+
+07:40.430 --> 07:44.390
+I know I kept saying that, but look at this guy's window.
+
+07:44.390 --> 07:47.360
+Scale is six multiplied by 64.
+
+07:47.720 --> 07:53.150
+So this is that to the power six effectively remember the window scale because the window scale really
+
+07:53.150 --> 07:55.610
+is just a way to increase this.
+
+07:55.610 --> 08:01.340
+Bobby So the calculated window size is says 6500, but is actually way more than that.
+
+08:01.760 --> 08:06.560
+You have to multiply this by that, but this is only shared during the handshake.
+
+08:06.950 --> 08:08.930
+So that's why we see that value here.
+
+08:11.180 --> 08:11.900
+Oh, okay.
+
+08:12.560 --> 08:15.080
+More TCP options timestamps.
+
+08:15.080 --> 08:21.020
+We don't talk much about terms, but they are very critical selective acts, SAC, as they call it.
+
+08:21.290 --> 08:22.850
+Now, I again, we don't talk about that.
+
+08:24.380 --> 08:26.450
+But, uh, times two.
+
+08:26.450 --> 08:26.900
+And that's it.
+
+08:27.350 --> 08:28.760
+That's our sin.
+
+08:29.120 --> 08:30.170
+Let's go to the snack.
+
+08:30.170 --> 08:31.220
+Or do the server say.
+
+08:32.600 --> 08:34.130
+What did the server say?
+
+08:35.000 --> 08:40.500
+The server replied back, We can go through the IP packets, let's go through the IP packets and that's
+
+08:40.500 --> 08:43.940
+pretty much I'm not going to waste a lot of your time, but this is fascinating stuff.
+
+08:44.120 --> 08:45.440
+Time to let 57.
+
+08:46.920 --> 08:48.300
+And this is the time to live.
+
+08:49.880 --> 08:52.370
+Guys, this is the time to live that we see.
+
+08:53.030 --> 08:56.960
+That means this has been screwed over during the Internet.
+
+08:57.560 --> 08:57.920
+Right.
+
+08:58.010 --> 09:00.010
+Because it came from example to come to my machine.
+
+09:00.030 --> 09:06.560
+So this have seen, you know, the scary out word and it has been recommended.
+
+09:06.560 --> 09:09.950
+So maybe it was 64 and down to 50, 57.
+
+09:09.950 --> 09:16.100
+I don't know the protocol and all that stuff, the transmission and what it is, is the length, the
+
+09:16.100 --> 09:23.780
+sequence numbers, again, not adjusted, all that stuff and but here, send and ach.
+
+09:23.900 --> 09:25.370
+So this is also a snack.
+
+09:25.400 --> 09:30.440
+That's the flags, windows, eyes, 6500.
+
+09:31.460 --> 09:33.650
+Not urgent the options.
+
+09:33.950 --> 09:36.470
+This is the server telling you, hey, this is my maximum signal.
+
+09:36.480 --> 09:38.370
+Size is 14, 16, right?
+
+09:39.740 --> 09:41.960
+I support selective acknowledgement.
+
+09:42.410 --> 09:44.420
+This is not really rocket science.
+
+09:44.420 --> 09:44.970
+Let's explain.
+
+09:45.050 --> 09:49.640
+So selective acknowledgment if you have like segment one, two, three, four, five, six, seven,
+
+09:49.640 --> 09:57.860
+eight and you sent all these segments right from 1 to 10, let's say, and segment one was lost.
+
+09:57.860 --> 10:00.680
+But segment two through ten was arrived.
+
+10:02.450 --> 10:09.530
+In normal situation, this the client, the server cannot acknowledge any segments because technically
+
+10:09.710 --> 10:14.140
+because the first one has to arrive because everything is in order and transmission right in TCP.
+
+10:14.570 --> 10:14.930
+Right.
+
+10:15.500 --> 10:17.400
+So in this case, it cannot do anything.
+
+10:17.420 --> 10:18.950
+It will not say anything.
+
+10:19.220 --> 10:23.210
+The server will sit in its end and the client will end up sending one, two, three, four all the way
+
+10:23.210 --> 10:23.570
+to ten.
+
+10:24.140 --> 10:30.130
+But the server in this case, if you have selective acknowledgment enabled, it, will stay.
+
+10:30.380 --> 10:35.110
+I actually, by the way, are as if selectively acknowledged from 2 to 10.
+
+10:35.120 --> 10:39.590
+I actually received them a client so only send to be one.
+
+10:40.280 --> 10:43.460
+So in this case, the client was, oh, okay.
+
+10:43.850 --> 10:46.970
+You said, okay, I don't have to send 2 to 10.
+
+10:47.000 --> 10:48.500
+I'm going to only send one.
+
+10:49.010 --> 10:51.890
+And this is all the problem with ordering of actively.
+
+10:53.030 --> 10:54.130
+Let's continue.
+
+10:55.690 --> 10:56.410
+When to scale.
+
+10:56.560 --> 10:56.860
+So.
+
+10:57.960 --> 11:00.260
+The window scale of the service is larger than us.
+
+11:00.270 --> 11:00.930
+It's nine.
+
+11:01.260 --> 11:03.840
+So we multiplied by 55, 25, 12.
+
+11:03.840 --> 11:05.280
+So to devour nine effectively.
+
+11:06.090 --> 11:07.260
+Bom, bom, bom, bom.
+
+11:07.680 --> 11:09.390
+And then this is all this stuff.
+
+11:09.990 --> 11:10.770
+And then ask.
+
+11:11.130 --> 11:13.140
+Asking the clients that can finishing the handshake.
+
+11:13.440 --> 11:14.820
+And then the client sending some data.
+
+11:17.340 --> 11:18.060
+What is the kind?
+
+11:18.990 --> 11:20.280
+The client sends.
+
+11:21.610 --> 11:24.280
+Let's go to IP client IP.
+
+11:25.350 --> 11:25.740
+Again.
+
+11:25.740 --> 11:28.620
+The client is eminence that do not fragment.
+
+11:28.620 --> 11:30.570
+They don't want anything fragmented.
+
+11:30.690 --> 11:31.050
+Right.
+
+11:31.410 --> 11:40.800
+So because of that, if ICMP is disabled in the new using kernel, you might you might get into a TCP
+
+11:40.860 --> 11:46.410
+black hole where you're that the handshake will definitely succeed because you're sending small packets.
+
+11:46.410 --> 11:46.710
+Right.
+
+11:46.740 --> 11:48.990
+Unless you have a ATF override.
+
+11:49.200 --> 11:50.280
+TCP fast open.
+
+11:50.760 --> 11:52.170
+I we talked about all that stuff guys.
+
+11:52.170 --> 11:55.200
+I expect to to go back to the lecture if you want a refresher.
+
+11:55.650 --> 12:02.250
+But yeah, so the sense and act are so tiny that they'll be any chance to to fragment so they will succeed.
+
+12:03.060 --> 12:05.490
+But now the guilt, of course, can be really large.
+
+12:05.850 --> 12:12.720
+So if you said don't fragment and we reached somewhere where we need to fragment, hopefully we don't
+
+12:12.720 --> 12:17.540
+because now the maximum segment size, we know the client and the server understand that and they want
+
+12:17.540 --> 12:18.900
+to send something larger than that.
+
+12:18.900 --> 12:21.720
+But let's say you want to throw a different path.
+
+12:21.720 --> 12:24.690
+And that path happened to be a very small m to you.
+
+12:24.710 --> 12:25.710
+And on 500, right.
+
+12:27.090 --> 12:28.050
+You need a fragment.
+
+12:28.650 --> 12:32.100
+That router will tell you, hey, you told me, don't fragment.
+
+12:32.100 --> 12:32.760
+So I'm sorry.
+
+12:32.760 --> 12:35.160
+I'm going to return fragmentation needed.
+
+12:35.460 --> 12:42.300
+And if ICMP is disabled in any of these nodes P, you won't get that message and all of a sudden your
+
+12:42.720 --> 12:46.200
+packet went and all of a sudden your packet will never reach the server.
+
+12:46.440 --> 12:51.780
+And that's called the TCP blackhole so you connection succeed for but why is my data is not arriving.
+
+12:52.900 --> 12:56.950
+So that's a that's another debugging tip for you.
+
+12:57.850 --> 12:59.080
+Boom, boom, boom.
+
+12:59.410 --> 13:04.630
+We're talking about transmission control, all this beauty flags or pushing data.
+
+13:04.840 --> 13:05.140
+Right.
+
+13:05.500 --> 13:08.230
+Every time you want to send data, you have to set the flag push.
+
+13:08.830 --> 13:11.730
+So from what I understand and by the way.
+
+13:13.060 --> 13:16.690
+You're going to always see ACH because hey, might as well just act.
+
+13:17.960 --> 13:18.350
+Right.
+
+13:18.470 --> 13:21.890
+Even if we send them back before with every data.
+
+13:21.920 --> 13:25.370
+Let's just sit there a bit because it's just it's literally cost us nothing.
+
+13:25.460 --> 13:28.120
+The beaches there and the flag is their acknowledgement.
+
+13:28.580 --> 13:33.380
+So and this is just in case the acknowledgement alone didn't arrive.
+
+13:33.770 --> 13:36.800
+This is if you send data, you can acknowledge it, hold it together.
+
+13:36.800 --> 13:37.790
+So this is just a
+
+13:40.940 --> 13:43.200
+protective kind of a scenario.
+
+13:43.820 --> 13:44.330
+Look at this.
+
+13:44.600 --> 13:48.650
+The window size of the who is this now?
+
+13:48.680 --> 13:50.810
+This is our strike client sending get request.
+
+13:50.840 --> 13:52.100
+It's 2000 bytes.
+
+13:52.610 --> 13:53.360
+Very tiny.
+
+13:53.720 --> 13:55.940
+If you look at this it will be receiving the.
+
+13:56.180 --> 14:00.890
+This is my current window it oh my God.
+
+14:00.890 --> 14:01.280
+Why?
+
+14:01.280 --> 14:02.780
+Because I multiply by 64.
+
+14:02.930 --> 14:08.780
+How did I get 64 from the handshake two to ball whatever tomorrow six was it forgot already.
+
+14:10.160 --> 14:10.550
+So if you.
+
+14:10.550 --> 14:11.630
+Oh, what happened?
+
+14:12.140 --> 14:16.730
+So if you multiply this by this, you're going to get this large number.
+
+14:16.730 --> 14:19.660
+That's my actual flow control window name.
+
+14:20.080 --> 14:22.760
+And you were telling this over that so that the server knows.
+
+14:22.760 --> 14:23.680
+Oh, all right.
+
+14:24.710 --> 14:26.660
+Again, this is done by shock.
+
+14:26.870 --> 14:28.160
+Thank God for whitewash.
+
+14:28.160 --> 14:29.960
+I was doing a lot of our job for us.
+
+14:31.010 --> 14:39.440
+Agent All that jazz, you know, it's not urgent timestamps, right times those like really critical
+
+14:39.440 --> 14:42.200
+sounds like right and it's on by default.
+
+14:44.420 --> 14:49.700
+And then obviously the actual get request if you're a front in or back in doing you know this is your
+
+14:49.700 --> 14:55.020
+bread and butter right get you know this the method slashes the path and this is the protocol.
+
+14:55.020 --> 14:58.340
+It should be one one and then the header is the host.
+
+14:58.490 --> 14:59.420
+What are we going.
+
+14:59.510 --> 15:05.990
+We need the host really for proxy seeing reasons and as an I reasons you know for one to host multiple
+
+15:06.170 --> 15:07.910
+servers on the same machine.
+
+15:08.210 --> 15:08.380
+Yeah.
+
+15:08.390 --> 15:14.180
+Multiple websites so we can go to the same IP address, but I can specify different host so I can have
+
+15:14.180 --> 15:19.340
+example one dot com example to this example theta and all are hosting in the same IP areas.
+
+15:19.820 --> 15:21.170
+Beauty of web hosting.
+
+15:21.410 --> 15:22.460
+I think I'm going to stop here.
+
+15:22.550 --> 15:23.720
+You get the gist of this stuff.
+
+15:24.080 --> 15:27.650
+You know, let's just go the thin route and then in this video.
+
+15:30.230 --> 15:31.310
+So this is the fun.
+
+15:31.640 --> 15:32.750
+We're closing the connection.
+
+15:32.750 --> 15:34.280
+So we said the fun bit here.
+
+15:34.670 --> 15:35.810
+Hey, I'm closing.
+
+15:35.930 --> 15:40.310
+So and that's how we close connection.
+
+15:40.310 --> 15:40.930
+And then look at that.
+
+15:41.000 --> 15:44.930
+Our sequences keep increasing with the amount of data that we sent, right?
+
+15:45.590 --> 15:49.370
+So at the end of the day, the sequences will reach the end, right?
+
+15:50.120 --> 15:51.350
+What are two of the 32.
+
+15:51.350 --> 15:51.560
+Right.
+
+15:51.560 --> 15:52.340
+Which is how many?
+
+15:52.340 --> 15:53.420
+4 billion, whatever.
+
+15:53.900 --> 15:59.570
+So you reach that and you might cycle back and you might at the end of the day, go back to the same
+
+15:59.570 --> 15:59.930
+sequence.
+
+15:59.930 --> 16:03.740
+If your connection is so long lived, you will do that.
+
+16:04.130 --> 16:09.110
+And that's where timestamps comes into the picture, where you need the timestamp to differentiate that.
+
+16:09.110 --> 16:13.280
+Or I did receive the sequence 300 and.
+
+16:14.350 --> 16:22.330
+And one days ago you know so I from the camp same connection so to to avoid replay attacks and stuff
+
+16:22.330 --> 16:29.500
+like that and corruption you basically need time stamp to identify who is which was the newer one.
+
+16:29.510 --> 16:36.210
+Oh this is this is a new I trust this one in one I guys I'm going to leave it at that hopefully and
+
+16:36.220 --> 16:42.040
+I enjoyed this lecture let's I'm going to see you in the next one the guys they also to by.

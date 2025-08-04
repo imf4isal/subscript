@@ -1,0 +1,1120 @@
+WEBVTT
+
+00:00.030 --> 00:07.530
+So we talked about how the IPV four has a limit of 4 billion addresses, which allows in 2022 is is
+
+00:07.830 --> 00:08.830
+literally nothing.
+
+00:08.850 --> 00:11.860
+You know, we have everyone is connected to the Internet.
+
+00:12.390 --> 00:18.090
+But the problem here remains, like, how can we get more than 4 billion devices on the Internet if
+
+00:18.090 --> 00:19.770
+we have a limit of IPV four?
+
+00:20.430 --> 00:27.420
+One solution is IPV six, but nobody is bringing that up because supporting a new protocol is just you
+
+00:27.420 --> 00:35.640
+need to update all the routers and it's a huge job so people start using it before so it's there.
+
+00:36.060 --> 00:45.930
+But how do we expose my internal thousands of devices network, you know, keeping them private while
+
+00:45.930 --> 00:51.210
+still they can access the Internet, meet the network address translation.
+
+00:51.210 --> 00:55.500
+And the goal of this is you can have one public IP address, which is your gateway.
+
+00:55.500 --> 00:59.700
+It's right behind me actually that has a public IP android.
+
+00:59.970 --> 01:05.940
+But now I'm using my Mac, I using my other Mac as he my windows machine is in my other windows machine.
+
+01:06.240 --> 01:07.140
+He has in my phone.
+
+01:07.260 --> 01:08.280
+My wife has a phone.
+
+01:08.610 --> 01:10.500
+My kids have phone everywhere.
+
+01:10.500 --> 01:14.490
+My TV is connected in all my other devices, Iot devices, device connected.
+
+01:14.640 --> 01:16.420
+All of them are connected.
+
+01:16.420 --> 01:24.150
+The Internet, not all of them have public IP addresses, but all of them have the same public IP address.
+
+01:24.630 --> 01:25.290
+Exactly.
+
+01:25.740 --> 01:27.720
+All of them have the same public IP address.
+
+01:28.230 --> 01:31.950
+Can make a big talk about this stuff a little bit a summary before we start.
+
+01:31.950 --> 01:32.730
+I like to do that.
+
+01:33.780 --> 01:35.310
+So all of my devices.
+
+01:36.310 --> 01:38.470
+Have the same public IP address, which is my router.
+
+01:38.470 --> 01:42.010
+But now how do they differentiate each other?
+
+01:43.350 --> 01:44.010
+Guess what, guys?
+
+01:44.850 --> 01:52.650
+The source IP address and the source port is being mapped to a different source port and a different
+
+01:52.650 --> 01:53.820
+source IP address.
+
+01:54.300 --> 01:55.200
+That's all that's required.
+
+01:55.320 --> 01:55.740
+Liz.
+
+01:56.370 --> 01:58.870
+So there is a limit to how much you can connect.
+
+01:58.890 --> 02:00.620
+And we're going to talk about this.
+
+02:00.630 --> 02:08.190
+But this nat table, the network address is in table, lives in the router and maps the private IP addresses,
+
+02:08.190 --> 02:16.590
+which is start with ten zero zero or 192168 or 172 to a public image.
+
+02:16.590 --> 02:22.320
+So that if Google want to respond back to my I don't know Reg right.
+
+02:22.320 --> 02:25.590
+That has a private IP address, it responds back to all of my order.
+
+02:25.590 --> 02:31.140
+It doesn't even know it is actually a private device, doesn't know it just responds to the public rather
+
+02:31.140 --> 02:36.890
+than gives you the the source port, which is the station bar in this case and thereafter does the mapping
+
+02:36.900 --> 02:44.250
+oh source seven seven, seven, seven going to that l oh that was actually that particular machine.
+
+02:44.400 --> 02:51.210
+So let me read, translate that back to the private IP address and then send that back as all going
+
+02:51.210 --> 02:56.130
+to be clear, we're going to have some diagrams for you here to explain all that.
+
+02:56.250 --> 02:57.150
+Let's jump into it.
+
+02:57.270 --> 03:02.370
+Network Address Translation How the when sees your internal devices.
+
+03:02.940 --> 03:05.820
+The wireless the wide area network.
+
+03:07.880 --> 03:14.330
+So this started that this started as as a as a solution to the limitation of IPV four.
+
+03:14.330 --> 03:20.870
+But now but by then evolved to to fascinating use cases.
+
+03:20.870 --> 03:27.200
+We're going to talk about this but in the back end if if you have seen in one of my videos I talk about
+
+03:27.200 --> 03:34.280
+load balancing and layer four load balancing NAT is as one of the tricks you can do it to do layer for
+
+03:34.280 --> 03:35.090
+load balancing.
+
+03:35.090 --> 03:36.380
+Fascinating stuff.
+
+03:36.860 --> 03:39.050
+Private versus public IP addresses.
+
+03:39.410 --> 03:46.580
+You know, while we didn't talk about this, it's really straightforward to to talk about the inner
+
+03:47.120 --> 03:54.830
+whatever the authority that manages IP addresses reserved certain subnet for private use.
+
+03:55.070 --> 03:57.290
+That means they are not publicly relatable.
+
+03:57.710 --> 04:02.840
+If if any router sees ten 00. x, it drops that back.
+
+04:02.850 --> 04:04.130
+It it doesn't make any sense.
+
+04:04.130 --> 04:10.190
+It never roots it because these are considered private and you assign it for private users only and
+
+04:10.190 --> 04:12.530
+they are used only in internal routers.
+
+04:13.040 --> 04:21.560
+You know, these are the things 192168x6 or ten 2000x and these are private and not readable.
+
+04:22.220 --> 04:26.000
+You can assign hosts based on these networks.
+
+04:28.350 --> 04:32.070
+And only a router technically needs a public IP address.
+
+04:32.730 --> 04:35.490
+None of these internal devices need a public IP address.
+
+04:35.850 --> 04:39.630
+One public openness that everyone can talk to and reach.
+
+04:40.290 --> 04:41.340
+And that's pretty much enough.
+
+04:42.390 --> 04:51.600
+The router can translate requests to and from it back to the device that originated through the magic
+
+04:51.600 --> 04:53.370
+of network address translation.
+
+04:53.490 --> 04:59.820
+We're going to talk about that because you see, if I have a private IP address as my phone connected
+
+04:59.820 --> 05:06.120
+to the wi fi, I cannot technically send an IP packet with that source IP.
+
+05:06.480 --> 05:11.910
+In the wild, wild internet, you know, it will be immediately obvious like what is this source IP
+
+05:11.910 --> 05:15.240
+address 191 saying I It doesn't make any sense at all but.
+
+05:16.180 --> 05:19.990
+So you need a public presence when you're in the Wild West.
+
+05:20.020 --> 05:21.880
+You cannot go naked like this.
+
+05:22.510 --> 05:23.350
+The thereafter.
+
+05:24.430 --> 05:30.520
+Takes that responsibility almost like a proxy it's proxies you as a layer three you know and layer three
+
+05:30.520 --> 05:34.090
+proxy into the public changes the iPad as a.
+
+05:35.690 --> 05:36.780
+All righty.
+
+05:36.830 --> 05:43.550
+It height aside, since we have important stuff to explain here in a local area, if you have a Node.js
+
+05:43.550 --> 05:49.010
+server on machines, I mean, this is the Mac address, right?
+
+05:49.340 --> 05:52.130
+And it's listening on for 8080.
+
+05:52.610 --> 05:57.890
+So what happens if this machine you want to send a get request, for example, to this Node.js server
+
+05:57.890 --> 05:58.760
+in the same network?
+
+05:59.270 --> 06:05.510
+What do you do as you build the packet, an IP packet, put the data in the destination IP address the
+
+06:05.510 --> 06:09.440
+source IP address the destination for the source port.
+
+06:09.440 --> 06:11.390
+And this USB port here happens to be eight, nine, nine.
+
+06:11.390 --> 06:13.910
+Too many random port that gets picked up, right?
+
+06:15.400 --> 06:16.990
+If you want to send this across.
+
+06:16.990 --> 06:19.180
+We talked about this is isn't the same network.
+
+06:19.480 --> 06:22.000
+I asked myself, are you in my network?
+
+06:22.000 --> 06:23.260
+I applied the subnet mask.
+
+06:23.270 --> 06:24.190
+Yes, you are.
+
+06:24.490 --> 06:27.190
+I don't need to go to the wild, wild internet.
+
+06:27.190 --> 06:35.710
+I find your Mac and I put your I do an R by finding our Mac and I put the frame and I send the message.
+
+06:35.710 --> 06:35.990
+Right.
+
+06:36.010 --> 06:38.230
+But the response is very similar.
+
+06:38.230 --> 06:41.590
+You get the packet use, you literally flip everything else.
+
+06:41.730 --> 06:43.300
+So this is my JSON response.
+
+06:43.300 --> 06:47.410
+For example, my the destination this time is 192.
+
+06:47.410 --> 06:48.220
+I'm responding.
+
+06:48.220 --> 06:49.480
+I'm not just responding.
+
+06:49.870 --> 06:54.730
+Go to 8992 and the source is me.
+
+06:54.760 --> 06:57.550
+And this is the source part by example.
+
+06:57.550 --> 06:58.060
+Just flip it.
+
+06:59.310 --> 07:05.560
+So now we're sending it from here down to the client, you know, responding, but not as spy things.
+
+07:05.580 --> 07:07.440
+I believe that you're here.
+
+07:07.890 --> 07:09.210
+You're a private IP address.
+
+07:09.510 --> 07:10.800
+This is your router.
+
+07:11.160 --> 07:12.960
+This is a public presence of the router.
+
+07:13.230 --> 07:13.620
+Right.
+
+07:13.980 --> 07:19.110
+Obviously, the router also have a private, private network as part in your network.
+
+07:19.170 --> 07:19.530
+Right.
+
+07:19.590 --> 07:21.810
+Let's get as your gateway effectively.
+
+07:23.100 --> 07:28.590
+And this is an IP address all the way across the Internet, you know, and it has has this make out.
+
+07:28.920 --> 07:30.810
+We don't really care about that map Mac address.
+
+07:30.810 --> 07:31.650
+But here's the thing.
+
+07:32.220 --> 07:37.890
+If I now want to send a get request to this IP address.
+
+07:38.190 --> 07:42.120
+No, to this port from this IP address.
+
+07:42.330 --> 07:45.360
+From this port, we asked the same question we did.
+
+07:45.840 --> 07:47.280
+Are you in my subnet?
+
+07:47.280 --> 07:52.320
+Oh, well, you are not, because I applied my mask to 552552550.
+
+07:52.710 --> 08:00.150
+Your network is five five 1122 definitely not mine, which is 19216811.
+
+08:00.480 --> 08:01.770
+So all bets are off.
+
+08:01.980 --> 08:03.840
+I need to send this to my router.
+
+08:03.840 --> 08:04.740
+We talked about this.
+
+08:04.740 --> 08:06.330
+Get that Mac address of that out there.
+
+08:06.330 --> 08:09.750
+Didn't send that frame.
+
+08:10.110 --> 08:13.410
+Goes to the router, but the destination IP doesn't change.
+
+08:13.800 --> 08:14.130
+Right?
+
+08:14.340 --> 08:17.040
+You still take that send it to that outer.
+
+08:17.040 --> 08:18.630
+And here's what we need to talk about rule.
+
+08:18.630 --> 08:22.680
+But so now the destination remains 55412288.
+
+08:23.310 --> 08:31.890
+My source IP address was 192168.122 and this was my port 89929.
+
+08:32.700 --> 08:38.790
+And we looked at this, it says, wait a minute, the router will say, wait a minute, yes, I got
+
+08:38.790 --> 08:39.480
+this packet.
+
+08:39.780 --> 08:46.950
+Yes, I was the destination frame for it, but I can't let you go out like this.
+
+08:46.950 --> 08:48.900
+192168.1.2.
+
+08:48.900 --> 08:49.620
+No way.
+
+08:49.800 --> 08:55.080
+Because the moment I send this packet as is is going to get screwed up and then tonight it would be
+
+08:55.080 --> 08:55.470
+dropped.
+
+08:55.920 --> 09:00.200
+So I need to change you temporarily change.
+
+09:00.210 --> 09:04.590
+Rewrite the IP packet so that I will.
+
+09:05.700 --> 09:11.220
+Present to you, my friend, in the wild, dangerous world of the Internet.
+
+09:12.000 --> 09:18.390
+So I'm going to put my Abia is 4411 570 which is a public racquetball address in this.
+
+09:18.390 --> 09:22.080
+Beckett And I'm going to generate a random port.
+
+09:22.320 --> 09:23.580
+Seven, seven, seven, seven.
+
+09:25.720 --> 09:30.170
+You might say, Hussein, if the moment you change that, how do you know the original one?
+
+09:30.190 --> 09:31.540
+Oh, don't worry.
+
+09:31.900 --> 09:33.130
+Not as stateful.
+
+09:33.670 --> 09:41.200
+We're going to keep our record in my table that says, Hey, 192168.1.2.
+
+09:41.530 --> 09:43.390
+On 8892.
+
+09:43.630 --> 09:44.020
+Right.
+
+09:44.590 --> 09:46.780
+That was going to five, five one.
+
+09:46.780 --> 09:48.460
+One, two, two, three, three, eight, eight.
+
+09:48.730 --> 09:52.300
+Is actually this public presence.
+
+09:52.600 --> 09:55.720
+Four, four, 115, seven, seven, seven, seven.
+
+09:56.110 --> 10:03.220
+So now if you ever get a response on this board, that means that means it's not only destined for the
+
+10:03.220 --> 10:04.960
+router that output is poor thing.
+
+10:05.410 --> 10:08.220
+Browser never actually gets it out.
+
+10:08.290 --> 10:11.530
+There is never almost never the final destination of anything.
+
+10:12.280 --> 10:16.390
+It's always it's a temporary thing to a final destination.
+
+10:17.740 --> 10:18.580
+So that's what happened.
+
+10:18.820 --> 10:20.500
+We're going to send this packet.
+
+10:20.500 --> 10:21.250
+This is the packet.
+
+10:21.250 --> 10:22.570
+The request still goes on.
+
+10:22.810 --> 10:26.230
+Now we're sending a request from here to here through the Internet.
+
+10:26.380 --> 10:30.300
+And this is the how the packet looks like in the wild world internet.
+
+10:30.970 --> 10:35.980
+You know, there's no mention of anything has to do with net.
+
+10:36.160 --> 10:38.230
+Anything had to do with private thing.
+
+10:38.650 --> 10:41.530
+There's nothing to to anyone here.
+
+10:42.250 --> 10:47.200
+Someone on this public IP address want to talk through this to to this guy and that's it.
+
+10:47.440 --> 10:53.470
+So Node.js receives it, processes it, written for JSON document.
+
+10:53.490 --> 10:59.560
+Like, for example, I'm receiving a Jason Dock here and it puts the destination.
+
+11:00.710 --> 11:01.760
+As the source.
+
+11:01.760 --> 11:05.480
+You know, it was the source and the port now becomes the destination.
+
+11:05.720 --> 11:07.940
+So I wanna reply back to the same connection.
+
+11:07.940 --> 11:08.210
+Right.
+
+11:08.570 --> 11:11.900
+Seven, seven, seven, 744115, 17.
+
+11:12.680 --> 11:13.490
+As the destination.
+
+11:13.490 --> 11:15.210
+And you are coming from me.
+
+11:15.240 --> 11:17.620
+Five, five, one, one, two, two, three, three, eight, eight.
+
+11:18.380 --> 11:20.150
+And you send that request.
+
+11:20.230 --> 11:21.380
+Where do you send it?
+
+11:21.380 --> 11:22.100
+To that outer.
+
+11:23.430 --> 11:24.240
+Well, all you care.
+
+11:24.240 --> 11:24.770
+This is not.
+
+11:24.780 --> 11:25.650
+You don't even know it.
+
+11:25.650 --> 11:27.330
+So rather I'll write it to you.
+
+11:27.330 --> 11:29.490
+It's just the host you hear being in.
+
+11:29.790 --> 11:30.800
+Yes, we get it.
+
+11:31.500 --> 11:35.460
+The destination for 115 17 777.
+
+11:35.490 --> 11:36.890
+Rather gets his like, wait a minute.
+
+11:36.900 --> 11:38.760
+All right, I got a packet.
+
+11:39.090 --> 11:40.890
+Is this really for me?
+
+11:41.040 --> 11:42.300
+Yeah, almost never.
+
+11:42.600 --> 11:49.710
+The only time Ralph receives an actual packet that is actually for that outer is when you'll go to the
+
+11:49.710 --> 11:53.570
+admin and you want to manage your router, and that's pretty much it.
+
+11:53.580 --> 11:59.100
+You know, when you go to the page of that outer, you know, the gateway and you want to like change
+
+11:59.100 --> 12:04.050
+the password or your Wi-Fi or something, that's the only time you're actually visiting your router,
+
+12:04.380 --> 12:06.060
+you know, that's the final destination.
+
+12:06.270 --> 12:09.660
+Otherwise it's almost never the final destination.
+
+12:10.020 --> 12:15.090
+Then now we got this IP address, we got this destination, our port.
+
+12:15.090 --> 12:16.320
+But wait a minute, let me look over.
+
+12:16.320 --> 12:17.310
+Might there not table.
+
+12:17.730 --> 12:22.560
+This is actually this guy and it not only looks this up because this could be dupes.
+
+12:23.580 --> 12:29.160
+So we need we need to look up all of that the destination to make sure we're fully unique here.
+
+12:29.190 --> 12:29.490
+Right.
+
+12:30.690 --> 12:32.700
+So we look up everything matches.
+
+12:32.700 --> 12:33.030
+Yep.
+
+12:33.030 --> 12:34.350
+This is definitely this guy.
+
+12:34.650 --> 12:43.050
+So now I'm going to rewrite the packet, the IP packet, so that they're actually not really the packet.
+
+12:43.050 --> 12:45.300
+It actually arrives at layer four.
+
+12:45.300 --> 12:49.380
+So it plays that and both layer four and layer three.
+
+12:49.710 --> 12:54.990
+So the browser here in net mode, it actually plays.
+
+12:55.880 --> 12:56.760
+Both roles.
+
+12:56.780 --> 13:00.050
+Layer three and layer four, not just rewriting the IPS.
+
+13:01.040 --> 13:05.510
+It's not just reading like normal Routh, just read the IP address.
+
+13:05.510 --> 13:07.400
+And that said, it doesn't rewrite anything.
+
+13:07.400 --> 13:07.670
+Right?
+
+13:08.960 --> 13:16.190
+Uh, maybe, maybe just that ECN better that we talked about to notify for congestion, but that's pretty
+
+13:16.190 --> 13:16.640
+much it.
+
+13:17.120 --> 13:23.780
+But Nat routers actually rewrite the IP and the port and that makes them a layer four and they are three
+
+13:23.990 --> 13:28.820
+and the router since back to the packet and that's how you get the response all the way to the client
+
+13:28.820 --> 13:30.200
+from the server.
+
+13:30.620 --> 13:37.250
+So if two clients locally want to talk to the same server, that's absolutely fine.
+
+13:37.250 --> 13:38.070
+Because why?
+
+13:38.090 --> 13:45.410
+Because we're going to get a completely different random IP addresses and not them, not iberia's random
+
+13:45.410 --> 13:51.830
+port that are assigned to to completely create any unique identity here.
+
+13:51.830 --> 13:52.150
+Right.
+
+13:53.840 --> 13:55.640
+That's why I changed the port here.
+
+13:55.640 --> 14:00.980
+I made I use the different port to show you that, hey, it's just another number.
+
+14:01.490 --> 14:02.720
+You're going to get another number.
+
+14:02.930 --> 14:06.110
+Another number to uniquely identify every host.
+
+14:06.920 --> 14:08.680
+So now who can tell me?
+
+14:09.290 --> 14:10.400
+Trying to do a quiz?
+
+14:10.610 --> 14:11.390
+This is not life.
+
+14:11.390 --> 14:12.260
+But you get the point.
+
+14:12.740 --> 14:15.440
+Who can tell me how many times?
+
+14:15.770 --> 14:24.560
+What is the maximum record in the NAT table when this machine want to visit the same destination on
+
+14:24.560 --> 14:25.310
+the same port?
+
+14:26.580 --> 14:26.850
+Right.
+
+14:27.120 --> 14:29.520
+So the same machine 192168.122.
+
+14:30.060 --> 14:34.800
+Fixed the destination 50 511, two, two, three, three.
+
+14:35.230 --> 14:35.550
+Right.
+
+14:36.060 --> 14:38.280
+And the destination port is always 80, 80.
+
+14:38.460 --> 14:40.830
+So now the only variable is what is the source port.
+
+14:41.610 --> 14:41.940
+Right.
+
+14:42.920 --> 14:50.660
+So now the same app can only make 65,000 connections.
+
+14:51.930 --> 14:52.410
+That's it.
+
+14:52.980 --> 14:54.810
+You cannot make any more right.
+
+14:54.810 --> 14:56.070
+Because 65,000.
+
+14:56.070 --> 14:57.600
+Because that's the 60 myth.
+
+14:57.690 --> 14:59.100
+Yeah, because 65,000.
+
+14:59.460 --> 15:02.430
+And it's maybe less than that because some of the ports are reserved.
+
+15:02.430 --> 15:02.670
+Right.
+
+15:03.300 --> 15:09.600
+So the rotor rotor will have 65,003, after which it will it will reach its limit because they say,
+
+15:09.600 --> 15:13.800
+wait a minute, I don't have any more random source for to assign you.
+
+15:14.550 --> 15:14.820
+Right.
+
+15:14.820 --> 15:17.340
+Because it's the same IP and it's making all these requests.
+
+15:17.560 --> 15:17.790
+Right.
+
+15:17.790 --> 15:21.390
+So there is a limit at the end of the day when it comes to an act.
+
+15:22.320 --> 15:22.650
+Right.
+
+15:22.980 --> 15:28.800
+Because at the end of the day, all of these random ports will be assigned right at the at the root
+
+15:28.800 --> 15:30.390
+and the public presence.
+
+15:30.390 --> 15:30.630
+Right.
+
+15:30.990 --> 15:42.280
+And not only that, the problem is even other clients will be, uh, will be starved of these 16 bit.
+
+15:42.300 --> 15:46.830
+So there is a limit when it comes to local area network and that right.
+
+15:46.830 --> 15:49.290
+If you think about it, I want to talk about net applications.
+
+15:49.390 --> 15:53.940
+So not applications, the first app, private or public translation?
+
+15:54.720 --> 15:55.120
+Why?
+
+15:55.230 --> 16:02.190
+So because we don't run out of AI by force because you can't use assign your fridge and I a public IPV
+
+16:02.190 --> 16:02.370
+four.
+
+16:02.370 --> 16:03.810
+That doesn't make any sense, right?
+
+16:04.170 --> 16:04.950
+Not this better.
+
+16:05.070 --> 16:05.640
+This case.
+
+16:05.670 --> 16:14.430
+Another use case that was born accidentally if you well, port forwarding, you know here's the trick.
+
+16:15.930 --> 16:21.660
+If you're a back, an engineer, you guys, I don't think that's much to face here.
+
+16:21.930 --> 16:24.030
+We'll all go back to those lines of support forwarding.
+
+16:24.030 --> 16:25.590
+This is the topic that we're going to talk about you.
+
+16:26.430 --> 16:35.700
+If you're back in June, you most definitely try to listen on a Linux box on Port 80 and you got an
+
+16:35.700 --> 16:41.280
+error, says, hey, this is a port that is less than 1024 and you cannot listen on that because there's
+
+16:41.280 --> 16:45.430
+a system maintained for Port one.
+
+16:45.510 --> 16:50.910
+A workaround is to do Sudo, which is a bad idea and never run your application as a root because if
+
+16:50.910 --> 16:54.690
+someone exploited your app, they have it with access.
+
+16:54.870 --> 16:55.410
+Yikes.
+
+16:55.830 --> 16:56.880
+Bad stuff, right?
+
+16:58.110 --> 16:59.880
+So what you can do is do port forwarding.
+
+16:59.880 --> 17:11.010
+Listen, on port 88, no kind of a port near port, but then add a rule in your net in your router such
+
+17:11.010 --> 17:18.960
+that if someone made a request to port 80 on a certain on your own you as a router, if someone tries
+
+17:18.960 --> 17:27.270
+to connect to you and port 80 rewrite the packet and forwarded to this machine on port 8080 port forwarded.
+
+17:27.900 --> 17:30.480
+This is a completely net solution, right?
+
+17:30.860 --> 17:34.950
+You because you're using Nat to do the mapping, but now you've forced an entry.
+
+17:35.130 --> 17:38.460
+This is not an automatic entry that is created by default.
+
+17:38.730 --> 17:46.740
+No, you added an entry in net that says if someone visited 80 go to here let the hardcoded kind of
+
+17:46.740 --> 17:49.170
+a port forward and you got port forwarding for free.
+
+17:49.650 --> 17:50.550
+Kind of neat, isn't it.
+
+17:53.980 --> 17:58.750
+So yeah, if you add an and that's entry in the router too for a package support to another machine,
+
+17:58.750 --> 18:01.180
+you learn no need to have root access as we talked about.
+
+18:01.390 --> 18:04.570
+And you can expose your local web server publicly.
+
+18:04.970 --> 18:07.360
+I mean, pretty cool stuff.
+
+18:08.560 --> 18:09.190
+All right.
+
+18:09.790 --> 18:13.840
+Let's talk about this layer for load balancing.
+
+18:14.230 --> 18:16.180
+And I had a link here at.
+
+18:18.130 --> 18:20.920
+To achieve a proxy, which is another proxy that is fascinating.
+
+18:20.920 --> 18:22.160
+My favorite proxy ever.
+
+18:22.180 --> 18:26.320
+You can do a load balancing using net a layer for load balancing to be specific.
+
+18:26.600 --> 18:27.460
+Here's how you do it.
+
+18:28.090 --> 18:36.910
+You can if you load band if if you can effectively make your gateway as the load balancer, here's how
+
+18:36.910 --> 18:37.270
+you do it.
+
+18:38.740 --> 18:42.340
+It's a victory, the complete opposite of this path forward.
+
+18:43.300 --> 18:46.420
+The client will send a request to a bogus IP address.
+
+18:46.570 --> 18:51.250
+How does layer four load balancing work so in India, specifically in Asia proxy?
+
+18:51.490 --> 18:55.120
+I think that's the first time I've seen it in a proxy genius.
+
+18:55.600 --> 18:57.370
+So here's how we do it.
+
+18:58.630 --> 19:01.570
+Client will make a request to a bogus IP address.
+
+19:02.290 --> 19:05.350
+A 100 or 100 or 100.
+
+19:05.350 --> 19:06.130
+100, whatever.
+
+19:06.140 --> 19:06.370
+Right.
+
+19:06.670 --> 19:08.920
+As long as it's outside, it's subnet, right?
+
+19:10.000 --> 19:10.420
+And.
+
+19:11.800 --> 19:12.940
+This IP address.
+
+19:12.970 --> 19:19.900
+Go and add an entry in your route and you're on your net that says, ho, ho, ho, ho, ho ho is actually
+
+19:20.260 --> 19:28.150
+this physical IP, IP address on this on this machine, you know, and then it is also this physical
+
+19:28.480 --> 19:30.640
+IP address on this machine, and it's also this.
+
+19:31.000 --> 19:37.150
+So if your clients answer packets to Ho, ho, ho, ho, ho, it will ask the question is ho, ho!
+
+19:37.510 --> 19:38.380
+My subnet?
+
+19:38.680 --> 19:39.670
+Definitely not.
+
+19:40.210 --> 19:41.080
+Where do I send it?
+
+19:41.080 --> 19:43.420
+If we don't know where to send it, we send it to the gateway.
+
+19:44.020 --> 19:45.910
+That gateway will receive that packet.
+
+19:45.910 --> 19:48.040
+But your router is marked your router.
+
+19:48.040 --> 19:49.480
+You wrote your router from scratch.
+
+19:49.480 --> 19:51.240
+Here, write it.
+
+19:51.250 --> 19:52.390
+Understand everything.
+
+19:52.750 --> 19:53.410
+So understand that.
+
+19:53.410 --> 19:57.300
+Oh, I know this is not actually something people want to visit.
+
+19:57.310 --> 19:59.740
+This is a virtual visit.
+
+20:00.100 --> 20:01.480
+This is a virtual IP address.
+
+20:01.480 --> 20:04.050
+Effectively, that's what's called ho, ho, ho, ho, ho.
+
+20:04.360 --> 20:04.840
+All right.
+
+20:05.950 --> 20:06.640
+How did I know?
+
+20:06.640 --> 20:08.590
+There's actually this machine or this machine or this machine.
+
+20:08.860 --> 20:13.420
+Let's look at the first one and realize the destination I buried it in instead of this garbage.
+
+20:13.420 --> 20:14.620
+100, 100 hundred.
+
+20:14.950 --> 20:16.330
+To the actual physical machine.
+
+20:16.960 --> 20:20.890
+And send that request and then complete the connection.
+
+20:20.980 --> 20:24.760
+And you can make the connection as stateful as as per the TCP rules, you know.
+
+20:25.090 --> 20:30.640
+So if you if you send another request, another connection request, it will go to the router and it
+
+20:30.640 --> 20:33.850
+will pick another one based on the round robin algorithm.
+
+20:33.880 --> 20:35.230
+So let's go to this server.
+
+20:35.500 --> 20:36.970
+Oh, this let's go to this server.
+
+20:37.360 --> 20:42.250
+So now you can literally pick any IP address that doesn't have to exist in the real world.
+
+20:42.820 --> 20:50.770
+But if your router in this case is a proxy, which is in net mode, it is effectively a software that
+
+20:50.770 --> 20:53.020
+you are because of what's out there are those are just software.
+
+20:53.260 --> 21:00.490
+And those guys came in and they had their genius idea to use that as a load balancing.
+
+21:00.910 --> 21:02.080
+And it worked.
+
+21:04.370 --> 21:05.360
+It worked.
+
+21:05.480 --> 21:07.160
+Isn't that cool, guys?
+
+21:07.370 --> 21:08.660
+I absolutely love this.
+
+21:09.050 --> 21:13.180
+So all you have to do is just rather intercept the back end that replaces the service IP address, or
+
+21:13.190 --> 21:17.900
+that's what it's called service IP of virtual libraries with the destination IO the decision server.
+
+21:18.340 --> 21:18.560
+Right.
+
+21:18.950 --> 21:22.640
+And then this is basically what layer four reverse proxy is.
+
+21:23.120 --> 21:30.950
+The limitation of this is obviously limited because now you really need to configure your fleet of clients
+
+21:30.950 --> 21:35.480
+to be gateways to your load balancer, which is almost very hard to do.
+
+21:35.480 --> 21:35.780
+Right.
+
+21:35.990 --> 21:38.890
+If you think about it, somebody IPV four is limited.
+
+21:39.560 --> 21:40.760
+It's only 4 billion.
+
+21:41.090 --> 21:41.420
+Right.
+
+21:41.810 --> 21:42.500
+IP addresses.
+
+21:42.800 --> 21:44.660
+You need to translate from private to public.
+
+21:45.260 --> 21:54.800
+So that's that's why we net obviously and port forwarding load balancing, you know, and the limitation
+
+21:54.980 --> 21:59.150
+of the IPV four kind of makes us need net.
+
+21:59.810 --> 22:02.630
+That's not that's why Nat is really powerful, guys.
+
+22:03.020 --> 22:05.090
+Let's jump to the next section.

@@ -1,0 +1,1471 @@
+WEBVTT
+
+00:00.150 --> 00:06.720
+So we talked about the difference between a proxy and a reverse proxy when it comes to the networking
+
+00:06.720 --> 00:07.530
+aspect of this.
+
+00:07.740 --> 00:11.310
+What is exactly happening when you use a proxy?
+
+00:11.910 --> 00:17.490
+What connections are being made and who's talking to whom effectively?
+
+00:18.150 --> 00:22.790
+This is very critical to understand the back engineer, especially for you using this on a daily basis.
+
+00:22.800 --> 00:23.060
+Right.
+
+00:23.850 --> 00:33.390
+But then another important concept is also the layer four and the Layer seven proxies or reverse proxies
+
+00:33.540 --> 00:34.460
+on load balances.
+
+00:35.100 --> 00:43.890
+So what I did, I built up this lecture specifically to differentiate the differences between layer
+
+00:43.890 --> 00:48.630
+four load balancers and Layer seven load balancers.
+
+00:48.990 --> 00:57.150
+And this is specifically a back end concept, if you will, but it's tightened in with networking.
+
+00:57.390 --> 01:04.530
+So I couldn't really explain this lecture if one did not understand the basic principle of networking,
+
+01:04.530 --> 01:07.740
+which you should buy now the end of the course, really.
+
+01:08.100 --> 01:13.230
+So how about we actually jump into this fantastic course was one of the my favorite actually.
+
+01:13.440 --> 01:14.100
+Let's jump into it.
+
+01:14.130 --> 01:20.220
+Alright, so layer four versus layer seven load balancer and you can replace load balancers with the
+
+01:20.220 --> 01:24.360
+reverse proxies and it will be identical effectively.
+
+01:24.690 --> 01:33.690
+A load balancer is a reverse proxy is just one case of a reverse proxy that happens to have logic to
+
+01:33.690 --> 01:40.680
+balance the request between multiple back ends on the back end, while a reverse proxies just doesn't
+
+01:40.680 --> 01:41.640
+have to balance it.
+
+01:41.700 --> 01:44.880
+It makes a request on your behalf.
+
+01:44.910 --> 01:45.360
+Right.
+
+01:46.110 --> 01:51.750
+It just talks to a back end, but it doesn't have balancing logic necessarily.
+
+01:51.750 --> 01:52.080
+Right.
+
+01:52.440 --> 01:58.080
+So every load balancer is a reverse proxy, but not every reverse proxy is a load balancer.
+
+01:58.170 --> 02:01.230
+And obviously a proxy has nothing to do with any of this stuff.
+
+02:01.740 --> 02:04.020
+That concept of just a proxy, get that out of the way.
+
+02:04.320 --> 02:09.120
+The fundamental component of back in networking, the layer four on layer seven load balancer we've
+
+02:09.120 --> 02:13.980
+been talking about back in June, understanding these two pieces very critically.
+
+02:14.460 --> 02:18.120
+So this is the agenda of this particular lecture we're going to talk about what is the difference between
+
+02:18.120 --> 02:19.500
+layer four, layer seven?
+
+02:19.680 --> 02:23.350
+Well, you already know, but it doesn't hurt, right, to mention it.
+
+02:23.380 --> 02:25.170
+We're going to talk about what is a load balancer.
+
+02:25.540 --> 02:29.270
+Going to mention the load for layer four load balancer.
+
+02:29.270 --> 02:34.380
+Do the pros and cons going to talk about the pros and cons of this layer for load balancing?
+
+02:34.650 --> 02:41.340
+And we're going to talk about layer seven load balancing effectively and also talk about the pros and
+
+02:41.340 --> 02:41.730
+cons.
+
+02:42.150 --> 02:42.930
+Let's jump into it.
+
+02:43.560 --> 02:45.090
+This is our beautiful office.
+
+02:45.090 --> 02:50.940
+I model the physical, the data link, the networking, the transport layer, the session presentation
+
+02:50.940 --> 02:57.300
+application, what we're really interested in as back end engineers as layer seven and layer four,
+
+02:57.330 --> 03:00.780
+we most of the time we play of this layer.
+
+03:01.170 --> 03:09.780
+Some of us play this layer, or we want to manage file descriptors, play with sessions, see how many
+
+03:09.780 --> 03:15.600
+segments this connection has received, see how many bytes this connection had, stuff like that.
+
+03:15.870 --> 03:21.090
+This information obviously is stored stateful in layer five because it's the session layer, right?
+
+03:21.960 --> 03:24.900
+But that's pretty much as we always play in these two layers.
+
+03:25.140 --> 03:28.320
+So what does that mean when it comes to actual load balancing?
+
+03:28.770 --> 03:34.100
+So here's what a load balancer is is also known as a fault tolerant system.
+
+03:34.110 --> 03:39.840
+You know, I want to build a system that is fault tolerant such that I'll make a request as a client
+
+03:39.840 --> 03:40.950
+to this load balancer.
+
+03:41.250 --> 03:47.700
+It it can talk to one backend or several and I don't really care how many back ends.
+
+03:47.880 --> 03:49.740
+That's the beauty of the reverse proxy, right.
+
+03:50.070 --> 03:55.830
+That a proxy you talk to this back end and that's that it takes care of talking to many, many backends
+
+03:55.830 --> 03:56.370
+on the back end.
+
+03:57.630 --> 04:08.430
+So a layer for load balancer, if you put in some IP addresses here is it starts up right and establishes
+
+04:08.430 --> 04:10.770
+some TCP connections on the backend.
+
+04:11.220 --> 04:12.330
+That's when it starts up.
+
+04:12.540 --> 04:13.890
+Just just warms up.
+
+04:14.400 --> 04:20.220
+It opens multiple connections, doesn't have to be one, could be ten, you know, per back end and
+
+04:20.220 --> 04:22.740
+then it just keeps them warm.
+
+04:22.920 --> 04:26.220
+This is idea of it's called warming up.
+
+04:26.400 --> 04:34.740
+You know, the participe connection is just keeping things hot so that we don't have to suffer from
+
+04:34.740 --> 04:36.960
+since anak ach on request.
+
+04:36.960 --> 04:37.260
+Right.
+
+04:38.070 --> 04:41.070
+We have the connections warm and just against the network segments.
+
+04:42.060 --> 04:51.840
+So now if a user establishes a connection to my load layer for load balancer, what will happen here
+
+04:51.840 --> 04:59.550
+is that connection will have a state in the load layer for load balancer and it will target to.
+
+04:59.910 --> 05:02.900
+One and only one connection to the back end.
+
+05:03.360 --> 05:10.890
+And that's the contract here, because a Layer four only deals with ports, IP addresses, and the data
+
+05:10.890 --> 05:17.130
+is just segments that I, I shouldn't really touch or try to pass.
+
+05:17.910 --> 05:23.790
+That means when the client connects to layer followed my answer there will be chooses one server and
+
+05:23.790 --> 05:31.770
+all segments that the client since to me all of them has to go to one connection not only just one server,
+
+05:32.070 --> 05:33.210
+one connection.
+
+05:33.210 --> 05:38.790
+And as long as this you're sending me data on this connection, you have to always send me to this,
+
+05:38.790 --> 05:39.000
+right?
+
+05:39.000 --> 05:42.600
+Because it's a stateful thing, a layer four as stateful.
+
+05:42.600 --> 05:43.560
+We talked about this, right?
+
+05:43.740 --> 05:48.930
+So if you send me data, I can just send one segment here, one segment here.
+
+05:49.080 --> 05:53.550
+The sequences will be out of sync and then everything will be that right.
+
+05:53.550 --> 05:54.720
+The data will be corrupted.
+
+05:54.930 --> 05:55.950
+You can just do that.
+
+05:56.340 --> 06:02.010
+So if you send me a segment on here, take the data and then rewrite it onto that connection.
+
+06:02.320 --> 06:02.610
+Right?
+
+06:02.880 --> 06:06.060
+So these are two different directions, right, if you think about it.
+
+06:07.770 --> 06:14.430
+And when you write a segment here, you rewrite it effectively on the back and on that connection.
+
+06:14.430 --> 06:16.140
+So it's two different sequences.
+
+06:16.140 --> 06:17.400
+Everything is different here.
+
+06:18.090 --> 06:20.520
+So that's one mode or layer for load balancer.
+
+06:20.520 --> 06:28.860
+At least there is another mode that it's called the Nat mode, which really makes everything into a
+
+06:28.860 --> 06:30.630
+single TCP connection.
+
+06:30.930 --> 06:34.050
+And then we talked about that and previous lectures as well.
+
+06:34.380 --> 06:36.720
+But we're interested in the common cases, right?
+
+06:36.900 --> 06:42.840
+In the next case, the client actually is the load balancer is the gateway of the client.
+
+06:43.020 --> 06:49.110
+And any connection you make, the load balancer effectively acts like almost like a router, right.
+
+06:49.110 --> 06:53.470
+In this case and just changes the the destination IP address to the back end.
+
+06:53.970 --> 06:54.240
+All right.
+
+06:54.270 --> 06:55.410
+Let's throw some examples here.
+
+06:56.820 --> 06:58.230
+So now what?
+
+06:58.230 --> 07:01.020
+Even if I send an IP back, Adria, I'm got a destiny.
+
+07:01.020 --> 07:02.520
+244.1.2.
+
+07:02.520 --> 07:03.450
+That's the load balancer.
+
+07:03.450 --> 07:04.950
+So this is a reverse proxy.
+
+07:05.460 --> 07:07.350
+That's my final destination, right?
+
+07:07.350 --> 07:14.910
+I send to the packet and the data is taken here and then literally rewritten into a brand YouTube connection
+
+07:15.180 --> 07:15.990
+on the backend.
+
+07:16.140 --> 07:16.410
+Right.
+
+07:16.410 --> 07:18.090
+So 44.1.3.
+
+07:18.090 --> 07:22.590
+In this case, this is my destination and the source becomes me as the load balancer.
+
+07:22.590 --> 07:22.890
+Right.
+
+07:23.100 --> 07:28.890
+And the client is completely unaware of that when that one, when the backend receives that segment
+
+07:29.130 --> 07:35.700
+delivered to the app maybe goes to an able socket, you know, GRB see anything, right?
+
+07:36.450 --> 07:43.000
+What happens here is the backend responds back, but now the destination becomes the load balancer.
+
+07:43.020 --> 07:46.580
+The source becomes this that the load balancer takes this bucket.
+
+07:46.910 --> 07:52.470
+It knows that anything I receive from this connection as a layer follow basin, I have to send it back
+
+07:52.470 --> 07:53.450
+to this particular can.
+
+07:53.460 --> 08:00.120
+Actually, it knows there is a table that keeps and it keeps this mapping and so it has to respond back
+
+08:00.120 --> 08:06.210
+to the actual client and it puts the destination as the client and the response content and then sends
+
+08:06.210 --> 08:06.420
+it up.
+
+08:06.900 --> 08:11.250
+And this, this becomes a sticky thing all the time.
+
+08:11.250 --> 08:15.180
+As long as the connection you're sending, the same connection, it's always going to the same back
+
+08:15.180 --> 08:19.770
+in the second example where we're sending an actual HTP request here, like I'm saying, going to send
+
+08:19.770 --> 08:22.320
+and ADB get request here number one.
+
+08:22.320 --> 08:23.970
+Right, I'm the new slash one.
+
+08:24.060 --> 08:25.890
+I'm getting some API here.
+
+08:26.190 --> 08:29.550
+And let's say that these are actually maybe multiple segments.
+
+08:29.550 --> 08:31.440
+So I'm going to send two segments here.
+
+08:31.450 --> 08:31.680
+Right?
+
+08:31.890 --> 08:38.760
+So segment one of the segment to the load for layer four, BANSAL receives those segments and then maybe
+
+08:38.850 --> 08:40.200
+chooses to acknowledge them.
+
+08:40.620 --> 08:46.440
+But once it's acknowledge it, it just forward those segments directly to the, to the back end that
+
+08:46.440 --> 08:51.330
+it chooses right for that connection and that's it and it moves on.
+
+08:51.660 --> 08:54.780
+So if the client send another segment, it just write it back.
+
+08:55.170 --> 09:01.560
+So all of this goes to the same connection all the time as I receive segment.
+
+09:01.560 --> 09:02.190
+I don't look.
+
+09:02.430 --> 09:03.420
+What's the distinction?
+
+09:03.420 --> 09:05.190
+Oh, you want me to write this?
+
+09:05.430 --> 09:06.930
+Read, write, read, write.
+
+09:07.800 --> 09:08.460
+I don't read.
+
+09:08.460 --> 09:10.170
+I don't try to do anything.
+
+09:10.170 --> 09:11.130
+There's no buffering.
+
+09:11.130 --> 09:14.490
+There's nothing I read and write instead of the situation.
+
+09:14.490 --> 09:22.140
+Maybe some smart layer forward basin might need to do some buffering to take advantage of larger empty.
+
+09:22.140 --> 09:23.220
+You may be here.
+
+09:23.310 --> 09:23.580
+All right.
+
+09:23.790 --> 09:28.080
+Like if they're to use here one 1500 and then you hit zero 9000.
+
+09:28.620 --> 09:34.830
+Maybe it's advantages for the lawyer for load balancer to read, read, read, read and then write smaller
+
+09:34.830 --> 09:35.910
+segments, if you will.
+
+09:35.910 --> 09:36.180
+Right.
+
+09:36.330 --> 09:38.490
+So that's one one case that you can do that.
+
+09:38.490 --> 09:41.250
+But that's back to the performance, baby.
+
+09:41.250 --> 09:48.480
+We always really try to squeeze as much performance as possible and try to challenge everything.
+
+09:50.430 --> 09:53.430
+All right, so I sent another request to V2 on the same connection.
+
+09:53.470 --> 09:54.270
+Doesn't matter.
+
+09:54.300 --> 09:57.180
+Five, six, five, six goes always to the same back in.
+
+09:57.540 --> 09:59.420
+As long as you're sending me to the same connection.
+
+09:59.430 --> 09:59.700
+Right.
+
+10:00.660 --> 10:03.450
+And the second segment seven goes there.
+
+10:03.480 --> 10:04.080
+So just like.
+
+10:04.080 --> 10:04.560
+As you say.
+
+10:04.590 --> 10:05.670
+Right, right, right.
+
+10:06.060 --> 10:07.080
+Immediately go there.
+
+10:07.920 --> 10:08.880
+So now what happened?
+
+10:08.880 --> 10:13.710
+If I open a new connection, I send the request, get three right in this case.
+
+10:14.190 --> 10:19.290
+Well, since it's a new connection, the load balancing logic will be triggered.
+
+10:19.290 --> 10:25.320
+So on your connection, I have to choose a back end that second back and will be chosen based on the
+
+10:25.320 --> 10:26.430
+load balancing algorithm.
+
+10:26.430 --> 10:29.970
+It could be around or be at least, at least connected.
+
+10:29.970 --> 10:30.360
+Like who?
+
+10:30.570 --> 10:35.430
+Whoever is that least overwhelmed will be picked and that connections will be established.
+
+10:35.430 --> 10:40.380
+So in this case, I pick this, maybe I receive one segment, right?
+
+10:40.380 --> 10:42.120
+That segment I see the second segment.
+
+10:42.120 --> 10:43.650
+Right, this segment third.
+
+10:43.920 --> 10:44.220
+Right.
+
+10:44.220 --> 10:45.600
+It so just did the do did it.
+
+10:45.810 --> 10:48.060
+I don't even know what's in this.
+
+10:48.720 --> 10:50.700
+This guy does not know it.
+
+10:50.830 --> 10:51.430
+HDTV.
+
+10:51.660 --> 10:54.510
+It knows it's DCP at segment and that's it.
+
+10:54.870 --> 10:55.920
+It does not need to be.
+
+10:55.920 --> 10:57.990
+It doesn't know it's encrypted, doesn't know anything.
+
+10:58.410 --> 10:58.650
+Right.
+
+10:58.890 --> 11:06.750
+If this was a protocol buffers, it was gRPC, if it was web sockets, if it was my sequel connection.
+
+11:06.750 --> 11:13.090
+Postscript It does not matter because I treat this as pure TCP connection.
+
+11:13.320 --> 11:13.800
+And that's it.
+
+11:14.100 --> 11:15.180
+Is just segments to me.
+
+11:15.660 --> 11:17.100
+And that's the beauty of Layer four.
+
+11:17.100 --> 11:25.170
+Let me answer this lack of knowledge, this naivete, if you will, is critical and beautiful because
+
+11:25.380 --> 11:32.550
+it makes mixed layer for load balancer supports really any protocol you want because hey, is just data
+
+11:32.550 --> 11:33.390
+is just segments.
+
+11:35.320 --> 11:36.610
+So what's the pros and cons of this?
+
+11:37.090 --> 11:37.600
+The pros.
+
+11:38.350 --> 11:39.220
+Let's talk about the pros.
+
+11:40.150 --> 11:45.070
+It's a simple load balancing because it's literally doesn't do with the data.
+
+11:45.640 --> 11:50.530
+It doesn't really read the protocol, doesn't really understand what Layer seven content is.
+
+11:50.530 --> 11:53.530
+This a layer four support IP addresses?
+
+11:53.540 --> 11:53.940
+That's it.
+
+11:54.250 --> 11:55.930
+You know, and connections.
+
+11:56.500 --> 11:58.140
+It's so it's really efficient.
+
+11:58.150 --> 11:59.350
+There's no data lockup.
+
+11:59.350 --> 12:01.540
+It doesn't look at any data just like that.
+
+12:01.540 --> 12:07.000
+Bought IP addresses and sometimes it buffers and sometimes a bit depends on them to you.
+
+12:07.000 --> 12:10.060
+But most of the time just takes the segment writers to the vacuum.
+
+12:10.510 --> 12:14.350
+It's more secure because we're going to talk about this layer seven.
+
+12:14.440 --> 12:17.350
+Load balancing actually needs to read the content.
+
+12:17.350 --> 12:25.040
+And in order to read, to cache or to do pass or API gateway, it needs to actually decrypt the content.
+
+12:25.460 --> 12:25.770
+Right.
+
+12:26.740 --> 12:27.100
+Yeah.
+
+12:27.130 --> 12:32.710
+It has to decrypt the content to load bands that some people might not be comfortable with that there
+
+12:32.710 --> 12:38.560
+are bands that is a third party, right, but layer for don't have to decrypt because it's almost end
+
+12:38.560 --> 12:40.870
+to end in this case right now.
+
+12:40.870 --> 12:42.040
+Almost, of course.
+
+12:42.670 --> 12:44.560
+So it works with any protocol.
+
+12:44.590 --> 12:45.940
+That's beautiful, right?
+
+12:46.480 --> 12:47.110
+Because.
+
+12:47.590 --> 12:49.240
+Because it doesn't look at the content.
+
+12:49.300 --> 12:51.700
+It's agnostic, say, hey, you send me segments.
+
+12:51.700 --> 12:53.770
+I'm saying I'm sending it back to the server.
+
+12:54.580 --> 13:03.910
+It can work with one TCP connection in a NAT configuration where if, if, if your client immediately
+
+13:04.090 --> 13:08.470
+connects to the load balancer as its gateway, which is not very common.
+
+13:10.360 --> 13:15.430
+A It will the whole thing will be a one TCP connection to the back end immediately.
+
+13:15.790 --> 13:21.850
+All what the router will do or in this case load balancer is just rewrite the destination IP address
+
+13:21.850 --> 13:22.750
+to be the back end.
+
+13:22.930 --> 13:24.580
+Just just change the segment.
+
+13:24.970 --> 13:27.070
+Write the segment IP address, though.
+
+13:27.250 --> 13:32.980
+In this case, the IP packet IP address, the destination to be the destination IP address or maybe
+
+13:32.980 --> 13:35.020
+the port in this case as well to change the port.
+
+13:35.290 --> 13:39.580
+So it becomes really using pure Nat and we talked about this and then that's configuration, right?
+
+13:41.180 --> 13:43.820
+Collins hears about the bad thing about this.
+
+13:44.120 --> 13:47.540
+There is no smaller bands like because you're not looking at the data.
+
+13:47.840 --> 13:49.370
+You can make smart decisions.
+
+13:49.640 --> 13:50.030
+Right.
+
+13:50.360 --> 13:54.950
+So so maybe let's say you're sending a specific request.
+
+13:54.950 --> 13:55.430
+There are.
+
+13:55.460 --> 13:56.420
+We know there is.
+
+13:56.630 --> 13:59.480
+This is heavy consuming workload.
+
+13:59.750 --> 14:00.050
+Right.
+
+14:00.260 --> 14:01.760
+I know this particular request.
+
+14:02.120 --> 14:08.270
+If it goes to this path, slash, I don't know, load or slash, analyze.
+
+14:08.270 --> 14:08.630
+Right.
+
+14:09.020 --> 14:11.000
+As an API, this is consuming.
+
+14:11.000 --> 14:14.180
+I wanted to to move this to a specific back end.
+
+14:14.210 --> 14:15.740
+There are beefy, right?
+
+14:15.860 --> 14:19.750
+You can do this with land for load better because you don't know anything, right?
+
+14:20.630 --> 14:21.800
+You can play tricks.
+
+14:22.490 --> 14:29.390
+You can configure the layer for load balancer to have multiple IP addresses, not my multiple reports.
+
+14:29.810 --> 14:34.010
+And if you're connected to this port, that means you want this particular back.
+
+14:34.310 --> 14:36.710
+If you're connected to this port, this bada back.
+
+14:36.710 --> 14:39.860
+And so we play with port because port is invisible for the layer four.
+
+14:40.550 --> 14:43.670
+You can definitely do that and it's not applicable for microservices.
+
+14:43.670 --> 14:44.720
+We talked about this here.
+
+14:44.720 --> 14:50.570
+You would need this smarter logic, although you can only obviously use the idea of ports and IP addresses
+
+14:50.570 --> 14:52.760
+to do that is sticky, right?
+
+14:52.790 --> 14:53.480
+Bear connection.
+
+14:53.480 --> 14:58.490
+We talked about this, so all the segments that you send on the connection will always go to one server
+
+14:58.490 --> 15:00.080
+and only one connection.
+
+15:00.380 --> 15:02.930
+There is no load balancing per connection.
+
+15:03.320 --> 15:04.400
+And the reason is.
+
+15:05.610 --> 15:08.220
+Because I don't know what these segments mean.
+
+15:08.580 --> 15:08.970
+Right.
+
+15:09.840 --> 15:10.290
+They're just.
+
+15:10.320 --> 15:16.070
+If you send a gift request or you send a post request or you send three, get request layer for lot
+
+15:16.080 --> 15:17.880
+bands that doesn't know anything.
+
+15:18.210 --> 15:21.150
+Is sees these as a bunch of segments coming in.
+
+15:21.540 --> 15:21.870
+Right.
+
+15:22.350 --> 15:25.890
+So as a result, just has to deliver them to the back end.
+
+15:25.890 --> 15:26.130
+Right.
+
+15:26.130 --> 15:27.660
+And one back it goes.
+
+15:27.930 --> 15:29.130
+It can make an assumption.
+
+15:30.340 --> 15:32.500
+Layer seven smart enough it knows.
+
+15:32.830 --> 15:37.630
+So it can actually pick and choose which segments are sent.
+
+15:38.620 --> 15:41.050
+No caching, obviously.
+
+15:41.050 --> 15:41.290
+Right.
+
+15:41.290 --> 15:44.680
+Because because there is no because I don't know what's in there.
+
+15:44.680 --> 15:45.880
+I cannot cache it.
+
+15:46.240 --> 15:51.730
+You might say, okay, if I send the same segment over and over again, it all bands I can call it.
+
+15:52.610 --> 15:53.110
+Really?
+
+15:53.110 --> 15:54.850
+Because what does that segment mean?
+
+15:55.100 --> 15:55.350
+Right.
+
+15:56.350 --> 15:57.880
+Yeah, it's the same value.
+
+15:57.880 --> 15:59.350
+But what does this represent?
+
+15:59.680 --> 16:00.790
+I have no idea.
+
+16:00.970 --> 16:01.300
+Right.
+
+16:01.450 --> 16:08.030
+You can send something that hashes to a certain value, but it could mean something completely different,
+
+16:08.050 --> 16:08.320
+right?
+
+16:08.500 --> 16:10.370
+It's a protocol anywhere.
+
+16:10.750 --> 16:15.130
+So while this was an advantage, there's also a double edged sword.
+
+16:15.130 --> 16:18.380
+It's also a disadvantage because it can be dangerous.
+
+16:18.400 --> 16:22.150
+There is one case where a layer for a layer seven.
+
+16:23.480 --> 16:27.530
+Load balancer can be downgraded to layer for load balancer.
+
+16:27.530 --> 16:35.810
+If you sent an upgrade protocol initiative either as an upgrade method that upgrades the connection
+
+16:35.810 --> 16:41.660
+to either of sockets or is dipped to over clear text.
+
+16:42.080 --> 16:42.440
+Right.
+
+16:43.220 --> 16:49.130
+And if you do that because of sockets is that is really a special protocol.
+
+16:49.580 --> 16:53.450
+The easiest way to do is from moving from layer seven.
+
+16:53.480 --> 16:56.630
+You can just move to layer four to support any protocol.
+
+16:56.870 --> 17:01.850
+So if I want to support to absorb, let's just move it to layer four protocol and then treated as a
+
+17:01.850 --> 17:02.360
+Layer four.
+
+17:02.720 --> 17:11.450
+And as a result, the moment you treat a layer for any logic that you might have in the load balancer
+
+17:11.450 --> 17:18.350
+to let's say, okay, I want to block certain users, I want to block certain authentication methods,
+
+17:18.530 --> 17:20.030
+I want to block certain headers.
+
+17:20.360 --> 17:22.210
+You can't do any of that anymore, right?
+
+17:22.220 --> 17:27.710
+Because you used to have these rules when you were a lawyer, seven load balancer, but when you were
+
+17:27.710 --> 17:31.550
+downgraded to a layer for everything was allowed, were allowed.
+
+17:32.270 --> 17:33.080
+And that's a problem.
+
+17:33.200 --> 17:33.470
+Right?
+
+17:33.470 --> 17:39.470
+So that's one kernel of layer after layer seven load balancer, very similar.
+
+17:39.470 --> 17:44.210
+When you spin up a layer seven load balancer, it just it uses the same concept.
+
+17:44.210 --> 17:49.970
+The ECP connection to the back ends and just warms up, opens up as many as it can or as configured
+
+17:50.510 --> 17:51.320
+and then moves on.
+
+17:51.830 --> 17:54.140
+So now when a client actually connects.
+
+17:55.250 --> 17:58.340
+To a back end, right to that layer seven back in here.
+
+17:58.850 --> 18:03.260
+What happens here is, Amy, it becomes a protocol specific.
+
+18:03.980 --> 18:07.940
+It means like, okay, well, you're connected to me, but are you going to tell me what you are?
+
+18:07.940 --> 18:09.470
+What are you sending me here?
+
+18:09.500 --> 18:10.910
+You can just send me garbage.
+
+18:11.270 --> 18:14.690
+It needs to endorse, stand everything you send it.
+
+18:15.080 --> 18:18.740
+So any logical request that you send.
+
+18:19.100 --> 18:20.240
+Logical request.
+
+18:20.240 --> 18:21.320
+We're going to talk about what mean?
+
+18:21.320 --> 18:23.060
+What do you mean by a logical request?
+
+18:23.510 --> 18:31.910
+A logical request here will be buffered and we'll all try to understand it, and only then it will pass
+
+18:31.910 --> 18:35.210
+it and then make the decision to forward it to the vacuum.
+
+18:35.570 --> 18:36.170
+All right.
+
+18:36.950 --> 18:45.350
+So a request here at this request, let's take an example, is a basically the start of GDP slash,
+
+18:45.350 --> 18:46.670
+slash, right?
+
+18:46.910 --> 18:51.770
+One, one slash the the path, you know, blah, blah, blah.
+
+18:51.950 --> 18:58.550
+And then at the end as what the the the version believe there should be one one slash.
+
+18:58.790 --> 19:00.260
+Yeah, they should be version.
+
+19:00.260 --> 19:00.560
+Right.
+
+19:00.830 --> 19:06.260
+And then that begins because they should be and then the headers follows and then at the end of the
+
+19:06.260 --> 19:08.870
+day we add a bunch of new lines.
+
+19:08.870 --> 19:10.130
+That's the end of the request.
+
+19:10.550 --> 19:13.010
+That is when they load bonuses.
+
+19:13.010 --> 19:14.360
+All right, that's a request.
+
+19:14.510 --> 19:15.080
+Stop.
+
+19:15.530 --> 19:15.860
+Right.
+
+19:16.130 --> 19:19.520
+Let me choose which back into this.
+
+19:19.530 --> 19:20.630
+Right, this request to.
+
+19:20.630 --> 19:24.740
+So that request could be one segment, could be two, could be hundreds segments.
+
+19:25.280 --> 19:30.590
+So it needs to read, read, read, read, read, read, read and buffer and.
+
+19:32.240 --> 19:36.260
+Read the data, and if it's encrypted, it needs to decrypt the data.
+
+19:36.560 --> 19:37.520
+What does that mean?
+
+19:37.550 --> 19:46.850
+It means that to decode the data, you have to have a connection between you and the server and also
+
+19:47.000 --> 19:49.280
+a secure connection between you and the server.
+
+19:49.550 --> 19:55.790
+That means if you ever want to host your website, this certificate has to live in the Layer seven load
+
+19:55.790 --> 19:56.420
+balancer.
+
+19:56.960 --> 20:02.880
+A lot of people just don't like to do that because your private key has to live in the layer subject
+
+20:03.050 --> 20:03.450
+as always.
+
+20:03.490 --> 20:03.710
+How?
+
+20:03.920 --> 20:06.800
+How can you pretend to be Google or your website?
+
+20:06.800 --> 20:07.070
+Right.
+
+20:07.190 --> 20:11.150
+In this case or otherwise, how can you pretend to be your website?
+
+20:11.440 --> 20:15.530
+This this guy has to pretend to be your website, right?
+
+20:15.530 --> 20:17.810
+Because that's the final destination to your client.
+
+20:18.080 --> 20:19.960
+So you have to give it the certificate.
+
+20:20.250 --> 20:20.490
+Right.
+
+20:21.230 --> 20:22.610
+So I have to decrypt, has to read.
+
+20:22.910 --> 20:26.300
+And then as a result, Andras, then let's take an example.
+
+20:26.300 --> 20:33.620
+So something we send IP packet goes to a back end and then we send back a response and it goes this
+
+20:34.010 --> 20:34.750
+same thing here.
+
+20:34.760 --> 20:43.640
+It doesn't change, but let's say I'm again sending a bigger request here slash one and this is a bunch
+
+20:43.640 --> 20:45.740
+of a bunch of segment.
+
+20:45.760 --> 20:51.740
+So segment one is still part of the Get one, segment two and segment three.
+
+20:52.010 --> 20:57.440
+All of this combined will become the HDP, get one slower request, right?
+
+20:58.550 --> 21:05.510
+So what the LP does is just try to understand it buffers this data to understand the segments and then
+
+21:05.510 --> 21:07.400
+says, okay, one, two, three, up.
+
+21:07.400 --> 21:07.960
+There you go.
+
+21:07.970 --> 21:08.690
+There's a new line.
+
+21:08.720 --> 21:09.620
+Here's one request.
+
+21:09.980 --> 21:16.850
+Now let me take these guys and then write them one by one to the actual back end.
+
+21:17.060 --> 21:26.780
+So all these segments become one unit, one request unit, and all of them has to go to one back end
+
+21:26.980 --> 21:27.860
+and that's it.
+
+21:28.430 --> 21:28.790
+Right.
+
+21:28.970 --> 21:36.860
+So although you send me a request on this connection, three segments goes to this server ballistic.
+
+21:36.860 --> 21:37.490
+An example.
+
+21:37.490 --> 21:43.520
+I'm sending another request on this same connection five, six and seven segments.
+
+21:44.060 --> 21:45.470
+That that's fine.
+
+21:45.500 --> 21:48.440
+That's a completely distinct request.
+
+21:48.770 --> 21:50.360
+I read it.
+
+21:50.480 --> 21:57.980
+I understood why you want it to is stateless so I can pick another server and send five, six, seven
+
+21:57.980 --> 21:58.370
+to.
+
+21:58.520 --> 22:04.940
+So I will send I will write the segments five, six, seven that represent the request.
+
+22:05.150 --> 22:11.550
+And this guy is will will need to pass that SDP request in this case and understand it.
+
+22:11.810 --> 22:15.410
+This is, by the way, where most of the HDP smuggling attacks happen.
+
+22:15.860 --> 22:22.550
+You know, if you write about HDP, smuggling is an attack where where if those guys do not agree.
+
+22:23.060 --> 22:23.510
+Right.
+
+22:23.600 --> 22:28.460
+If the low band sat on their back and doesn't do not agree on where their requests start and where they
+
+22:28.460 --> 22:31.230
+request and bad things happen.
+
+22:31.260 --> 22:34.040
+You know, and this is outside of the realm of this.
+
+22:34.040 --> 22:38.900
+You can read more about this if you want, outside the scope of this lecture.
+
+22:39.110 --> 22:41.090
+Otherwise, this lecture was me 3 hours.
+
+22:42.440 --> 22:45.770
+But yet I can establish a new connection and the same thing.
+
+22:46.220 --> 22:46.790
+We can.
+
+22:47.420 --> 22:51.530
+That connection will use that same connection.
+
+22:52.100 --> 22:52.460
+Right.
+
+22:53.330 --> 22:57.910
+This is something we can do, by the way, in labor force load bands.
+
+22:57.920 --> 23:00.080
+Or we can talk about it once.
+
+23:00.190 --> 23:01.070
+When layer four.
+
+23:01.070 --> 23:03.050
+Once someone connects and.
+
+23:04.190 --> 23:05.090
+Reserves.
+
+23:05.090 --> 23:12.440
+That connection, that back end connection cannot be used for any of the clients.
+
+23:13.430 --> 23:19.720
+That's, I guess, another disadvantage, if you will, of the layer followed by is becomes a private
+
+23:19.730 --> 23:22.100
+they call it private connection sometimes.
+
+23:22.910 --> 23:28.160
+So that's a big disadvantage actually in layer four, right, because you can deplete your back end
+
+23:28.170 --> 23:34.100
+connections while they are for lot bands that actually nicely balanced through the connections.
+
+23:34.100 --> 23:34.400
+Right.
+
+23:34.460 --> 23:36.080
+That's powerful stuff, right?
+
+23:36.080 --> 23:37.640
+They're pros.
+
+23:38.390 --> 23:42.260
+So as there is a smaller balancing, there is actual load balancing happening here.
+
+23:42.290 --> 23:49.290
+We are efficient in using that connections on the back end we can cache because now I'm reading, I'm
+
+23:49.310 --> 23:55.430
+decrypting, I'm understanding, I can cash here, I can do a smart load balancing.
+
+23:55.430 --> 23:59.720
+Hey, if you're going to slash pictures, I can take you to this server.
+
+23:59.900 --> 24:03.620
+If you're going to slash comments, I can take you to this server.
+
+24:03.770 --> 24:09.290
+If you're going to slash post comment, this is a right heavy workload.
+
+24:09.560 --> 24:15.260
+Go to this server because it has a a specific database designed for this particular workload.
+
+24:15.980 --> 24:26.930
+If you want to analyze or do an overlap, you know, here, here is a, a, uh, a server that points
+
+24:26.930 --> 24:35.690
+to a database that is all specific, you know, such as a Sabiha now or post was got.
+
+24:35.690 --> 24:37.010
+Maria DB Right.
+
+24:37.310 --> 24:42.650
+So you can a column base storage, you can do all sorts of smart thing.
+
+24:42.650 --> 24:50.060
+So that's why it's GraphQL microservices API we're logic like we explain like you can API gateway authentication
+
+24:50.060 --> 24:58.640
+can happen everything can happen the load balancer as a result you can cache results night what's the
+
+24:58.640 --> 24:59.300
+cons?
+
+24:59.690 --> 25:01.430
+Obviously it's expensive, right?
+
+25:01.730 --> 25:02.030
+Why?
+
+25:02.030 --> 25:03.380
+Because it's doing more work.
+
+25:03.380 --> 25:04.310
+It's buffering.
+
+25:04.310 --> 25:05.990
+It's reading, it's decrypting.
+
+25:06.230 --> 25:06.950
+So it's more.
+
+25:06.950 --> 25:07.820
+It's more expensive.
+
+25:08.000 --> 25:09.350
+It's decrypting the content.
+
+25:09.380 --> 25:10.850
+So it terminates the address.
+
+25:10.850 --> 25:12.080
+That's why it's called TLC.
+
+25:12.080 --> 25:18.050
+Terminator like load balancer is almost called TLC Terminator nine, Layer seven.
+
+25:18.790 --> 25:23.870
+What are we ever we say layer seven it has to terminate connection it uses to RTC because actually I
+
+25:23.870 --> 25:25.430
+don't know if this is the cons really.
+
+25:25.430 --> 25:27.410
+I don't think so.
+
+25:27.950 --> 25:33.080
+But just there is a way that layer four can use one connection.
+
+25:33.080 --> 25:35.150
+So that's why I put it there.
+
+25:36.170 --> 25:37.420
+Is this like a disadvantage?
+
+25:38.090 --> 25:38.500
+And.
+
+25:38.830 --> 25:46.690
+But you can you can add that to the prose section here, where actually it's a very efficient use of
+
+25:46.690 --> 25:47.160
+connection.
+
+25:47.170 --> 25:47.770
+They are seven.
+
+25:47.980 --> 25:48.210
+Yeah.
+
+25:48.970 --> 25:53.830
+It must share that yellow certificate as kind of a commons as well, because some people don't like
+
+25:53.830 --> 25:54.130
+that.
+
+25:54.700 --> 25:55.020
+Right.
+
+25:55.600 --> 25:56.800
+It needs to cover buffer.
+
+25:56.980 --> 25:59.950
+So there is a performance results.
+
+25:59.950 --> 26:00.190
+Right.
+
+26:00.190 --> 26:05.440
+So you need to read re re re that the request understand that it was all the way then so that while
+
+26:05.440 --> 26:07.670
+the actual back end is waiting meanwhile.
+
+26:07.690 --> 26:07.970
+Right.
+
+26:08.440 --> 26:09.340
+So if there is like.
+
+26:10.360 --> 26:12.920
+The load balancer becomes a bottleneck of this.
+
+26:12.940 --> 26:13.630
+It's buffering.
+
+26:13.630 --> 26:15.790
+A lot of request is doing at the same time.
+
+26:16.150 --> 26:17.020
+It can slow down.
+
+26:17.740 --> 26:19.780
+And the problem here, this is the major one.
+
+26:20.650 --> 26:27.610
+It needs to understand the protocol, why there are why there is like requests going all the time,
+
+26:27.610 --> 26:33.070
+like people actual rescue work with the forecasting features from a proxy, an engine to say hey, please
+
+26:33.070 --> 26:33.940
+support socket.
+
+26:34.150 --> 26:36.490
+Oh, guys, can you support you are busy.
+
+26:36.640 --> 26:37.900
+Oh, guys, can you support.
+
+26:37.910 --> 26:38.320
+I don't know.
+
+26:38.320 --> 26:40.180
+With this protocol can usable PostgreSQL.
+
+26:40.840 --> 26:41.290
+Why?
+
+26:41.920 --> 26:42.700
+Because of.
+
+26:43.060 --> 26:45.550
+Because we need to do layer seven load balancing.
+
+26:45.880 --> 26:52.900
+You cannot do layer seven load balancing if the load balancer doesn't understand the protocol.
+
+26:52.900 --> 26:53.350
+Right.
+
+26:53.890 --> 26:54.940
+Because we are.
+
+26:57.220 --> 27:00.650
+Passing the data we're reading as a result.
+
+27:00.910 --> 27:07.930
+If we don't understand how to talk to the back end and receive data, we're going to, you know, we're
+
+27:07.930 --> 27:08.350
+done.
+
+27:09.010 --> 27:10.930
+That's why load layers have a lot better.
+
+27:10.960 --> 27:14.140
+They need to understand the protocols layer for in advance.
+
+27:14.140 --> 27:15.370
+In this case can be used.
+
+27:15.670 --> 27:22.210
+If you if you don't have basically if your protocol cannot be interpreted.
+
+27:22.450 --> 27:22.710
+Right.
+
+27:23.830 --> 27:27.040
+So in summary, so we talked about layer four members as layer seven.
+
+27:27.040 --> 27:27.380
+Right?
+
+27:27.400 --> 27:29.090
+We talked about now what the load bands are.
+
+27:29.110 --> 27:34.080
+It's just basically a glorified reverse proxy that's a smart enough to do actual load balancing.
+
+27:34.090 --> 27:39.610
+You know, we talk about layer four load balancing project goals, we talk about layer seven load balancing
+
+27:39.610 --> 27:40.660
+and the pros and cons.
+
+27:41.530 --> 27:42.820
+There is no right or wrong.
+
+27:42.880 --> 27:46.150
+There is a case for every load balancer.
+
+27:46.180 --> 27:49.810
+Guys, hope you enjoy this lecture and I see you on the next one.
+
+27:50.260 --> 27:51.190
+Enjoy the course.

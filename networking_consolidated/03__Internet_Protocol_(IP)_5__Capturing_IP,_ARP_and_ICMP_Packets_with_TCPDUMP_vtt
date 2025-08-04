@@ -1,0 +1,664 @@
+WEBVTT
+
+00:00.120 --> 00:05.480
+Hey, guys, now that we're almost done with this section, that is the IP section.
+
+00:05.490 --> 00:13.200
+I thought it would be good to exercise and show you guys how the our protocol looks like, how the ICMP
+
+00:13.200 --> 00:15.780
+protocol looks, how the IP packet looks like.
+
+00:16.080 --> 00:17.760
+You know, in a practical manner.
+
+00:17.790 --> 00:20.570
+That is a very nice tool called TCP dump.
+
+00:20.580 --> 00:23.140
+If you have a MacBook, this is in a cell by default.
+
+00:23.160 --> 00:25.710
+I believe all Linux have it by default.
+
+00:25.740 --> 00:29.470
+If not, you can easily install it on open toe or windows.
+
+00:29.490 --> 00:30.820
+Download the tool.
+
+00:30.840 --> 00:32.700
+It's a very, very cool tool.
+
+00:32.730 --> 00:34.290
+Well, this is called TCP dump.
+
+00:34.290 --> 00:40.590
+It's actually you can use it for any protocol, almost any protocol that includes TCP and anything underneath
+
+00:40.590 --> 00:42.990
+it or above it actually.
+
+00:42.990 --> 00:47.400
+IP or it detects or detects ICMP.
+
+00:47.820 --> 00:55.650
+So in this lecture, I thought, I'm going to go through this tool and capture packets for the IP packets
+
+00:55.680 --> 01:00.240
+and we're going to capture for ICMP and again capture for ARP.
+
+01:00.480 --> 01:01.660
+How about we get started?
+
+01:01.680 --> 01:09.720
+So to do to do that, you can do the TCP dump with many, many options, right?
+
+01:09.870 --> 01:12.600
+One of the options is called AI, which is the interface.
+
+01:12.600 --> 01:13.980
+And we talked about it a little bit.
+
+01:13.980 --> 01:19.920
+When you have a when you have a computer, you might have multiple network interfaces, one for your
+
+01:19.920 --> 01:24.570
+wi fi, one for your lan, one for your Docker container.
+
+01:24.570 --> 01:26.490
+You can create virtual interfaces.
+
+01:26.490 --> 01:29.910
+And my interface called I end zero here.
+
+01:30.960 --> 01:34.530
+If you specify that then is going to only capture for that interface.
+
+01:34.530 --> 01:38.280
+If you don't, then it's going to capture everything and you might need.
+
+01:38.280 --> 01:43.160
+If you do all, then you might need administrator privileges to do that.
+
+01:43.170 --> 01:46.840
+So I'm going to do it just in zero four starter.
+
+01:46.860 --> 01:53.220
+What I'm going to do is I'm going to capture let's capture the ARP that gets, you know, which which
+
+01:53.220 --> 01:57.150
+is ARP is a layer two framework.
+
+01:57.150 --> 02:00.360
+So it's not not there is nothing to do with IP.
+
+02:00.360 --> 02:00.930
+Right?
+
+02:00.930 --> 02:03.060
+So it's a very low level protocol.
+
+02:03.960 --> 02:08.280
+Give me the the Mac address for a given IP address.
+
+02:08.280 --> 02:15.480
+You know, and the IP data here becomes just information that goes into the frame.
+
+02:15.480 --> 02:16.710
+So let's go ahead and do that.
+
+02:16.710 --> 02:22.680
+And if I do that, I'm just going to wait here and look at all these announcements that is happening
+
+02:22.680 --> 02:23.130
+here.
+
+02:23.670 --> 02:25.770
+And this is obviously running on my home.
+
+02:25.770 --> 02:31.490
+So I have an Amazon thermostats, I have IP cameras, I have so much other stuff.
+
+02:31.500 --> 02:36.690
+So these are constantly asking for the IP addresses for certain things.
+
+02:36.690 --> 02:42.510
+So if we if we take a look at this and let's let's start reading and I'm going to go ahead and stop
+
+02:42.510 --> 02:44.070
+the capturing for now.
+
+02:44.670 --> 02:46.770
+We're going to listen on this interface.
+
+02:47.310 --> 02:48.860
+This is the date stamp.
+
+02:48.870 --> 02:50.610
+This is in microseconds.
+
+02:51.120 --> 02:54.180
+And this tells you this is the ARP address resolution protocol.
+
+02:54.210 --> 02:55.710
+There is an announcement.
+
+02:55.710 --> 03:05.250
+So someone just announced that, hey, this hostname puro and my network and this is the basically the
+
+03:05.730 --> 03:12.180
+that that's the our packet and we can ask for more information by doing V to actually see the actual
+
+03:12.180 --> 03:15.240
+packets, you know, the IP addresses and stuff like that.
+
+03:15.450 --> 03:16.680
+This is just an overview.
+
+03:17.190 --> 03:19.410
+So then there is another request.
+
+03:19.410 --> 03:21.720
+Who has the gateway to the home dot local?
+
+03:21.720 --> 03:23.160
+This is my router by the way.
+
+03:23.160 --> 03:29.820
+So someone is trying to send a packet to the router but they do not know the IP address for the router.
+
+03:29.820 --> 03:33.510
+So they are asking for that particular thing.
+
+03:33.510 --> 03:37.710
+And TCP dumps usually tries to show you all the hostnames.
+
+03:37.710 --> 03:39.810
+So what are we going to do instead?
+
+03:39.990 --> 03:44.060
+We can do a dash in to show only numbers.
+
+03:44.070 --> 03:46.480
+Don't try to be smart, you know DC be dumb.
+
+03:46.560 --> 03:48.210
+Don't show me hostnames.
+
+03:48.210 --> 03:51.540
+This is slightly better and more readable.
+
+03:51.540 --> 03:52.920
+Yeah, here is a hit.
+
+03:52.920 --> 03:53.310
+It is.
+
+03:53.310 --> 03:55.110
+So now we get more information, right?
+
+03:55.110 --> 04:06.090
+So to get who has this IP address, now we get the actual IP address and instead we get basically that's
+
+04:06.090 --> 04:07.080
+the MAC address.
+
+04:07.110 --> 04:07.860
+Please.
+
+04:07.860 --> 04:15.120
+Who whoever have this tell 192168.245.144, which is this MacBook.
+
+04:15.120 --> 04:15.530
+Right.
+
+04:15.540 --> 04:16.640
+And here is a reply.
+
+04:16.650 --> 04:17.820
+This is the request.
+
+04:18.390 --> 04:26.430
+Now we get a reply from what this guy basically the one who actually got the answer and.
+
+04:27.420 --> 04:30.060
+But this is the Mac address is at this.
+
+04:30.060 --> 04:31.320
+So we get the Mac address.
+
+04:31.740 --> 04:32.520
+It's a pretty cool thing.
+
+04:32.520 --> 04:37.080
+So you can see all these ARP requests going through.
+
+04:37.560 --> 04:39.630
+So let's do the ARP.
+
+04:39.780 --> 04:41.420
+That's enough ARP here.
+
+04:41.430 --> 04:44.550
+Let's show the ICMP this way.
+
+04:45.180 --> 04:47.060
+If I say ICMP no.
+
+04:47.130 --> 04:47.320
+Right.
+
+04:47.400 --> 04:52.350
+Which we use, the we we talked about that and traceroute is using traceroute used in ping.
+
+04:52.350 --> 04:53.980
+So I'm going to do that.
+
+04:54.000 --> 04:55.050
+I'm just going to wait.
+
+04:55.170 --> 05:00.870
+Obviously no one is doing anything I see in blue eyes here, but let's actually do something.
+
+05:00.950 --> 05:03.840
+I'm going to open another tap and again, a ping.
+
+05:04.440 --> 05:05.030
+Mm.
+
+05:05.490 --> 05:06.750
+Example dot com.
+
+05:07.810 --> 05:08.740
+I let it ping.
+
+05:08.770 --> 05:11.130
+This is the iPad, for example.
+
+05:11.260 --> 05:11.640
+Let's go.
+
+05:11.680 --> 05:17.700
+And as we go, look at this, we're going to get a the source IP.
+
+05:17.900 --> 05:19.870
+No, this is my machine.
+
+05:20.020 --> 05:24.770
+And we're going to 93.1 84.216.
+
+05:24.790 --> 05:28.300
+Now we're actually looking at an IP packet, unlike ARP.
+
+05:28.300 --> 05:28.760
+Right?
+
+05:28.780 --> 05:33.840
+So this is the IP packet source address, destination address.
+
+05:33.850 --> 05:34.320
+Right.
+
+05:34.360 --> 05:38.440
+And this is an ICMP echo request we're requesting.
+
+05:38.500 --> 05:40.390
+That's the unique identifier.
+
+05:40.420 --> 05:41.290
+That's the sequence.
+
+05:41.290 --> 05:44.650
+And that's the length of the IP packet.
+
+05:44.680 --> 05:48.910
+Now, that includes all the headers, obviously, and this is where we get the reply.
+
+05:48.910 --> 05:50.990
+That applies exactly the opposite.
+
+05:51.010 --> 05:59.020
+Their server is replying to us with an echo reply and we got that back right and we send another a ping.
+
+05:59.050 --> 06:02.380
+The ping are going right obviously, so we can stop here.
+
+06:02.590 --> 06:06.010
+And this is the way we can measure the time and do all that stuff.
+
+06:06.010 --> 06:12.640
+ICMP sequences, you can see the sequences will be increasing as we continue.
+
+06:13.270 --> 06:17.840
+It's like a sequence 12, 13, 14, 15.
+
+06:17.860 --> 06:22.330
+The sequence is what we basically use to reply back.
+
+06:22.330 --> 06:25.930
+So that's a unique identifier for that ICMP packet.
+
+06:26.200 --> 06:26.620
+Now.
+
+06:27.760 --> 06:28.980
+It's pretty cool stuff.
+
+06:28.990 --> 06:37.990
+And there is a nice feature in TCP dump that allows us to show a little bit more verbose information.
+
+06:37.990 --> 06:41.530
+So let's go ahead and do Dash V here, right?
+
+06:42.070 --> 06:44.170
+Dash V will be a verbose mode.
+
+06:44.170 --> 06:50.860
+And now if we continue pinging and continue playing game, now we're going to get more information,
+
+06:50.860 --> 06:51.430
+you guys.
+
+06:52.150 --> 06:55.510
+And this lecture is at the end of the IP section.
+
+06:55.510 --> 06:59.770
+So you might have already been familiar with the IP packet itself.
+
+07:00.160 --> 07:01.900
+You know, the IP packet how it looks like.
+
+07:01.900 --> 07:03.730
+So pretty cool stuff.
+
+07:03.940 --> 07:11.370
+So the IP packet and now we notice that this is the additional stuff we received here, right?
+
+07:12.400 --> 07:23.020
+That this is a bit in the IP packet which is this services time to live 60 for the ID right off set
+
+07:23.020 --> 07:29.320
+whether we have a fragmentation offset and flags this these are the don't fragment we remember don't
+
+07:29.320 --> 07:33.520
+fragment more fragments or the fragmentation so we don't have any flags here.
+
+07:33.610 --> 07:36.790
+And this is the protocol field, which is number one here.
+
+07:36.790 --> 07:40.780
+That's the basically the protocol field in the IP header now.
+
+07:40.810 --> 07:49.870
+And that's the link of the IP packet entirely, including the the headers of the IP, which is around
+
+07:49.870 --> 07:50.500
+20 bytes.
+
+07:50.500 --> 07:50.890
+Right.
+
+07:51.640 --> 07:58.540
+And this you're going to see a new line and then space here and that's the content of the IP packet.
+
+07:58.810 --> 08:05.350
+Right, which we'll have which will have the obviously the source IP and the destination IP, ICMP echo
+
+08:05.350 --> 08:06.100
+request.
+
+08:06.100 --> 08:07.420
+Now we know.
+
+08:07.420 --> 08:14.170
+So the TCP IP dump actually parsed the packets and says, hey, this is actually an ICMP request and
+
+08:14.170 --> 08:16.510
+this is all the information that we get.
+
+08:16.600 --> 08:19.900
+And then that's the second IP packet.
+
+08:20.170 --> 08:23.380
+The third IP packet and the fourth IP back.
+
+08:23.590 --> 08:27.970
+No, actually, this is the entire IP packet.
+
+08:28.190 --> 08:30.550
+Well, that's another IP back.
+
+08:31.780 --> 08:33.490
+It's pretty cool stuff.
+
+08:33.490 --> 08:42.040
+So you can play with this TCP IP dump you guys and do a man TCP dump and see all the options.
+
+08:42.040 --> 08:44.140
+You know, let's go through the description here.
+
+08:44.140 --> 08:45.400
+Read a little bit.
+
+08:45.400 --> 08:51.700
+You know, this IP dump prints out a description of the content of packets on a network interface that
+
+08:51.700 --> 08:53.500
+matches the Boolean expression.
+
+08:53.500 --> 08:55.060
+This is something we didn't do yet.
+
+08:55.060 --> 08:58.860
+You can actually filter stuff here, which is pretty neat, right?
+
+08:58.930 --> 09:04.780
+The description is preceded by a timestamp which we saw printed by default as hours, minutes, seconds
+
+09:04.780 --> 09:06.260
+and fractions of a second since.
+
+09:06.280 --> 09:11.800
+But it can also be run with a dash w which is less than four.
+
+09:11.800 --> 09:14.950
+Right, which causes it to save the packet to a file.
+
+09:14.950 --> 09:16.180
+So this is pretty cool.
+
+09:16.810 --> 09:24.250
+A lot of people save their TCP dump for analysis and you can send this TCP down file and then you can
+
+09:24.250 --> 09:24.670
+read it.
+
+09:24.670 --> 09:26.940
+Unfortunately, to read it, you need also TCP dump.
+
+09:26.980 --> 09:30.550
+It's not a text file, so you can dump it and then read it back.
+
+09:30.550 --> 09:33.010
+So let's go ahead and do another thing.
+
+09:33.040 --> 09:33.820
+Let's quit here.
+
+09:33.820 --> 09:36.310
+And do what?
+
+09:36.310 --> 09:37.120
+What can we do?
+
+09:37.750 --> 09:40.120
+Let me do a filter.
+
+09:40.120 --> 09:40.900
+How about that?
+
+09:41.140 --> 09:45.490
+All right, so let's just tell this filtering thing that we talked about, right?
+
+09:46.000 --> 09:47.710
+We're going to do the filtering.
+
+09:48.190 --> 09:54.130
+Let's say we have a lot of packets going on like let's say I'm pinging example dot com, right.
+
+09:54.550 --> 09:57.290
+And I'm also pinging engine XCOM.
+
+09:57.310 --> 09:58.480
+So another server.
+
+09:58.480 --> 09:59.010
+Right.
+
+09:59.020 --> 10:04.780
+So we have this IP address and this IP address and all of a sudden, if I do like this, we're going
+
+10:04.780 --> 10:07.300
+to be flooded with stuff, right?
+
+10:07.360 --> 10:08.920
+All sorts of stuff.
+
+10:09.070 --> 10:16.510
+So how do they I then filter the things that only from, let's say, engine X.
+
+10:17.450 --> 10:25.400
+Dot com right index dot com as or request time out so in Gen-X doesn't is not allowing me to tie to
+
+10:25.400 --> 10:28.370
+paying them so ICMP is disabled in that area.
+
+10:29.000 --> 10:30.560
+It's not really a big deal.
+
+10:30.560 --> 10:33.380
+We can ping Google then ping google dot com.
+
+10:33.680 --> 10:37.220
+See, it's good to see these kind of things live so you can know.
+
+10:37.220 --> 10:38.540
+So let's ping Google.
+
+10:38.570 --> 10:45.770
+This is Google and obviously someone is querying Google doing all that sorts of stuff, you know, and
+
+10:46.670 --> 10:52.100
+what are we going to do is I really want only the traffic to two example dot com.
+
+10:52.100 --> 10:52.460
+Right.
+
+10:52.490 --> 10:53.090
+Okay cool.
+
+10:53.090 --> 10:59.960
+So now that we have all sorts of traffic going on, I'm really interested in an only specific IP address
+
+10:59.960 --> 11:02.720
+so we can do an expression after that.
+
+11:02.990 --> 11:06.800
+It's RC stands for the source IP address in this case.
+
+11:06.800 --> 11:06.990
+Right.
+
+11:07.040 --> 11:10.610
+And you can do Z and then you basically specify the address.
+
+11:10.610 --> 11:18.830
+So this means please capture IP packets coming from this IP address.
+
+11:18.830 --> 11:25.280
+That means I'm not going to capture the packets going to this address, I'm going to capture packets
+
+11:25.280 --> 11:26.720
+coming to me.
+
+11:26.720 --> 11:38.600
+So that means in this particular case, either a ICMP echo or a replies, if I'm pinging or ICMP requests
+
+11:38.600 --> 11:41.030
+that are someone is bringing me, that's pretty cool.
+
+11:41.570 --> 11:49.100
+So if I do this now, I'm only capturing, as you guys see the replies from that and only that I'm not
+
+11:49.100 --> 11:50.810
+capturing the Google requests.
+
+11:50.810 --> 11:51.020
+Right?
+
+11:51.020 --> 11:56.210
+Because this is the example that come we're stopping in Google too, but I'm not getting anything here.
+
+11:56.210 --> 11:59.900
+So this is the way to clean your TCP dump.
+
+11:59.900 --> 12:01.010
+That's pretty nice, right?
+
+12:01.010 --> 12:05.840
+You can see all this stuff here, all the details, pretty cool stuff.
+
+12:05.840 --> 12:14.420
+So what we can also do as like, well, not only I'm going to capture the source, I want this to be
+
+12:14.420 --> 12:15.890
+in the destination.
+
+12:15.890 --> 12:16.310
+Right?
+
+12:16.490 --> 12:18.200
+Like things I am going to.
+
+12:18.230 --> 12:23.330
+So what do you do is do or destination de sd then.
+
+12:24.300 --> 12:26.700
+Based this way, we're going to capture both.
+
+12:26.940 --> 12:32.690
+If the destination is this, all of the sources this please capture them.
+
+12:32.700 --> 12:34.540
+So that's where you can go.
+
+12:34.560 --> 12:37.610
+Really a very interesting thing.
+
+12:37.620 --> 12:44.070
+And notice that we didn't talk about ports at all or TCP or UDP because that that's all going to come
+
+12:44.070 --> 12:51.720
+in another section when we get to discuss TCP or UDP where ports are introduced again and the IP, we
+
+12:51.720 --> 12:52.880
+don't talk about ports.
+
+12:52.890 --> 12:59.550
+IP is just destination source, the destination IP address and the source IP address, that's it.
+
+12:59.700 --> 13:02.100
+And few other headers.
+
+13:02.100 --> 13:07.290
+But ports are introduced in the transmission control layer and the transport layer.
+
+13:07.340 --> 13:08.870
+I hope you enjoy this lecture.
+
+13:08.880 --> 13:10.080
+I'm going to see you in the next one.
+
+13:10.080 --> 13:11.610
+Guys, enjoy the course.

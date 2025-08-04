@@ -1,0 +1,1648 @@
+WEBVTT
+
+00:00.710 --> 00:07.790
+Hey, guys, as we reach the end of the course, I thought that I'm going to include a new lecture detailing
+
+00:07.790 --> 00:14.930
+a brand new protocol that is not really in production, but this protocol really takes the limitation
+
+00:14.930 --> 00:25.190
+of the TCP protocol and looks at it and tries to improve it by really changing fundamental things in
+
+00:25.190 --> 00:30.980
+the congestion control algorithms and the flow control of things.
+
+00:30.980 --> 00:34.130
+So this this video is already on my YouTube channel.
+
+00:34.130 --> 00:35.360
+I started about a little bit.
+
+00:35.360 --> 00:39.230
+I did some editing, but I thought I'd include it here as a supplementary.
+
+00:39.350 --> 00:39.590
+Uh.
+
+00:40.540 --> 00:45.040
+If you reach this level, in this, in this course, then it's working course.
+
+00:45.040 --> 00:49.990
+You will be able to understand almost everything that I'm discussing here.
+
+00:49.990 --> 00:51.250
+So this is like at the end.
+
+00:51.250 --> 00:59.320
+So it's more of like an advanced concept and just pay attention to as we go into each of these in the
+
+00:59.320 --> 01:06.130
+bowels of this protocol, it's going to be really interesting to to learn and see how people think,
+
+01:06.460 --> 01:13.780
+understand first the problems and then as a result, uh, find solutions that fit this.
+
+01:14.410 --> 01:14.740
+All right.
+
+01:14.740 --> 01:18.100
+So, uh, let's go ahead and jump into it.
+
+01:18.490 --> 01:27.340
+I stumble upon a new paper, uh, written by Professor John Ousterhout, uh, from Stanford University.
+
+01:28.120 --> 01:38.800
+Uh, the paper summarizes a new protocol that replaces TCP, which is one of the most abundant if if
+
+01:38.800 --> 01:46.420
+not the abundant protocol that is used everywhere, you know, and it's not directly used.
+
+01:46.420 --> 01:50.200
+It's probably used by your application right now, even if you don't know it.
+
+01:50.200 --> 01:50.590
+Right.
+
+01:51.190 --> 02:00.130
+Like Http uses, uh, tcp, I know Http three does switch to Quic, which uses UDP, but a lot of applications
+
+02:00.130 --> 02:08.620
+SSH, you know, SMTp, all of these protocols use directly uses TCP as a protocol.
+
+02:08.650 --> 02:13.270
+You know, uh, and it's been very popular for years.
+
+02:13.540 --> 02:15.070
+So why change?
+
+02:15.460 --> 02:22.930
+Apparently when I, when I read the title of this, um, paper, you know, I was skeptical.
+
+02:22.930 --> 02:26.650
+You know, we need a replacement for TCP in the data center.
+
+02:26.650 --> 02:33.010
+Emphasis in the data center here because, uh, don't don't get defensive like I did when I first read
+
+02:33.010 --> 02:33.160
+this.
+
+02:33.250 --> 02:40.570
+Ah, another someone who wanted to change things the way we do things, you know, and it's working.
+
+02:40.570 --> 02:41.680
+And back end engineering.
+
+02:41.680 --> 02:51.430
+Uh, I try to be objective and look at the actual paper and see the original problems that TCP has because
+
+02:51.430 --> 02:52.180
+we agree, right?
+
+02:52.210 --> 02:53.740
+TCP is not good for everything.
+
+02:53.740 --> 02:54.670
+We know that.
+
+02:54.670 --> 02:56.050
+That's why we have Quic.
+
+02:56.050 --> 03:01.660
+That's why we use UDP directly, especially for gaming, for video streaming, things like that.
+
+03:01.660 --> 03:08.170
+Because we know that TCP is great, but also it has limitations because it was designed, you know,
+
+03:08.170 --> 03:15.340
+it was ossified is the right word, you know, and it's very hard to change.
+
+03:15.340 --> 03:16.540
+But people worked around it.
+
+03:17.020 --> 03:20.260
+So in this episode of the BAC Engineering show, it's going to be a little bit different.
+
+03:20.260 --> 03:21.550
+It's going to be a little bit longer.
+
+03:21.550 --> 03:24.700
+So get a drink, uh, relax.
+
+03:24.700 --> 03:26.530
+And uh, let's enjoy this show.
+
+03:26.530 --> 03:30.880
+I think I think it's going to be a good, uh, discussion.
+
+03:30.880 --> 03:31.570
+Really.
+
+03:31.570 --> 03:32.920
+I think it's a good paper.
+
+03:32.920 --> 03:37.360
+Or do I think this new protocol that is called Homa, by the way?
+
+03:37.810 --> 03:44.080
+Uh, uh, a very common Persian name, like, that's how I know it, because my mom is, you know,
+
+03:44.080 --> 03:47.530
+my mom's side is Persian, so that's a very common used name.
+
+03:47.530 --> 03:55.240
+And I think Homa is, uh, is, uh, some sort of a mythical bird that always flies and never lands.
+
+03:55.240 --> 03:57.370
+I don't know the history, but it's.
+
+03:57.370 --> 04:02.440
+I don't know if it's but it's inspired by this, you know, myth, mythology or not.
+
+04:02.440 --> 04:05.620
+But regardless, I think this is going to be interesting.
+
+04:05.620 --> 04:07.360
+Uh, let's just keep an open mind.
+
+04:07.360 --> 04:08.200
+Read it through.
+
+04:08.200 --> 04:09.760
+Obviously, I have my criticism.
+
+04:09.760 --> 04:10.690
+As usual.
+
+04:10.690 --> 04:12.070
+I'll try to keep an open mind.
+
+04:12.070 --> 04:13.000
+Read it through.
+
+04:13.300 --> 04:14.140
+Let's have fun.
+
+04:14.500 --> 04:15.460
+Let's jump into it.
+
+04:15.460 --> 04:18.760
+Welcome to the backend engineering show with your host, Hussein Nasser.
+
+04:18.760 --> 04:22.960
+Today we're gonna read this, uh, summary paper.
+
+04:22.960 --> 04:31.150
+That's not the actual the actual paper for this new protocol that attempts to replace TCP in the data
+
+04:31.150 --> 04:31.810
+centers.
+
+04:31.810 --> 04:40.000
+Again, very important to emphasize that in the data centers, things in the data center, everything
+
+04:40.000 --> 04:42.280
+is tightly tucked in together.
+
+04:42.280 --> 04:49.420
+You know, the latency is almost latency when it comes to networking is, is is in a in a in microseconds,
+
+04:49.420 --> 04:52.660
+you know, hundreds and microseconds or even even less than that.
+
+04:52.660 --> 04:52.870
+Right.
+
+04:52.870 --> 04:57.220
+In switches like nanoseconds, hundreds of nanoseconds.
+
+04:57.220 --> 05:03.670
+Like so they they invest a lot in this, uh, making these equipments as fast as possible, unlike the
+
+05:03.670 --> 05:05.590
+internet, which is like Wild West.
+
+05:05.590 --> 05:12.940
+And obviously there is latency, there is limitation when it comes to the MTA's use during the maximum
+
+05:12.940 --> 05:13.840
+transmission unit.
+
+05:13.840 --> 05:16.420
+We don't have these limits in the data center.
+
+05:16.420 --> 05:26.530
+We we are so fast and TCP is apparently slowing development, uh, of applications on the data center.
+
+05:26.530 --> 05:27.220
+Let's find out.
+
+05:27.220 --> 05:28.840
+I never worked in the data center.
+
+05:28.840 --> 05:31.030
+I don't know the challenges of data center.
+
+05:31.030 --> 05:35.530
+That's why I'm taking the word of, uh, Professor John here.
+
+05:35.530 --> 05:38.200
+And, uh, the references he references.
+
+05:38.200 --> 05:39.340
+Let's get started.
+
+05:40.240 --> 05:43.810
+We need a replacement for TCP in the data center.
+
+05:43.840 --> 05:44.980
+Let's read the abstract.
+
+05:44.980 --> 05:50.830
+And by the way, I download the PDF and I started highlighting the important parts that I believe it's
+
+05:50.830 --> 05:53.080
+important because it can go through the whole paper.
+
+05:53.080 --> 05:54.430
+Obviously it's not that long.
+
+05:54.430 --> 05:56.350
+It's just six pages, you know.
+
+05:56.350 --> 06:01.990
+But I only don't highlighted the interesting parts that I want to discuss here.
+
+06:01.990 --> 06:02.440
+Right.
+
+06:02.440 --> 06:03.220
+Abstract.
+
+06:03.550 --> 06:13.120
+In spite of its long and successful history, TCP is a poor transport protocol for modern data centers.
+
+06:13.120 --> 06:20.380
+Every significant element of TCP, from its stream orientation to its requirement of in-order packet
+
+06:20.380 --> 06:24.640
+delivery is wrong again for the data center.
+
+06:25.060 --> 06:28.360
+Professor John emphasizes on this statement.
+
+06:28.360 --> 06:29.680
+It's just for the data center.
+
+06:29.680 --> 06:32.650
+If you're using it on the internet, don't change it.
+
+06:32.650 --> 06:34.900
+So think about stream orientation.
+
+06:34.900 --> 06:41.710
+So when we talk about TCP now the idea of TCP TCP sits on top of IP and IP has packets.
+
+06:41.710 --> 06:48.400
+And if you want to send data through the TCP you ship them into segments.
+
+06:48.400 --> 06:48.910
+Right.
+
+06:48.910 --> 06:53.200
+No mention of segments at all here, which is something I have to criticize.
+
+06:53.200 --> 06:59.740
+You know, it's very hard not to talk about TCP and not mention very critical concept of TCP, which
+
+06:59.740 --> 07:05.980
+is the segment, not to mention not in the original, uh, paper, not in this one.
+
+07:06.660 --> 07:08.220
+Z nothing.
+
+07:08.340 --> 07:08.820
+You know.
+
+07:08.820 --> 07:09.420
+So.
+
+07:10.330 --> 07:17.860
+TCP has this idea of segments, and segments will have the TCP header, which includes the ports information
+
+07:17.860 --> 07:21.550
+about congestion control, other information as well.
+
+07:21.550 --> 07:25.390
+Can't remember right now sequences, you know, window sizes, stuff like that.
+
+07:25.960 --> 07:31.870
+You know, and this is where the headers actually all the all the information these segments becomes
+
+07:31.870 --> 07:33.100
+carries your data.
+
+07:33.100 --> 07:38.440
+So if you send a bunch of data, let's say I want to send I don't know, I want to send a whole word
+
+07:38.440 --> 07:40.810
+document, you know, that example.
+
+07:40.810 --> 07:42.640
+But that will be.
+
+07:43.620 --> 07:46.620
+Try to send into this TCP socket.
+
+07:46.620 --> 07:51.780
+You know, when you create a connection through TCP and you just stream that whole word document into
+
+07:51.780 --> 07:57.090
+the socket, your application doesn't really know about this concept of segments.
+
+07:57.090 --> 08:02.310
+The kernel takes care of breaking things down into segments, right?
+
+08:02.310 --> 08:07.500
+Sometimes I guess you can have access to those, but you just get a bunch.
+
+08:07.830 --> 08:11.370
+This will eventually be broken into multiple segments and will be shipped.
+
+08:11.370 --> 08:13.920
+Each segment will be sequenced with a number.
+
+08:13.920 --> 08:14.160
+Okay.
+
+08:14.160 --> 08:14.910
+Segment number one.
+
+08:14.910 --> 08:15.270
+Right.
+
+08:15.270 --> 08:17.700
+The first part of the document, second part of the document.
+
+08:17.700 --> 08:19.350
+So how many segments?
+
+08:19.380 --> 08:22.830
+It really depends on the MTU that down down link layer.
+
+08:22.830 --> 08:29.250
+Obviously the how much your Wi-Fi connection can handle, how much your LAN can handle, you know,
+
+08:29.250 --> 08:35.370
+and that is your basically the maximum transmission unit, your your neck, your network card effectively.
+
+08:35.910 --> 08:43.920
+And that carries on to the maximum the PDU, which is the, the packet uh, size and the IP packet,
+
+08:43.920 --> 08:47.070
+which of obviously translates to the maximum segment size.
+
+08:47.070 --> 08:47.340
+Right.
+
+08:47.340 --> 08:51.150
+So you can send up to maximum segment size worth of content.
+
+08:51.150 --> 08:53.430
+But all of this is called a stream.
+
+08:53.430 --> 08:54.930
+It's just a stream of data.
+
+08:54.930 --> 08:56.940
+It's just in sequence packet.
+
+08:56.940 --> 09:02.310
+So if you think about it there is no concept of, you know, request in TCP.
+
+09:02.340 --> 09:05.040
+You know, you send uh, the word document.
+
+09:05.040 --> 09:06.690
+How do you know if it actually arrives?
+
+09:06.690 --> 09:07.320
+Right.
+
+09:07.320 --> 09:13.500
+The application has to decide that, you know, because it doesn't know the transport transfer protocol
+
+09:13.500 --> 09:18.420
+doesn't know about this discrete, you know, boundaries of your.
+
+09:18.980 --> 09:25.430
+Messages, as the paper calls it, or request even the Http request when you send an Http request through
+
+09:25.430 --> 09:26.030
+TCP.
+
+09:26.090 --> 09:29.360
+There is no concept of a request at the TCP layer.
+
+09:29.360 --> 09:38.360
+You know, you send a bunch of bytes, the bytes goes right and the the Http request becomes get slash
+
+09:38.360 --> 09:39.500
+Http 114.
+
+09:39.500 --> 09:42.170
+We put the headers, all of this becomes a byte string.
+
+09:42.170 --> 09:45.350
+And then that byte string is shoved into the TCP layer.
+
+09:45.350 --> 09:48.500
+The kernel might use one if you're lucky.
+
+09:48.830 --> 09:54.770
+Like I think the 1500 is the maximum segment size in the internet by default in the data center is way
+
+09:54.770 --> 09:56.540
+larger than that, obviously, right.
+
+09:56.540 --> 10:00.410
+Because they have control of all this equipment, they can increase that.
+
+10:00.410 --> 10:04.730
+That basically controls the frame at the data link layer.
+
+10:04.730 --> 10:10.040
+So we're still in the abstract and I still didn't get continue I have to I have to shut up and read.
+
+10:10.040 --> 10:16.460
+So from its stream, uh, orientation to its requirement of in-order packet delivery, it has to be
+
+10:16.460 --> 10:20.120
+an order because you're sending a stream a better arrival order.
+
+10:20.120 --> 10:25.190
+Otherwise the word document or the request, the actual content of the request will be arrive out of
+
+10:25.190 --> 10:25.790
+order.
+
+10:26.630 --> 10:27.050
+Right.
+
+10:27.050 --> 10:34.340
+So that's why when you send multiple requests on the same TCP connection, you have no idea at the server
+
+10:34.340 --> 10:39.740
+side where the request, the first request starts, where the second request end, we don't have that
+
+10:39.740 --> 10:41.870
+knowledge right at the transport layer.
+
+10:41.870 --> 10:45.920
+The application has to start receiving everything.
+
+10:45.920 --> 10:51.230
+And then it says, oh, okay, this is the request number one, because it ends in a new line or whatever
+
+10:51.230 --> 10:53.240
+the Http standard says.
+
+10:53.240 --> 10:55.250
+And then the second request starts right there.
+
+10:55.250 --> 10:57.290
+So that's what we have here.
+
+10:57.290 --> 10:59.090
+We have an order packet delivery.
+
+10:59.090 --> 11:06.440
+It is time to recognize that TCP problems are two fundamentals and fundamental and interrelated to be
+
+11:06.440 --> 11:06.950
+fixed.
+
+11:06.950 --> 11:13.850
+The only way to harness the full performance potential of modern network is to introduce a new transfer
+
+11:13.850 --> 11:16.730
+protocol into the data center.
+
+11:17.060 --> 11:25.160
+Homa demonstrate that it is possible to create a transfer protocol that avoids all of these problems.
+
+11:25.160 --> 11:25.910
+Interesting.
+
+11:25.910 --> 11:32.510
+Although Homa is not a API, I keep saying homa as in because that's in Persian.
+
+11:32.510 --> 11:33.380
+That's how we pronounce it.
+
+11:33.380 --> 11:35.000
+It probably pronounce it different thing.
+
+11:35.000 --> 11:36.230
+Homa somewhat.
+
+11:36.230 --> 11:38.900
+Might be something else, but I'm going to say homa.
+
+11:39.080 --> 11:47.060
+Although Homa is not API compatible with TCP, it should be possible to bring into this is this is really
+
+11:47.060 --> 11:47.900
+big, right?
+
+11:47.900 --> 11:54.380
+If your application is running on TCP on top of TCP directly, then you cannot use this.
+
+11:54.380 --> 11:56.570
+You have to rewrite your whole application to use Homa.
+
+11:56.720 --> 11:57.020
+Right.
+
+11:58.220 --> 11:59.720
+Because it's a different API, right?
+
+11:59.720 --> 12:01.610
+There is no right or read.
+
+12:01.910 --> 12:03.500
+The whole thing is different.
+
+12:03.500 --> 12:05.450
+You know, it's not as simple as it is.
+
+12:06.890 --> 12:09.770
+Maybe they probably when they say it, it's not API compatible.
+
+12:09.770 --> 12:13.730
+That means it is literally it's not because the whole thing changes.
+
+12:13.850 --> 12:19.400
+We're going to find out the paper doesn't detail this and this is really odd.
+
+12:19.400 --> 12:21.080
+It doesn't even mention the header.
+
+12:21.080 --> 12:23.630
+How it looks like nothing really.
+
+12:23.630 --> 12:26.690
+I try to as much as possible pull information.
+
+12:26.690 --> 12:29.690
+There is no concept of ports as far as I've seen.
+
+12:29.690 --> 12:31.610
+There's no concept of ports at all.
+
+12:31.610 --> 12:34.010
+They just say, hey, host connects to a host.
+
+12:34.010 --> 12:35.180
+Why do we need ports?
+
+12:35.180 --> 12:38.960
+They just completely removed that concept altogether.
+
+12:38.960 --> 12:44.750
+So they saved on the header sizes of the, you know, the messages that they send I got out of bed.
+
+12:44.780 --> 12:45.380
+It's clever.
+
+12:45.500 --> 12:48.530
+They are reinventing the whole wheel here.
+
+12:49.040 --> 12:49.400
+Right.
+
+12:49.400 --> 12:51.410
+So it's scary for us.
+
+12:51.410 --> 12:52.580
+It's like something new.
+
+12:52.610 --> 12:54.920
+We get scared of course.
+
+12:54.920 --> 12:57.740
+But yeah, it's, uh, courageous.
+
+12:57.740 --> 13:01.010
+Might I say, although humor is not an API component.
+
+13:01.010 --> 13:01.790
+Okay, we read this.
+
+13:02.420 --> 13:03.080
+Okay, let's read it.
+
+13:03.080 --> 13:04.040
+This is the introduction.
+
+13:04.040 --> 13:05.450
+I'm going to read just this part.
+
+13:05.630 --> 13:06.770
+I'm going to discuss.
+
+13:06.770 --> 13:12.470
+However, data center computing creates unprecedented challenges for TCP.
+
+13:12.470 --> 13:16.430
+So they focus on what's what's so unique about data centers here.
+
+13:16.430 --> 13:16.790
+Right.
+
+13:17.720 --> 13:26.000
+The data center environment with millions of cores in close proximity, focus on close proximity, you
+
+13:26.000 --> 13:26.330
+guys.
+
+13:26.330 --> 13:27.650
+Close proximity.
+
+13:27.650 --> 13:29.960
+They are so tucked in together.
+
+13:29.960 --> 13:32.240
+This is not a solution for the internet.
+
+13:32.240 --> 13:33.860
+Don't bring this to the internet.
+
+13:33.860 --> 13:36.500
+I don't think it will fit in the internet to be honest.
+
+13:36.500 --> 13:36.740
+Right.
+
+13:36.740 --> 13:39.770
+With the way I I've read the design.
+
+13:40.420 --> 13:45.790
+There is a lot of chattiness going on, especially with the unscheduled packet in the schedule packet,
+
+13:45.790 --> 13:49.420
+and the receiver has to say go ahead and now you can send it or we can wait.
+
+13:49.420 --> 13:50.830
+Oh, go, go ahead and send it.
+
+13:50.860 --> 13:52.210
+There is a lot of chattiness.
+
+13:52.210 --> 13:55.750
+I don't know if it would work in the internet at all with millions of course.
+
+13:55.750 --> 14:02.770
+Proximity, individual application, harnessing thousands of machines to interact on microsecond timescale.
+
+14:02.770 --> 14:06.220
+So this is the latency is so tiny between the machines.
+
+14:06.220 --> 14:14.230
+So we want we are burdened by the TCP protocol could not be envisioned by the designers of TCP.
+
+14:14.230 --> 14:17.410
+Yeah TCP the TCP is designed 40 years ago.
+
+14:17.410 --> 14:18.910
+Did they didn't know that.
+
+14:18.940 --> 14:21.730
+They didn't know that it would get to reach this scale.
+
+14:21.730 --> 14:28.300
+So I mean, what they what they built is amazing that it actually survived 40 years.
+
+14:28.300 --> 14:30.310
+So I'm going to jump in here and read the requirements.
+
+14:30.310 --> 14:30.520
+Okay.
+
+14:30.550 --> 14:33.010
+Obviously this is invisible and I can disappear.
+
+14:33.130 --> 14:33.910
+That's all right.
+
+14:34.840 --> 14:39.040
+If I'm covering the page requirements.
+
+14:39.910 --> 14:41.950
+What are we trying to solve here?
+
+14:41.950 --> 14:48.250
+Before discussing the problem of TCP, let's review the challenges that must be addressed by any transport
+
+14:48.250 --> 14:50.380
+protocol for data centers.
+
+14:50.890 --> 14:53.770
+For data centers, again reliable delivery.
+
+14:53.770 --> 14:59.470
+The protocol must deliver data reliably from one host to another in spite of transient failures.
+
+14:59.470 --> 15:01.360
+So they're not taking that away.
+
+15:01.960 --> 15:06.880
+There is a big difference between in-order delivery versus reliable delivery.
+
+15:06.880 --> 15:09.640
+So the retransmission we're talking about retransmission here.
+
+15:09.640 --> 15:13.450
+If something failed, we have to know that it failed.
+
+15:13.450 --> 15:14.410
+It was dropped.
+
+15:14.410 --> 15:18.190
+And we need to send it again reliably.
+
+15:18.190 --> 15:23.890
+We have to deliver that no matter what the consequences were.
+
+15:23.890 --> 15:29.920
+So here the throughput is the concept of throughput is like how many units can be delivered in X amount
+
+15:29.920 --> 15:30.250
+of time.
+
+15:30.250 --> 15:36.310
+So let's say I can I can process thousand packets, IP packets.
+
+15:36.310 --> 15:39.460
+That is in a given second, right.
+
+15:40.320 --> 15:44.370
+Versus someone else can process 10,000 packets in a second.
+
+15:44.370 --> 15:47.100
+So my that their throughput is better than mine.
+
+15:47.100 --> 15:49.770
+I have more they have more throughput than I do, right?
+
+15:49.770 --> 15:50.010
+Why?
+
+15:50.040 --> 15:55.770
+Because I take more time processing each packet compared to their right.
+
+15:55.770 --> 15:58.410
+So you want to increase throughput.
+
+15:58.410 --> 16:04.230
+You need to reduce time spent in each packet, thus increasing the throughput.
+
+16:04.230 --> 16:07.530
+But that's usually called the data throughput as they call it here.
+
+16:07.530 --> 16:07.920
+Right?
+
+16:08.280 --> 16:14.580
+What they care about is actually a higher level of throughput, which is the application level message
+
+16:14.580 --> 16:15.240
+or request.
+
+16:15.240 --> 16:16.980
+So what does it mean?
+
+16:17.250 --> 16:22.050
+Even if you say thousand packet, how many requests are there.
+
+16:22.050 --> 16:22.950
+Those right.
+
+16:22.950 --> 16:28.020
+If you're sending uh, it doesn't really mean a thousand packet doesn't mean a thousand requests.
+
+16:28.200 --> 16:29.040
+Not at all.
+
+16:29.040 --> 16:30.570
+It could be 30, right?
+
+16:30.570 --> 16:32.310
+It depends on the sizes of the request.
+
+16:32.310 --> 16:32.610
+Right.
+
+16:32.610 --> 16:39.810
+So throughput here is is completely different because each request or each message I keep saying request.
+
+16:39.810 --> 16:41.970
+But you can translate it to a message.
+
+16:41.970 --> 16:44.970
+They use the word message extensively here.
+
+16:45.060 --> 16:46.470
+It's very abstract.
+
+16:46.470 --> 16:51.870
+But uh, think of the messages I request when it's going from the sender to the server, right.
+
+16:52.560 --> 16:53.760
+And as a result.
+
+16:54.310 --> 16:56.770
+How many requests can I send in a in a second?
+
+16:56.800 --> 16:58.570
+How many requests can you process?
+
+16:58.570 --> 17:04.780
+That is a very important metric in proxies such as nginx, envoy, HAProxy.
+
+17:04.780 --> 17:08.950
+How many requests can you pull and request and process.
+
+17:08.950 --> 17:11.860
+And that obviously depends on the protocol at the layer seven.
+
+17:11.860 --> 17:12.250
+Right.
+
+17:12.250 --> 17:16.420
+Is it Http is a Http two, is it gRPC?
+
+17:16.540 --> 17:19.090
+How many requests can you process.
+
+17:19.090 --> 17:23.440
+And that is another concept that is requirement here.
+
+17:23.470 --> 17:26.260
+The ability to send large number of small messages quickly.
+
+17:26.260 --> 17:27.790
+So that's one of their requirements.
+
+17:28.030 --> 17:34.960
+They really when you notice the the the the the theme that you're going to notice in this paper is they
+
+17:34.960 --> 17:41.590
+focus on messages and they're short messages to specific I think they define what what do they mean
+
+17:41.590 --> 17:43.270
+by short messages.
+
+17:43.480 --> 17:45.700
+And like within the kilobytes.
+
+17:45.700 --> 17:46.360
+Right.
+
+17:46.900 --> 17:51.430
+Uh, which is I believe it's very common, especially in microservices.
+
+17:51.430 --> 17:57.130
+You're probably going to make a small request and a large response, or maybe a large request and a
+
+17:57.130 --> 17:58.000
+small response.
+
+17:58.000 --> 18:01.390
+Usually requests are smaller than responses, usually.
+
+18:01.390 --> 18:01.720
+Right.
+
+18:01.720 --> 18:04.600
+I don't I don't I can't think of an example where a request.
+
+18:04.600 --> 18:09.070
+Yeah, I guess if you send like a your writing something, hey, I'm posting a tweet.
+
+18:09.070 --> 18:09.430
+Right.
+
+18:09.430 --> 18:11.740
+So the request in this case.
+
+18:11.740 --> 18:12.490
+So I take it back.
+
+18:12.490 --> 18:14.140
+The request is large.
+
+18:14.140 --> 18:16.270
+The response is tiny right.
+
+18:16.270 --> 18:20.980
+But short messages are are often in this case the response is short.
+
+18:20.980 --> 18:23.950
+So they want to prioritize short messages.
+
+18:23.980 --> 18:28.690
+TCP really works really bad when it comes to short messages.
+
+18:29.500 --> 18:30.520
+Just because.
+
+18:30.520 --> 18:31.450
+What does it mean?
+
+18:31.450 --> 18:32.620
+A short message, right?
+
+18:32.620 --> 18:38.500
+A short message is I don't know, let's say 200 or 300 bytes.
+
+18:38.500 --> 18:40.720
+You can fit that in a segment, right?
+
+18:40.720 --> 18:47.710
+And you can say, you might say, well, short messages to fit in a single segment at the client side.
+
+18:48.070 --> 18:56.170
+Uh, some clients can delay sending that segment and wait until it's actually fills up to fill up a
+
+18:56.170 --> 19:00.730
+maximum segment size, the whole segment, you know, because it's wasteful.
+
+19:00.940 --> 19:02.770
+You're going to see this theme with TCP.
+
+19:02.890 --> 19:06.970
+It's don't never send a single byte in a message in a segment.
+
+19:06.970 --> 19:08.530
+Always wait to fill it up.
+
+19:08.530 --> 19:08.890
+Right.
+
+19:08.890 --> 19:17.290
+That's why most implementations today disable this behavior of waiting to fill a message segment, which
+
+19:17.290 --> 19:19.390
+is called Nigel algorithm a curl.
+
+19:19.390 --> 19:22.720
+Back in 2016, they just disabled that altogether.
+
+19:22.720 --> 19:24.490
+No, it's like I have 300 bytes.
+
+19:24.490 --> 19:25.810
+Why do you have me to wait?
+
+19:25.810 --> 19:27.970
+And again it's not just always waiting.
+
+19:27.970 --> 19:29.950
+It's just if there is acknowledgement.
+
+19:29.950 --> 19:30.520
+Right.
+
+19:30.520 --> 19:38.530
+So that's how I guess part of the things that we're kind of frankensteining on top of TCP, that makes
+
+19:38.530 --> 19:38.860
+sense.
+
+19:38.860 --> 19:39.220
+Right.
+
+19:39.220 --> 19:41.050
+So so I get that.
+
+19:41.650 --> 19:43.390
+Let's continue congestion control.
+
+19:43.510 --> 19:45.190
+So what is congestion control.
+
+19:45.900 --> 19:48.360
+So obviously they don't explain any of these concepts, right?
+
+19:48.360 --> 19:55.140
+They assume, you know, and that's my job here to kind of explain and illustrate and demystify anything.
+
+19:55.140 --> 20:00.810
+That is not clear, because when I read this, I obviously some of the stuff I didn't understand, some
+
+20:00.810 --> 20:06.960
+of the stuff I did and spent some time to kind of I might get some of this wrong, obviously, but.
+
+20:08.470 --> 20:09.190
+Oh, well.
+
+20:09.520 --> 20:11.260
+Well, that's part of it, right.
+
+20:11.410 --> 20:12.880
+Congestion control.
+
+20:12.880 --> 20:18.640
+So congestion control is refers to you know TCP has two.
+
+20:19.850 --> 20:21.770
+Could control, if you will.
+
+20:21.770 --> 20:29.570
+There is a flow control at the receiver side where it says, okay, the host that you're sending to
+
+20:29.570 --> 20:35.660
+how much they can handle, how much buffer they have to receive, data, the host itself, how much
+
+20:35.660 --> 20:40.520
+bandwidth those guys actually have, you know, at that application site.
+
+20:40.700 --> 20:43.340
+And that's called flow control, receiver flow control.
+
+20:43.340 --> 20:48.770
+And there is another level of control which is congestion control, which basically usually describes
+
+20:48.770 --> 20:50.120
+the middle network.
+
+20:50.120 --> 20:54.770
+Now things like in the middle, how much how much can you handle in the middle.
+
+20:54.770 --> 20:55.430
+Right.
+
+20:55.430 --> 21:01.220
+The routers in the middle and the switches in the middle will buffer packets.
+
+21:01.220 --> 21:08.870
+And if those buffers are full for any router of any host in the middle before we reach the end, then
+
+21:08.870 --> 21:16.400
+those packets will be dropped and that dropping of a packet will signal to the sender that say, hey,
+
+21:16.400 --> 21:17.510
+there is a congestion.
+
+21:17.510 --> 21:19.670
+Let me slow down.
+
+21:19.670 --> 21:23.840
+And the author of Homo hate this.
+
+21:24.550 --> 21:29.470
+They hate the fact that the sender is actually slowing down rating.
+
+21:29.470 --> 21:32.620
+You know, the transmission rate, right?
+
+21:32.620 --> 21:35.380
+And the congestion control algorithm goes like the first.
+
+21:35.380 --> 21:36.760
+There's something called a slow start.
+
+21:36.880 --> 21:39.190
+By the way, I talk about all of this stuff in my networking course.
+
+21:39.190 --> 21:40.450
+Check it, check it, check it out.
+
+21:40.450 --> 21:47.470
+Networks, intercom, all this fundamental stuff I try to explain, you know, so it's all there in
+
+21:47.470 --> 21:50.020
+detail, but I'll explain it here.
+
+21:50.020 --> 21:52.900
+So congestion control starts with the CB starts with a slow start.
+
+21:52.900 --> 21:59.500
+So it will aggressively send send send send send send and then start uh the the another algorithm which
+
+21:59.500 --> 22:05.860
+is basically the congestion control algorithm, the normal one where it will create a segment by segment
+
+22:05.860 --> 22:11.650
+right until and congestion was detected.
+
+22:11.650 --> 22:12.700
+And what does that mean.
+
+22:12.700 --> 22:19.690
+And this is where the disagreement here, the authors of the Homer paper here, they disagree.
+
+22:19.690 --> 22:23.170
+Where what does it mean to be congested?
+
+22:23.170 --> 22:29.740
+You know, the congestion in TCP says if there is a dropped packet or sometimes there is something there
+
+22:30.040 --> 22:37.810
+is explicit congestion notification set in the IP header that router set and layer three switches to
+
+22:37.810 --> 22:38.470
+be specific.
+
+22:38.470 --> 22:42.640
+Also there was a I detected a conjecture or I'm about to be congested.
+
+22:42.640 --> 22:43.270
+Yeah.
+
+22:44.330 --> 22:50.510
+Could you slow down so that once the congestion is detected by.
+
+22:50.540 --> 22:53.540
+If a buffer is filled, packets are dropped?
+
+22:53.780 --> 22:58.760
+Timing out as a result in the client said, hey segment, I didn't receive an entry for this segment.
+
+22:58.760 --> 23:00.830
+There must be a congestion.
+
+23:00.830 --> 23:05.420
+I'm going to have my window, the congestion window, the CW end, right?
+
+23:05.420 --> 23:08.780
+And then it will go on right and then slows down.
+
+23:08.780 --> 23:12.080
+And that's just really bad apparently for data centers.
+
+23:12.080 --> 23:12.560
+Right.
+
+23:12.560 --> 23:16.640
+It's it's interesting how they are trying to kind of solve this problem.
+
+23:16.640 --> 23:20.360
+You know, they are instead of.
+
+23:21.400 --> 23:24.010
+Introduce because let's think about it.
+
+23:24.040 --> 23:25.630
+Who is introducing the congestion?
+
+23:25.630 --> 23:26.110
+The sender.
+
+23:26.110 --> 23:26.320
+Right.
+
+23:26.320 --> 23:30.220
+Because it's sending data like there is no tomorrow, right?
+
+23:30.430 --> 23:31.540
+It's like sending, sending, sending.
+
+23:31.540 --> 23:34.270
+And then eventually it will reach a state where.
+
+23:34.300 --> 23:41.050
+No, the routers in the middle there was like a weakest link that cannot handle this because the the
+
+23:41.050 --> 23:44.410
+packets will get backed up and the buffers will fail.
+
+23:44.410 --> 23:47.080
+And when the buffers fail, then new packets will.
+
+23:47.080 --> 23:51.370
+No, they will no have will have no room to sit in these routers.
+
+23:51.370 --> 23:55.570
+And as a result they will basically drop the packet will slow down the code.
+
+23:55.600 --> 23:57.790
+So they are they're flipping this algorithm.
+
+23:57.790 --> 23:59.260
+So I guess it's a spoiler.
+
+23:59.620 --> 24:03.250
+Uh, spoiler alert I'm going to explain what Homa does here.
+
+24:03.250 --> 24:05.110
+What they did is actually flip it.
+
+24:05.110 --> 24:12.460
+They make the receiver decide tell the sender, hey it's okay to send now right.
+
+24:12.460 --> 24:17.710
+So what happened here is the the in homa.
+
+24:18.490 --> 24:24.910
+The messages will be sent regardless a blindly sent that's what they call it.
+
+24:24.910 --> 24:28.750
+They just just send anything you have but only things.
+
+24:28.750 --> 24:32.920
+That's called unscheduled packets are scheduled messages.
+
+24:32.920 --> 24:38.740
+So they're going to send only few parts of the of each of the message that you're going to send.
+
+24:38.770 --> 24:44.230
+They're going to send the parts the the beginning of the message which includes the message length.
+
+24:44.230 --> 24:50.740
+And that gives kind of information metadata to the receiver says, oh, uh, this message is short.
+
+24:50.740 --> 24:52.030
+Go ahead and send that.
+
+24:52.030 --> 24:53.080
+This message is long.
+
+24:53.080 --> 24:54.340
+Let's wait a little bit on this.
+
+24:54.340 --> 24:58.690
+I'm going to grant you sending these messages, but keep the rest of them.
+
+24:58.690 --> 25:04.450
+So the receiver is just orchestrating the congestion, not really congestion.
+
+25:04.600 --> 25:07.900
+The receiving the receiver orchestrating the sending.
+
+25:07.900 --> 25:08.140
+Right.
+
+25:08.140 --> 25:11.350
+So you're going to see a lot of chattiness if you think about it.
+
+25:11.350 --> 25:11.920
+Right.
+
+25:11.920 --> 25:15.100
+Just this this thing didn't really exist.
+
+25:15.100 --> 25:16.840
+I can you can argue that as acknowledgement.
+
+25:16.840 --> 25:17.080
+Right.
+
+25:17.080 --> 25:18.130
+Coming back and forth.
+
+25:18.130 --> 25:20.920
+So they're replacing that with this concept of grants.
+
+25:20.920 --> 25:24.490
+I know, I know, I know, I have to continue reading.
+
+25:25.900 --> 25:33.070
+In order to provide low latency, the Transport Messaging Transport protocol must limit the build up
+
+25:33.070 --> 25:34.240
+of packet in the network.
+
+25:34.240 --> 25:34.840
+Queues.
+
+25:35.050 --> 25:42.100
+Packet queues can occur both at the edge the links connecting hosts to the top of racks.
+
+25:42.100 --> 25:44.170
+You're going to see this mentioned a lot in the paper.
+
+25:44.170 --> 25:49.810
+Top of racks uh, Tor I think stands not the onion router.
+
+25:49.810 --> 25:54.550
+Not to be confused with the Onion router because I've seen tools like what does Tor has to do with this
+
+25:54.910 --> 25:56.440
+top of rack switches.
+
+25:56.440 --> 26:03.520
+And in the network core, each of these forms of congestion creates distinct problems, obviously.
+
+26:04.790 --> 26:05.330
+All right.
+
+26:05.330 --> 26:09.230
+This is, uh, some some of this part is, like, actually my favorite here.
+
+26:09.230 --> 26:14.180
+And again, we are we are here in the requirements section.
+
+26:14.180 --> 26:14.570
+Right.
+
+26:14.570 --> 26:17.660
+What is the requirement for a new protocol in the data center.
+
+26:17.660 --> 26:20.690
+So we talked about congestion control.
+
+26:20.690 --> 26:23.750
+We want to try to avoid it as much as possible.
+
+26:23.750 --> 26:26.360
+Efficient load balancing across server cores.
+
+26:26.360 --> 26:33.290
+For more than a decade, network speeds have been increasing rapidly while the processor clock rates
+
+26:33.290 --> 26:35.570
+have remained essentially static.
+
+26:35.570 --> 26:38.390
+So you see, I'm not a hardware engineer.
+
+26:38.390 --> 26:39.830
+I'm not a network engineer.
+
+26:39.830 --> 26:40.160
+Right.
+
+26:40.160 --> 26:41.600
+But this this actually.
+
+26:42.790 --> 26:44.140
+I mean, this makes sense, right?
+
+26:44.140 --> 26:46.210
+But I didn't know about this.
+
+26:46.240 --> 26:50.530
+Apparently the switches are getting better, the routers are being better, but the CPU is staying the
+
+26:50.530 --> 26:51.700
+static, the speed.
+
+26:52.060 --> 26:53.800
+Because what is.
+
+26:53.800 --> 26:54.520
+What's his name?
+
+26:54.790 --> 26:55.060
+Uh.
+
+26:55.060 --> 26:55.930
+Moore's law.
+
+26:55.960 --> 26:56.440
+Moore's law?
+
+26:56.440 --> 26:59.200
+Yeah, that's Moore's law, not Murphy's law.
+
+26:59.230 --> 27:00.340
+I'm confused.
+
+27:00.370 --> 27:00.850
+Moore.
+
+27:00.850 --> 27:01.330
+Moore's law?
+
+27:01.360 --> 27:01.510
+Yeah.
+
+27:01.510 --> 27:01.840
+Moore's law.
+
+27:02.140 --> 27:03.820
+Every 18 months, it doubles.
+
+27:03.820 --> 27:09.730
+I think it's slowing down, but network is just keeping the switches are keeping getting better and
+
+27:09.730 --> 27:10.570
+better, apparently.
+
+27:10.720 --> 27:11.590
+I don't know that.
+
+27:11.590 --> 27:14.170
+So that's a again I didn't work in the data center.
+
+27:14.170 --> 27:16.300
+So any information here is new to me.
+
+27:16.300 --> 27:17.140
+News.
+
+27:17.170 --> 27:22.870
+Thus, it's no longer possible for a single core to keep up with a single network link.
+
+27:22.870 --> 27:24.940
+You have to have multiple cores.
+
+27:24.940 --> 27:26.380
+That is very interesting.
+
+27:26.380 --> 27:27.640
+Also, I love it.
+
+27:27.640 --> 27:28.690
+I absolutely love it.
+
+27:28.840 --> 27:37.540
+So the the fact that you need multiple cores, which kind of translate to these cores, must be load
+
+27:37.540 --> 27:46.960
+balanced, like whatever the data coming into your neck has to be shuffled into these cores in an organized
+
+27:46.960 --> 27:49.660
+manner and in a balanced manner.
+
+27:50.320 --> 27:54.490
+We're gonna we're gonna read later that TCP cannot do this effectively.
+
+27:54.490 --> 27:58.690
+It creates this hotspot in a single core per connection.
+
+27:58.690 --> 28:06.580
+Because of this concept of connections, both incoming and outgoing load must be distributed across
+
+28:06.580 --> 28:08.500
+multiple cores.
+
+28:08.500 --> 28:11.110
+This is true at multiple levels.
+
+28:11.110 --> 28:17.680
+At the application level, high throughput services must run on many cores and divide their work among
+
+28:17.680 --> 28:19.450
+the cores at the transport layer.
+
+28:19.450 --> 28:25.990
+A single core cannot keep up with the high speed link, especially with short messages.
+
+28:25.990 --> 28:29.950
+Load balancing impacts transport protocols in two ways.
+
+28:29.950 --> 28:32.230
+First, it can introduce overhead.
+
+28:32.230 --> 28:38.080
+For example, the use of multiple cores causes additional cache misses and coherence.
+
+28:38.080 --> 28:45.670
+Second, load balancing can lead to hotspots where load is unevenly distributed around, uh, across
+
+28:45.670 --> 28:46.330
+cores.
+
+28:46.510 --> 28:46.780
+Right.
+
+28:46.780 --> 28:50.710
+So we're going to see like all the packets going to one core.
+
+28:50.740 --> 28:54.670
+The other cores are not uh, as even.
+
+28:54.670 --> 28:57.760
+And the reason we do this is for stickiness reason.
+
+28:57.760 --> 29:04.720
+We want the packets to be processed in the same core as much as possible, so that file descriptors
+
+29:04.720 --> 29:08.050
+of the connection live in the processor cache.
+
+29:08.050 --> 29:11.050
+And we don't have to go to the memory to fetch those information.
+
+29:11.050 --> 29:14.320
+I guess that's, that's that's one way to look at it.
+
+29:14.320 --> 29:14.560
+Right.
+
+29:14.560 --> 29:19.450
+That's probably why this is the format, the congestion of the software level.
+
+29:19.450 --> 29:26.770
+Load balancing overheads are now one of the primary sources of tail latency, and they are impacted
+
+29:26.770 --> 29:29.590
+by the design of transport protocol.
+
+29:29.590 --> 29:32.050
+It's so fascinating to read this stuff.
+
+29:32.830 --> 29:37.150
+Um, if you read it in details that is neck offload.
+
+29:37.150 --> 29:43.630
+I'm not going to spend much on this because, uh, to be honest, what neck offload is like is the network
+
+29:43.630 --> 29:45.250
+interface controller, right?
+
+29:45.250 --> 29:52.720
+That means like we want as much as possible the protocol to run in the network card, the network interface
+
+29:52.720 --> 29:55.030
+controller instead of the actual software.
+
+29:55.030 --> 29:55.270
+Right.
+
+29:55.270 --> 29:59.950
+Because it's way faster to run in the in that hardware environment.
+
+29:59.950 --> 30:04.360
+The problem is, I think Linux is.
+
+30:06.420 --> 30:13.590
+Very against that, you know, and I when I read that, I think I was like Wikipedia entries and references,
+
+30:13.590 --> 30:21.060
+some articles says the reason the links do not want to use neck offloading, like running software related
+
+30:21.060 --> 30:28.920
+to transport protocol in the actual neck is because of patches like what if you want to patch this right?
+
+30:28.950 --> 30:30.810
+Uh, how do you patch hardware stuff?
+
+30:30.810 --> 30:33.000
+And every vendor is going to do it differently.
+
+30:33.000 --> 30:33.330
+Right.
+
+30:33.330 --> 30:40.770
+So for for specific data center mama me a problem that not might not be a problem because like I say
+
+30:40.770 --> 30:44.010
+this, the whole thing will be managed by one vendor, right?
+
+30:44.010 --> 30:45.090
+The whole hardware.
+
+30:45.090 --> 30:50.370
+But like if there is a security concern, like when their transport protocol and you want to fix it,
+
+30:50.370 --> 30:53.430
+you want to fix a bug, like what do you do in Linux?
+
+30:53.430 --> 30:54.540
+You just it's a software.
+
+30:54.540 --> 30:55.380
+You just patch it.
+
+30:55.380 --> 30:55.800
+Right.
+
+30:55.800 --> 30:58.080
+And hardware, it's like it's a firmware.
+
+30:58.080 --> 30:59.130
+What do you do?
+
+30:59.370 --> 31:01.410
+You just you have to like.
+
+31:01.740 --> 31:02.400
+Yeah.
+
+31:02.400 --> 31:04.890
+It's just it's very complicated to fix.
+
+31:04.890 --> 31:10.320
+When I read this like, not a lot of people are in favor of Nick offloading, putting everything into
+
+31:10.320 --> 31:12.450
+the nick because of these problems.
+
+31:12.450 --> 31:14.850
+Like it's very sticky to update, right?
+
+31:15.480 --> 31:18.750
+Especially if you have like a security problems and stuff like that.
+
+31:18.750 --> 31:22.950
+I don't know, I know I might be wrong there, but I kind of agree that it's like, yeah, Nick is faster,
+
+31:22.950 --> 31:24.510
+but is it worth it?
+
+31:24.990 --> 31:25.560
+Let's continue.

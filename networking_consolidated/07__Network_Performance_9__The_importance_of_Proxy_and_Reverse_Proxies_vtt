@@ -1,0 +1,997 @@
+WEBVTT
+
+00:00.180 --> 00:04.930
+So guys, as you started watching the course and asking questions.
+
+00:04.950 --> 00:09.870
+One common question that I start to notice is people asking, what's the difference between a proxy
+
+00:10.230 --> 00:11.460
+and a reverse proxy?
+
+00:11.790 --> 00:18.210
+While this is purely a networking course, I really thought that it would be nice to actually explain
+
+00:18.210 --> 00:24.600
+proxy and an inverse proxy because this is the bridge to the back end, because if you're a back injury,
+
+00:24.600 --> 00:27.300
+you have to understand the difference between a proxy and reverse proxy.
+
+00:27.300 --> 00:29.580
+So this lecture exactly does that.
+
+00:30.000 --> 00:33.420
+I'm going to explain what is what is the meaning of proxy?
+
+00:33.990 --> 00:40.410
+And all the slides that I have here is a little bit of a high level, but I'll talk through the low
+
+00:40.410 --> 00:43.020
+level details when it comes to not talking.
+
+00:43.020 --> 00:48.300
+So I'll try to bridge that gap as much as possible, and then I'm going to explain the usefulness of
+
+00:48.300 --> 00:48.870
+the proxy.
+
+00:48.870 --> 00:49.710
+Why are we using it?
+
+00:49.980 --> 00:51.480
+Why do we use a proxy?
+
+00:52.140 --> 00:58.500
+Finally, I'll talk about whether it is a reverse proxy, and then in that case, what is it used for
+
+00:58.980 --> 01:03.210
+that we're going to mention obviously API gateways, load balancers.
+
+01:03.630 --> 01:10.530
+They all either this or this, you know, site car containers, you know, things like envoy line Kurdi,
+
+01:11.010 --> 01:13.380
+they all either fit as a proxy or reverse proxy.
+
+01:13.980 --> 01:15.600
+And that's the state we want to get in.
+
+01:15.780 --> 01:22.710
+We won't be able as much as possible to have a few basic fundamentals and every fluff that is being
+
+01:22.710 --> 01:28.560
+uttered out there in the software engineer and the network engineering world, we want to be able to
+
+01:28.560 --> 01:36.930
+resolve those two these basic fundamentals, because any word that you hear means something, you know.
+
+01:37.380 --> 01:45.780
+And obviously the sad part is marketing that no, to unnecessarily blow things up, you'll hear a lot
+
+01:45.780 --> 01:50.070
+of things that kind of confusing at times.
+
+01:50.070 --> 01:56.940
+And so that's what this goal of the courses to confuse if possible, let's jump into it.
+
+01:57.210 --> 02:03.840
+Alright, so let's just explain the difference between a proxy versus a reverse proxy.
+
+02:04.110 --> 02:08.940
+And I had these slides already laying around so I just used them, I changed them to a theme, right?
+
+02:09.300 --> 02:13.980
+So if there is like a little bit animation that is distracting, I apologize.
+
+02:14.490 --> 02:19.110
+This is this is slides that I have already laying out on that I built a few years back.
+
+02:19.230 --> 02:20.850
+So what is a proxy?
+
+02:21.720 --> 02:28.770
+So the definition of a proxy is it's a server that makes request on your behalf.
+
+02:30.120 --> 02:35.670
+By that definition, it means that you as a client want to go to a certain destination.
+
+02:35.670 --> 02:37.140
+That's your final goal.
+
+02:37.560 --> 02:46.680
+You want, for example, to go to Google.com, but if you use a proxy, the proxy will go there for
+
+02:46.680 --> 02:46.920
+you.
+
+02:47.400 --> 02:49.440
+That's what it means at the high level.
+
+02:50.070 --> 02:51.610
+Obviously, this is a networking course.
+
+02:51.610 --> 02:53.880
+So we're going to explain what does that mean?
+
+02:54.270 --> 02:54.520
+Okay.
+
+02:55.080 --> 02:55.380
+So.
+
+02:56.280 --> 03:03.660
+If I want to go to a Google dotcom, what happens here is I know my final destination, Google dotcom.
+
+03:03.990 --> 03:08.910
+But I also know in that client machine that I have a proxy configured.
+
+03:08.910 --> 03:14.490
+And you can look at that if to check if you have a proxy configured and if you have a proxy configured,
+
+03:15.000 --> 03:22.460
+what happens here from a layer four perspective, your TCP connection is being established not with
+
+03:22.470 --> 03:28.020
+Google, but with a proxy first, so you can establish a tipping action between you and the proxy.
+
+03:28.620 --> 03:34.620
+And the content of layer seven will go to Google dot com.
+
+03:35.460 --> 03:41.550
+Obviously after you establish the CCP connection at layer four here, right, you're going to send the
+
+03:41.670 --> 03:48.180
+get request and the get request will clearly say Google dot com, go, go, take me to Google dot com.
+
+03:48.410 --> 03:48.630
+Right.
+
+03:49.140 --> 03:58.560
+So the proxy would receive that get get slash google.com and it will turn around and establish a brand
+
+03:58.560 --> 04:01.950
+new TCP connection between itself and google dot com.
+
+04:02.370 --> 04:06.090
+So Google dot com knows the IP address of the proxy.
+
+04:06.210 --> 04:08.370
+It never sees you right?
+
+04:08.700 --> 04:14.430
+As a you as an IP address, you buy the content as you transmitted.
+
+04:14.430 --> 04:20.760
+It is completely rewritten and written to the new connection here.
+
+04:21.120 --> 04:30.030
+So any application seven right data is sent as is some proxies and in the case of HTTP, they add their
+
+04:30.030 --> 04:34.530
+own headers, things like ex forwarded from and stuff like that.
+
+04:35.490 --> 04:43.860
+And if those headers are added right, the original client can be known from layer seven, but from
+
+04:43.860 --> 04:47.280
+layer four, Google only sees the proxy.
+
+04:47.670 --> 04:48.300
+Does that make sense?
+
+04:48.720 --> 04:50.490
+So I say, what is the purpose here?
+
+04:50.850 --> 04:53.100
+So, so that that that's the statement here.
+
+04:53.100 --> 04:56.850
+I just know that and I received a request from my proxy.
+
+04:57.300 --> 05:00.180
+That's the only thing I know as Google dot com.
+
+05:00.720 --> 05:03.300
+So in a proxy configuration, right.
+
+05:03.720 --> 05:08.010
+That client knows the server but the server doesn't know their client.
+
+05:08.550 --> 05:15.360
+Yes, there are there are exceptions when the proxy adds a header that obviously identifies the client.
+
+05:15.360 --> 05:16.650
+But that's kind of cheating.
+
+05:17.040 --> 05:17.280
+Right.
+
+05:17.760 --> 05:18.780
+So that's what a proxy is.
+
+05:19.680 --> 05:22.470
+You might say what's what's what's the purpose of this thing?
+
+05:22.920 --> 05:25.830
+What why are we doing this is kind of useless.
+
+05:26.790 --> 05:29.640
+Well, one use cases anonymity.
+
+05:29.910 --> 05:30.180
+Right?
+
+05:30.630 --> 05:34.410
+It's like I don't want to be identified from an IP address point of view.
+
+05:34.410 --> 05:34.680
+Right.
+
+05:34.800 --> 05:36.960
+I don't want anybody to know my IP address.
+
+05:37.380 --> 05:47.430
+So I want someone to write that request in in front of him instead of me and send it to this destination.
+
+05:47.940 --> 05:50.970
+Obviously that's not really secure because of the proxy.
+
+05:50.970 --> 05:53.970
+The moment the proxy adds your IP address, you're done, right?
+
+05:54.720 --> 05:56.550
+So you need to trust the proxy in a way.
+
+05:59.120 --> 06:00.450
+Caching is another way.
+
+06:00.470 --> 06:07.580
+So a lot of proxies, especially the old days, I don't think this is happening now, but if you use
+
+06:07.580 --> 06:13.760
+it in like an organization, a proxy, that means all HTP request goes to your organization proxy first
+
+06:14.420 --> 06:18.080
+like this if you want to go to Google, it goes to this thing.
+
+06:18.470 --> 06:25.580
+The proxy can choose to cache like if if a sees someone went to this static page, it can choose to
+
+06:25.580 --> 06:25.940
+caches.
+
+06:25.940 --> 06:33.440
+So if someone else from the same organization using the same proxy hit that server right, it will serve
+
+06:33.440 --> 06:34.140
+it from the cache.
+
+06:35.600 --> 06:40.010
+So that's it's it's kind of different, right, if you think about it.
+
+06:41.790 --> 06:43.680
+And this is slightly different from a CD in.
+
+06:43.710 --> 06:48.420
+We're going to explain the difference because the CD is actually a reverse proxy.
+
+06:49.200 --> 06:49.830
+We'll come to that.
+
+06:50.610 --> 06:52.950
+But this is another use case logging.
+
+06:53.040 --> 07:02.460
+You know, all this, you know, sidecar containers and service mesh purely rely on the idea of a proxy
+
+07:02.850 --> 07:04.920
+where you have an application here.
+
+07:05.370 --> 07:05.700
+Right.
+
+07:06.540 --> 07:07.620
+And this.
+
+07:07.830 --> 07:08.310
+This.
+
+07:09.270 --> 07:09.960
+The site.
+
+07:10.500 --> 07:15.570
+This software is installed as a proxy next to the application as a sidecar, as they call it.
+
+07:15.900 --> 07:20.790
+And the application is configured to use this as a proxy then means if you want to connect to service
+
+07:20.790 --> 07:25.050
+A or service B or service C, all these request goes through the proxy.
+
+07:25.290 --> 07:26.670
+This is very valuable.
+
+07:26.670 --> 07:28.530
+So caching CEC is kicks in.
+
+07:28.650 --> 07:33.300
+We don't really care about anonymity here because of the service service mesh architecture.
+
+07:33.300 --> 07:39.840
+We just the proxies to talk to each other in a sense so we can log all these.
+
+07:39.990 --> 07:42.990
+We can see how long a request took.
+
+07:43.320 --> 07:48.030
+You know, you can measure these, you can monitor, can do all these things because all of this pull
+
+07:48.030 --> 07:51.360
+into this proxy before it's sent to the actual destination.
+
+07:52.320 --> 07:55.160
+So the proxy actually takes care of that logging.
+
+07:55.170 --> 07:58.610
+You might argue that, hey, isn't that kind of slow?
+
+07:58.620 --> 08:00.480
+Of course there is a cost for everything.
+
+08:00.750 --> 08:02.190
+And that's what I want you to do.
+
+08:02.580 --> 08:04.650
+Anything I say here, I want you to challenge it.
+
+08:05.100 --> 08:07.290
+And that's the beauty of the engineering here.
+
+08:07.830 --> 08:09.970
+There's nothing that you can take for granted.
+
+08:09.990 --> 08:12.990
+Anything I say can be wrong, right?
+
+08:12.990 --> 08:19.830
+Because anything my experience is, is my own experiences and any one out there can be wrong.
+
+08:20.490 --> 08:26.520
+And it's beautiful to actually think of it this way, because this way you open your mind to critique,
+
+08:26.910 --> 08:27.180
+right?
+
+08:27.180 --> 08:32.340
+And as a result, if we critique, we get better, we can build better softwares.
+
+08:33.090 --> 08:34.500
+So that's that's another thing here.
+
+08:34.590 --> 08:40.770
+So this this idea of service mesh is primarily using log in, tracing gold as some block sites.
+
+08:41.550 --> 08:45.720
+So this is definitely used to block websites back in the day at least tried.
+
+08:45.720 --> 08:54.120
+If you have an organization that uses an issue ATP proxy, it looks at all the sites that you're visiting
+
+08:54.270 --> 08:58.620
+and it can choose to block says, Hey, hey, hey, can you take me to this site?
+
+08:58.770 --> 08:59.130
+Yeah.
+
+08:59.310 --> 09:00.240
+No, sorry.
+
+09:00.810 --> 09:02.460
+You are not allowed to go to that site.
+
+09:03.240 --> 09:08.220
+And just the fact that you're not allowed to go to this, then that means that proxy actually sees the
+
+09:08.220 --> 09:09.630
+sites you're looking at.
+
+09:10.050 --> 09:12.210
+And this is maybe something that I'm going to talk about, right?
+
+09:12.510 --> 09:22.110
+Like that TLS and decryption most proxies sometimes decrypt that traffic.
+
+09:22.590 --> 09:29.490
+I actually I forgot to add one layer which is a debugging, you know, if you ever used a fiddler or
+
+09:29.490 --> 09:36.510
+man in the middle proxy to monitor your requests like you want an application to see what request is
+
+09:36.510 --> 09:39.900
+sending, Fiddler is actually a proxy.
+
+09:40.200 --> 09:43.950
+It is installed on your machine and you're configure it to decrypt that traffic.
+
+09:43.950 --> 09:47.460
+You can forget it so that all the request goes to it.
+
+09:47.460 --> 09:54.930
+So we can clearly see all the requests that your application is sending a very, very popular monitoring
+
+09:54.930 --> 09:55.650
+and debugging tool.
+
+09:55.650 --> 09:56.520
+So that's another thing.
+
+09:56.640 --> 10:02.130
+Logging, if you want debugging and it is another job proxy is very useful microservices as we mentioned
+
+10:02.130 --> 10:06.810
+that already because it kind of digs into logging and caching, which is the idea of service mesh.
+
+10:06.810 --> 10:06.990
+Yeah.
+
+10:08.910 --> 10:09.420
+All right.
+
+10:09.450 --> 10:10.800
+What is this, a reverse proxy?
+
+10:11.580 --> 10:17.310
+So we said the the proxy in the proxy is the client.
+
+10:17.310 --> 10:18.240
+Let's go back to the proxy.
+
+10:18.240 --> 10:21.270
+In the proxy case, the client knows the server ID not.
+
+10:21.270 --> 10:26.610
+Hey, I want to go to Google or com take me there, you know, but the server doesn't know the client.
+
+10:26.700 --> 10:27.960
+That's, that's what a proxy adds.
+
+10:27.960 --> 10:28.170
+Right.
+
+10:28.620 --> 10:29.610
+In a reverse proxy.
+
+10:30.210 --> 10:31.320
+It's exactly the reverse.
+
+10:33.520 --> 10:34.360
+The client.
+
+10:35.460 --> 10:40.560
+Doesn't know the final true destinations, however.
+
+10:41.040 --> 10:44.880
+It talks to Google dot com as its final destination.
+
+10:45.390 --> 10:49.020
+But Google dot com could be a reverse proxy.
+
+10:49.650 --> 10:54.750
+It turns out it talks to another Google server that you have no idea that you talking to.
+
+10:55.230 --> 10:55.560
+Right.
+
+10:56.400 --> 10:59.520
+So you as a client, you just know that reverse proxy.
+
+10:59.700 --> 11:01.320
+That's your final destination.
+
+11:01.980 --> 11:02.350
+Right.
+
+11:02.370 --> 11:07.800
+But Google that turns around and sends that request to an actual back in server.
+
+11:07.980 --> 11:09.340
+So this is called the backend server.
+
+11:09.360 --> 11:09.990
+This is called the.
+
+11:10.770 --> 11:12.650
+Sometimes they call the front end server.
+
+11:12.660 --> 11:14.460
+Sometimes they call the edge servers.
+
+11:15.480 --> 11:15.750
+Right.
+
+11:15.960 --> 11:23.910
+And just like that explosion of beautiful use cases are born.
+
+11:24.210 --> 11:26.970
+You might say, what, what, what?
+
+11:27.000 --> 11:27.660
+What kind?
+
+11:27.660 --> 11:29.070
+Or the kind of things that can be one.
+
+11:29.170 --> 11:30.720
+Hey, here's one example.
+
+11:31.080 --> 11:33.000
+Load balancing, right?
+
+11:33.030 --> 11:36.230
+If I made a request to google dot com, I only talk to the same server.
+
+11:36.810 --> 11:37.920
+By Google dot com.
+
+11:37.920 --> 11:42.300
+Could choose to say okay let me send the this request to the server.
+
+11:42.960 --> 11:46.710
+Google Chen can choose to send the request to the first server.
+
+11:47.160 --> 11:53.070
+The second request of the third and could ground rob open through them as effectively lowered the balance
+
+11:53.070 --> 11:53.490
+through them.
+
+11:54.360 --> 12:00.150
+And even better you google dot com based on the path that you're going.
+
+12:00.180 --> 12:01.860
+It can take you to different servers.
+
+12:02.340 --> 12:08.760
+So let's say you're building a microservice, you know, gateway or API gateway stick enable gateway.
+
+12:09.030 --> 12:10.300
+So if you going to slash.
+
+12:11.790 --> 12:15.110
+Example post this is the post server.
+
+12:15.120 --> 12:16.560
+It has a database and everything.
+
+12:16.560 --> 12:17.670
+So we take you there.
+
+12:17.940 --> 12:23.430
+If you going to slash read messages, this is the read server.
+
+12:23.440 --> 12:27.020
+This way you can have completely different servers, completely different databases.
+
+12:27.030 --> 12:28.740
+This is a read intensive database.
+
+12:28.750 --> 12:30.260
+This is right in of database.
+
+12:30.270 --> 12:34.680
+This is like a for example, this is a roast or this is a columnist for analytics.
+
+12:34.680 --> 12:34.950
+Right.
+
+12:35.220 --> 12:40.260
+And you can do all this sort of genius stuff just by the beauty of reverse proxy.
+
+12:40.590 --> 12:45.510
+So a load balancer is a reverse proxy, but not every reverse proxy is a load balancer and a put as
+
+12:45.510 --> 12:51.210
+proxies just and that is it makes a request to something on the backend that you don't know about.
+
+12:51.650 --> 12:51.900
+Right.
+
+12:51.990 --> 12:52.980
+So that's a reverse proxy.
+
+12:53.100 --> 12:53.910
+Very powerful.
+
+12:54.150 --> 12:55.680
+So how does it work behind the scenes?
+
+12:55.890 --> 12:58.650
+You establish a connection between you and the reverse proxy.
+
+12:58.980 --> 13:00.960
+So the TCP connection is here.
+
+13:01.440 --> 13:01.680
+Right.
+
+13:01.680 --> 13:03.420
+So that's the destination IP address.
+
+13:04.020 --> 13:05.640
+So the reverse proxy knows you.
+
+13:05.640 --> 13:10.110
+Obviously, you do not know the final destination.
+
+13:10.110 --> 13:13.170
+You never know the actual server that will serve you.
+
+13:13.710 --> 13:13.980
+Right.
+
+13:13.980 --> 13:16.920
+So that's that's basically the difference between a reverse proxy and a proxy.
+
+13:17.190 --> 13:20.850
+I use this definition for almost six years and I absolutely love it.
+
+13:20.880 --> 13:24.360
+Everybody here that hears this usually clicks with them.
+
+13:24.510 --> 13:24.720
+Right.
+
+13:25.170 --> 13:26.730
+So again.
+
+13:27.030 --> 13:27.840
+So a proxy.
+
+13:28.620 --> 13:30.060
+The client knows the server.
+
+13:30.060 --> 13:31.030
+Final destination.
+
+13:31.030 --> 13:31.470
+The server.
+
+13:31.950 --> 13:32.220
+Right.
+
+13:32.230 --> 13:34.620
+But the server doesn't know their client.
+
+13:35.310 --> 13:36.690
+In the reverse proxy case.
+
+13:37.080 --> 13:42.100
+The client doesn't know what the true final destination server effectively.
+
+13:42.270 --> 13:45.510
+And because the reverse proxy talks to that in the back end.
+
+13:45.810 --> 13:52.260
+And if you flip this, you can you can see the clearly that this is this is like almost like a reverse
+
+13:52.350 --> 13:53.160
+proxy, right?
+
+13:53.520 --> 13:58.920
+So, yeah, so we can establish a CCP connection here and the Google turns around and establish an actual
+
+13:58.920 --> 14:00.690
+TCP connection to the actual backend.
+
+14:01.380 --> 14:07.400
+So you can have configuration where, where you are using a proxy and a reverse proxy at the same time.
+
+14:07.410 --> 14:08.280
+Like here.
+
+14:08.550 --> 14:15.420
+Yeah, the client knows the final destination, but even that, if you think about it, that final destination
+
+14:15.420 --> 14:16.310
+could not be it.
+
+14:16.320 --> 14:16.530
+Right?
+
+14:16.530 --> 14:21.280
+Because Google itself could talk to an act to something else here.
+
+14:21.300 --> 14:21.630
+Right.
+
+14:22.140 --> 14:24.270
+So that could be a reverse proxy.
+
+14:24.270 --> 14:29.700
+But the client is using a proxy to talk on its behalf.
+
+14:29.930 --> 14:35.190
+But from layer four perspective, this is my final destination.
+
+14:35.200 --> 14:38.280
+From layer seven perspective, this is my final destination.
+
+14:38.580 --> 14:42.540
+And from layer four suspected, this is my father's station.
+
+14:42.660 --> 14:46.110
+And from Labor seven perspective, this is my final destination.
+
+14:46.500 --> 14:50.910
+From both cases, this as my final destination, I have no clue what's coming after that.
+
+14:51.390 --> 14:52.740
+And that's the difference basically to me.
+
+14:52.750 --> 14:57.510
+And maybe you can look at that this way in a campaign out the real nicely I think.
+
+14:58.650 --> 15:04.080
+Well are they use cases caching same thing in content delivery network right.
+
+15:04.110 --> 15:11.400
+I could look at a content delivery network actually like fastly stores the content right here and you
+
+15:11.400 --> 15:16.740
+talk to CDA and as if it's your final destination, you have no idea what the client is going to talk
+
+15:16.740 --> 15:16.980
+to you.
+
+15:17.290 --> 15:17.490
+Right.
+
+15:17.910 --> 15:25.590
+But that's could be a server in India and you could be a client in India, but you get to connect to
+
+15:25.590 --> 15:29.300
+that seed in India, the server in India, DCP right.
+
+15:29.310 --> 15:34.890
+And layer seven as well application and get it serve content but that reverse.
+
+15:35.150 --> 15:37.070
+You can talk to a server in America, right?
+
+15:37.840 --> 15:40.640
+A completely transparent formula.
+
+15:41.000 --> 15:42.560
+So you are served content.
+
+15:42.560 --> 15:45.350
+So a CD is just a glorified reverse proxy.
+
+15:45.740 --> 15:47.660
+I'm no bouncing.
+
+15:48.530 --> 15:55.970
+I can choose to balance your requests from to multiple to multiple servers on the back.
+
+15:57.050 --> 15:59.420
+Ingress like we talked about this API gateway.
+
+16:00.380 --> 16:06.290
+Uh, configurations like any API gateway authentication happens in this application and this reverse
+
+16:06.290 --> 16:11.420
+proxy can out of deployment where you can do things like, yeah, you can test, right?
+
+16:11.420 --> 16:18.020
+It's like, Hey, I wanted to test this new feature so maybe you can explain this way.
+
+16:18.020 --> 16:23.330
+So let's say you want to test a new feature, so you want, you will, you will deploy it on one server,
+
+16:24.050 --> 16:26.120
+but the rest of the server all have the old version.
+
+16:26.810 --> 16:34.790
+And you can add a reverse proxy rule here that says, okay, 10% of their request goes to this new server
+
+16:34.790 --> 16:36.230
+while 90% goes to this.
+
+16:36.230 --> 16:37.040
+You can do that.
+
+16:37.430 --> 16:39.680
+It's really simple to code, right?
+
+16:40.190 --> 16:41.090
+Any request you can.
+
+16:41.090 --> 16:43.430
+Four for every ten request take.
+
+16:45.150 --> 16:46.050
+One of them.
+
+16:46.320 --> 16:52.410
+I understand that one of the requests for everything requested right as they handled it for everyone,
+
+16:52.530 --> 16:53.190
+their request.
+
+16:53.370 --> 16:58.560
+Ten of them should go to this server and 90 should go to this server, and ten of them will experience
+
+16:58.560 --> 16:59.670
+the new feature.
+
+16:59.970 --> 17:02.970
+Then 90% will experience the old behavior.
+
+17:03.210 --> 17:06.330
+Obviously, we have to build our application in a stateless manner.
+
+17:06.690 --> 17:07.020
+Right.
+
+17:07.020 --> 17:10.340
+So that doesn't break because that request might go here.
+
+17:10.350 --> 17:11.730
+The second request might go here.
+
+17:11.730 --> 17:12.000
+Right.
+
+17:12.330 --> 17:13.950
+So you need to obviously code around.
+
+17:13.950 --> 17:14.910
+It's not that simple.
+
+17:16.380 --> 17:17.850
+And obviously micro services.
+
+17:18.640 --> 17:18.890
+Yeah.
+
+17:18.900 --> 17:22.950
+So these are some of the use cases of the reverse proxy, a very, very powerful concept.
+
+17:23.250 --> 17:26.850
+So these are some most of the common questions that I receive all the time about this.
+
+17:26.850 --> 17:29.870
+Two things can the proxy in reverse proxy used in the same time?
+
+17:29.880 --> 17:32.310
+Yeah, but you would never know it, right?
+
+17:33.120 --> 17:38.370
+You as a client will know you have a proxy because you have to configure the proxy in your configuration
+
+17:38.760 --> 17:39.810
+by the reverse proxy.
+
+17:40.440 --> 17:41.280
+You don't know, right?
+
+17:41.460 --> 17:47.040
+Your server you might head actually could be a reverse proxy that talks to something else like in Gen
+
+17:47.040 --> 17:47.430
+X, right?
+
+17:47.430 --> 17:49.550
+And Gen X is a reverse proxy, Ajay.
+
+17:49.570 --> 17:50.790
+A proxy is a reverse proxy.
+
+17:52.410 --> 17:58.710
+Can I use a proxy instead of a VPN for anonymity and not a good idea because some proxies actually terminate
+
+17:58.710 --> 18:00.210
+DNS and looks at your content.
+
+18:00.240 --> 18:01.230
+VPNs do not.
+
+18:01.650 --> 18:10.140
+VPN operate at IP level, so any IP packet, they encrypt that and they don't know or care what is in
+
+18:10.140 --> 18:11.040
+that IP packet.
+
+18:11.280 --> 18:13.590
+Proxy operator layer four and above.
+
+18:13.980 --> 18:14.550
+Obviously.
+
+18:14.550 --> 18:16.110
+So they need a protocol.
+
+18:16.800 --> 18:20.730
+As a result, the proxy needs to know the protocol that you're using.
+
+18:20.790 --> 18:27.540
+So if using that's why there is an DTP proxy, TCP proxy, you know, stocks proxy, all sorts of proxies
+
+18:27.540 --> 18:27.930
+as well.
+
+18:30.470 --> 18:31.880
+Is proxy just for sleepy traffic?
+
+18:32.090 --> 18:32.680
+Not really.
+
+18:32.690 --> 18:36.620
+There are many types of proxies, but the most popular is the TTP proxy.
+
+18:37.160 --> 18:38.480
+And there is there is.
+
+18:39.170 --> 18:47.960
+If there is a mood when you use a ITBS proxy where you can effectively use a tunnel mode, where the
+
+18:47.960 --> 18:53.420
+client can ask the proxy to open a connection for it, maybe you can explain this way better.
+
+18:53.960 --> 18:58.850
+So a tunnel more than a deep tunnel managed to be connect to the method.
+
+18:59.630 --> 19:01.310
+Their client can ask the proxies.
+
+19:01.310 --> 19:03.350
+Hey, connect me.
+
+19:03.380 --> 19:04.910
+It will send you a packet.
+
+19:05.360 --> 19:10.220
+Initiative type packet has to be a request that says hey connect to google dot com.
+
+19:10.590 --> 19:10.790
+Right?
+
+19:11.360 --> 19:18.290
+So the proxy will actually establish a connection and it will do that connection will be a dump pipe
+
+19:19.280 --> 19:27.050
+and that just by the fact we are doing that, any segment that is sent is immediately written to that
+
+19:27.050 --> 19:27.560
+packet.
+
+19:28.070 --> 19:32.750
+So the proxy in that configuration does cannot see the content.
+
+19:32.750 --> 19:36.320
+It's like it's a tunnel all the way in to the end.
+
+19:37.070 --> 19:43.700
+So in this case, you can you can do the TLS connection in an end to end fashion, right?
+
+19:43.880 --> 19:48.110
+So the proxy doesn't actually that's just a bonus content, if you will.
+
+19:48.110 --> 19:50.210
+All right, guys, that's it for me today.
+
+19:50.210 --> 19:52.670
+I hope you enjoyed this lecture and the next election.
+
+19:52.670 --> 19:59.600
+I'm going to talk about the different different types of proxies in reverse proxy like layer seven and
+
+19:59.600 --> 20:02.030
+therefore a little bit more in detail.
+
+20:02.300 --> 20:03.350
+Looking forward for that.
+
+20:03.620 --> 20:05.000
+See in the next one, goodbye.

@@ -1,0 +1,1060 @@
+WEBVTT
+
+00:00.090 --> 00:00.840
+All right, guys.
+
+00:01.320 --> 00:06.750
+ICMP is one of the most critical protocols that lives in layer three.
+
+00:07.230 --> 00:11.730
+And we talked about it a lot, but this is where we actually explain it.
+
+00:12.270 --> 00:14.670
+If you ever used Ping, that's ICMP.
+
+00:14.970 --> 00:17.280
+If you ever use Traceroute, that's ICMP.
+
+00:17.280 --> 00:23.250
+We're going to demystify this protocol and talk about how critical this thing is, how we jump into
+
+00:23.250 --> 00:23.370
+it.
+
+00:24.520 --> 00:30.370
+So ICMP stands for the Internet Control Message Protocol and lives in layer three domains.
+
+00:30.790 --> 00:31.480
+What does that mean?
+
+00:32.770 --> 00:36.360
+It means only there is a destination and source IPA.
+
+00:36.640 --> 00:39.280
+There is no concept of ports at that layer.
+
+00:39.640 --> 00:40.480
+There is no ports.
+
+00:40.480 --> 00:41.560
+There are no ports.
+
+00:42.130 --> 00:44.890
+Well, so just for information, messages between host.
+
+00:45.900 --> 00:46.530
+Beautiful.
+
+00:47.010 --> 00:48.280
+No, just very critical.
+
+00:48.300 --> 00:51.600
+That's why when I now we have the same language, we talk the same language.
+
+00:51.610 --> 00:54.810
+When I say layer three, we you understand what that means.
+
+00:55.170 --> 00:57.360
+When I say layer four, immediately ports.
+
+00:57.660 --> 00:58.410
+Think of ports.
+
+00:58.410 --> 01:00.750
+You know, think of DCP, think of congestion control.
+
+01:00.750 --> 01:01.530
+Think of that stuff.
+
+01:01.770 --> 01:05.400
+We're going to become more clear as the course goes.
+
+01:06.240 --> 01:08.640
+Designed for informational messages, hosted.
+
+01:08.670 --> 01:09.150
+Reachable.
+
+01:09.330 --> 01:13.290
+Hey, you send a message to a host that doesn't exist.
+
+01:14.100 --> 01:16.320
+ICMP Port Unreachable.
+
+01:16.890 --> 01:23.790
+Although port is a layer four concept, the ICMP is a layer three concept that is sent back from the
+
+01:23.790 --> 01:24.210
+server.
+
+01:24.660 --> 01:33.270
+So if you try to reach a port on a server that doesn't exist, it will send a ICMP message back if that's
+
+01:33.270 --> 01:38.250
+enabled, unless they had port unreachable, hosted, unreachable, fragmentation needed.
+
+01:38.250 --> 01:42.120
+We spent 5 minutes talking about that fragmentation.
+
+01:42.270 --> 01:46.740
+Hey, you need to fragment your packet because it's too large for them to you.
+
+01:47.520 --> 01:54.150
+Packet expiry, infinite loop and routers like hey, this is the time to live thing that we talked about,
+
+01:54.150 --> 01:54.420
+right?
+
+01:54.810 --> 01:59.310
+Until if we keep a decrement they trigger and they decrement thing until it reaches the head and then
+
+01:59.310 --> 02:00.170
+hey, back.
+
+02:00.180 --> 02:01.560
+It expired at zero.
+
+02:01.560 --> 02:02.220
+It's dead.
+
+02:02.820 --> 02:09.660
+You send an ICMP message so all the time uses IP directly ping and trace it out, uses it.
+
+02:10.440 --> 02:15.030
+We talked about that doesn't it doesn't require listeners or port to be opened.
+
+02:15.030 --> 02:17.070
+I love to add this kind of concept.
+
+02:17.280 --> 02:21.450
+You'll never find anything else this because our people take this for granted.
+
+02:21.450 --> 02:23.520
+But I like to kind of emphasize these point.
+
+02:23.790 --> 02:26.730
+There is no port to listen to get the ICMP messages.
+
+02:27.030 --> 02:34.170
+You know, you can send an ICMP message any time you want, as long as the host itself enables ICMP,
+
+02:34.470 --> 02:39.570
+that means IP packets with IP packets with the protocol set to ICMP.
+
+02:39.990 --> 02:41.310
+No ports, nothing like that.
+
+02:41.910 --> 02:44.940
+You can send these echo messages all you want.
+
+02:44.940 --> 02:48.180
+You know, this is how the ICMP header looks like.
+
+02:48.390 --> 02:55.260
+This is they're basically I throw this from the RC 792 can look at the ICMP message the very simple
+
+02:55.260 --> 02:59.400
+you know, there's a four by four octet as they say it.
+
+02:59.680 --> 03:02.880
+Right that one for a one by two by three by.
+
+03:02.880 --> 03:10.650
+So there's a white for the code obviously you can have up to 255 code, write a type of the message.
+
+03:10.650 --> 03:14.310
+Just the thing goes, this is the type, the subtype if you will know.
+
+03:14.520 --> 03:20.430
+And this is a list of everything here and all the list is here effectively checksum whether this message
+
+03:20.430 --> 03:21.330
+was corrupted or not.
+
+03:21.840 --> 03:26.010
+Rest of the headers, you know, some firewalls block ICMP for security reasons.
+
+03:26.040 --> 03:29.340
+You know, a lot of you know, that's the sad thing about the Internet.
+
+03:29.340 --> 03:34.920
+You know, you build something cool, you can't have nice things and then you build nice things and
+
+03:34.920 --> 03:38.310
+attackers find an exploit to use ICMP for bad thing.
+
+03:38.430 --> 03:44.730
+You know, some people use that for to do flooding attacks you know, to flood ICMP messages Desert
+
+03:44.730 --> 03:50.820
+Observer some use it some some some used it for back channel attacks to kind of probe the server has
+
+03:51.270 --> 03:54.390
+to find certain ports that are enabled.
+
+03:54.390 --> 04:02.430
+You know, just some firewalls actually block ICMP or some some some firewalls, time out ICMP messages
+
+04:02.430 --> 04:07.290
+like, okay, you can't you're doing a lot of ICMP requests right now.
+
+04:07.290 --> 04:14.370
+So I'm going to time you off for I think for our for example, this is why Bing might not work in these
+
+04:14.370 --> 04:14.700
+cases.
+
+04:14.700 --> 04:21.060
+So ever wonder that you pinging a machine that you absolutely know it's alive but your ping is not going
+
+04:21.060 --> 04:21.360
+through?
+
+04:21.930 --> 04:25.020
+It could be that it's not going through because the host is not available.
+
+04:25.440 --> 04:31.320
+But most of the time ping one of the packets, right.
+
+04:31.320 --> 04:35.790
+The router that you're going, your ping is going through your IP because ping is just an IP packet
+
+04:35.790 --> 04:41.430
+that has ICMP really nothing, nothing fancy there.
+
+04:42.060 --> 04:48.510
+And what it does is, is say, hey, one of those routers, drop the IP because I'll be back because
+
+04:48.510 --> 04:49.920
+the ICMP is blocked.
+
+04:51.570 --> 04:55.770
+So disabling ICMP can also cause real damage with connection establishment.
+
+04:57.570 --> 05:00.330
+This is called the TCP blackhole, effectively.
+
+05:00.510 --> 05:02.610
+So you would establish the connection, right?
+
+05:03.030 --> 05:04.040
+But then you started.
+
+05:04.060 --> 05:09.390
+So TCP IP through a handshake is we're going to talk about about but is tiny you know the data you're
+
+05:09.390 --> 05:11.340
+sending is so send and second.
+
+05:11.880 --> 05:12.160
+Right.
+
+05:12.510 --> 05:16.470
+But then so so that passes because your IP back is so tiny.
+
+05:16.920 --> 05:19.050
+But the moment you stop sending real data.
+
+05:19.440 --> 05:19.740
+Right.
+
+05:20.400 --> 05:20.640
+Right.
+
+05:20.640 --> 05:22.020
+And you say don't fragment.
+
+05:23.290 --> 05:28.000
+And then one of the empty use and the devices are so small and you need to fragment.
+
+05:28.720 --> 05:36.340
+The router will send will try to send you a message ICMP message saying hey, your, your, your IP
+
+05:36.340 --> 05:39.790
+packet is so large for my home to you, please make it smaller.
+
+05:40.030 --> 05:40.660
+But guess what?
+
+05:40.660 --> 05:42.910
+ICMP is blocked, right?
+
+05:42.940 --> 05:46.870
+If it's blocked, you will never reach you will never get the ICMP message.
+
+05:47.020 --> 05:52.240
+So all of a sudden you see that TB connection open, but your data is not going through what the heck
+
+05:52.240 --> 05:52.780
+is going on?
+
+05:52.780 --> 05:54.100
+It's like you open a black hole.
+
+05:54.100 --> 05:56.170
+That's literally what is called TCP black hole.
+
+05:56.320 --> 06:01.180
+Google it and we're going to do a ping demo a little bit in a minute here.
+
+06:01.450 --> 06:02.950
+Let me let me ping something here.
+
+06:03.220 --> 06:08.140
+I'm going to ping pong is available on literally every operating system, so let's pick something less.
+
+06:08.140 --> 06:08.500
+Bang.
+
+06:08.680 --> 06:11.950
+19.168.2524.245.
+
+06:11.950 --> 06:13.150
+Or this is actually my router.
+
+06:13.840 --> 06:21.220
+So if you see this ping will send an ICMP sequence message, you know, and it will specify a title.
+
+06:21.640 --> 06:24.280
+Hey, we know this stuff now, right?
+
+06:24.310 --> 06:26.710
+TTL time to level 64.
+
+06:27.660 --> 06:32.850
+Title Time to live iterations and ascending 64 bytes.
+
+06:33.390 --> 06:33.750
+Right.
+
+06:33.990 --> 06:41.910
+And this is the time it takes from for the ICMP to reach this router and from the router back to me
+
+06:41.910 --> 06:43.020
+and a six millisecond.
+
+06:43.380 --> 06:46.260
+If you think about this a little bit slow, my daughter is right over there.
+
+06:46.290 --> 06:47.520
+Why is it taking me?
+
+06:47.730 --> 06:49.050
+Maybe through the Wi-Fi.
+
+06:49.110 --> 06:50.250
+Because I connect to the Wi-Fi.
+
+06:50.970 --> 06:51.540
+But look at this.
+
+06:51.780 --> 06:54.240
+Sometimes 11 milliseconds, sometimes 12.
+
+06:54.960 --> 06:56.040
+That is nuts.
+
+06:56.130 --> 06:57.660
+You know, but this is the ICMP sequence.
+
+06:57.810 --> 07:00.360
+It's beautiful to understand this stuff, right?
+
+07:00.840 --> 07:01.770
+So ICMP let's let's.
+
+07:01.770 --> 07:02.130
+Bingo.
+
+07:02.130 --> 07:03.960
+Google does comping google.com.
+
+07:04.410 --> 07:08.440
+So what pink does is like first of all, ping only works with IP addresses.
+
+07:08.460 --> 07:09.660
+Google.com is not IP.
+
+07:09.660 --> 07:12.000
+And also it does a DNS finds the IP address.
+
+07:12.600 --> 07:12.810
+Right.
+
+07:12.810 --> 07:14.400
+So Bing does more work here.
+
+07:14.790 --> 07:15.690
+Give me the IP address.
+
+07:15.690 --> 07:21.900
+And now we ping it and notice that it decided to do a larger deal.
+
+07:21.930 --> 07:25.980
+Now, just because they're Google, I guess it's farther.
+
+07:25.980 --> 07:31.830
+So it will estimate that let me put a larger title and this is like, look at this.
+
+07:32.400 --> 07:38.340
+Google is almost as close to my Rather it's like 12 minute, nine millisecond and my daughter is six
+
+07:38.340 --> 07:38.880
+millisecond.
+
+07:39.180 --> 07:45.870
+I really need to check like why is my routing is so slow and I need maybe to upgrade my router.
+
+07:46.560 --> 07:49.320
+Now, but this is really interesting, so I'll get back to the slides.
+
+07:52.570 --> 07:53.890
+All right, Pang.
+
+07:54.760 --> 07:56.020
+This is how Bing works.
+
+07:56.740 --> 07:56.880
+Right.
+
+07:58.030 --> 07:59.620
+This is the destination server.
+
+08:00.100 --> 08:00.370
+All right.
+
+08:00.640 --> 08:06.520
+Let's explain this beautiful diagram that I spent so much time trying to draw because I'm not a very
+
+08:06.520 --> 08:07.270
+good animator.
+
+08:08.350 --> 08:08.680
+Right.
+
+08:08.710 --> 08:10.570
+As you might have noticed already.
+
+08:11.080 --> 08:14.070
+So 192161 200 is the first.
+
+08:14.080 --> 08:16.720
+Rather, that three dot hundred is a second rather.
+
+08:16.720 --> 08:18.680
+So this is an ad network.
+
+08:18.700 --> 08:19.840
+This is a network.
+
+08:19.840 --> 08:23.560
+And these are their puppy devices for that network.
+
+08:24.160 --> 08:26.070
+Why don't you do the five video?
+
+08:26.390 --> 08:30.630
+These are that network and these are the devices tender handler.
+
+08:30.640 --> 08:32.620
+This is another net or so they were connected.
+
+08:32.980 --> 08:34.720
+We're connecting many networks together.
+
+08:34.720 --> 08:37.390
+So as we talked about, this, rather belongs to two networks.
+
+08:37.840 --> 08:38.170
+Right.
+
+08:38.410 --> 08:39.610
+This guy and this guy.
+
+08:39.790 --> 08:42.910
+The other belongs to two networks with rather built to do network.
+
+08:43.090 --> 08:45.300
+This rather to belong to one network.
+
+08:45.310 --> 08:45.610
+Right.
+
+08:45.880 --> 08:47.590
+And this is just one of the devices.
+
+08:48.220 --> 08:54.820
+So if I send a packet, what do we do is like I sent a total hundred ICMP echo request.
+
+08:54.830 --> 08:55.840
+That's what it means, right?
+
+08:56.080 --> 08:58.930
+Hey, I want to go to 19216, eight or 10 to 3.
+
+08:59.260 --> 09:00.010
+So this guy.
+
+09:00.640 --> 09:02.650
+190.168.123.
+
+09:02.950 --> 09:05.290
+We do all this shebang that we talked about.
+
+09:05.320 --> 09:07.120
+No, do the subnet mask.
+
+09:07.330 --> 09:08.560
+Are you in my subnet?
+
+09:08.860 --> 09:09.820
+No, you're not.
+
+09:10.060 --> 09:10.990
+Let me send it.
+
+09:11.020 --> 09:11.380
+Right.
+
+09:12.010 --> 09:14.680
+And with the message, the packet will reach there.
+
+09:14.680 --> 09:16.540
+And we're going to decrement all the TTL.
+
+09:16.550 --> 09:16.810
+Right.
+
+09:17.110 --> 09:19.090
+So from 100, we reach 96.
+
+09:19.420 --> 09:20.500
+So, one, two, three, four.
+
+09:20.510 --> 09:20.800
+Right.
+
+09:20.890 --> 09:21.370
+Makes sense.
+
+09:21.370 --> 09:21.640
+Right.
+
+09:21.670 --> 09:24.160
+And I'm not sure if the host actually decrement that or not.
+
+09:24.460 --> 09:30.010
+We can we can we can study that and make sure like, okay, there is it 95 or 96.
+
+09:30.020 --> 09:31.570
+I really don't know.
+
+09:31.570 --> 09:33.520
+But I know that outers decrement the details.
+
+09:33.710 --> 09:34.900
+You know how we reach that.
+
+09:35.200 --> 09:36.240
+So that's that's helping.
+
+09:36.610 --> 09:39.280
+So we got the echo that server.
+
+09:39.280 --> 09:44.770
+If it supports ICMP, it will respond back with an ICMP echo or apply again.
+
+09:44.770 --> 09:52.120
+Or he said the TTL, the source, the destination is 1921688123 and the source is ten two three.
+
+09:52.690 --> 09:58.510
+Do all the subnet mask shebang and then boom, send it over and we get it.
+
+09:58.900 --> 09:59.800
+That's helping works.
+
+10:00.760 --> 10:01.380
+Let's go.
+
+10:01.390 --> 10:03.070
+A ping that is unreachable.
+
+10:04.600 --> 10:08.290
+I'm sending 219216 at a tender three, which is right there.
+
+10:08.590 --> 10:10.870
+And one of the two it is the one 1.1 to 3.
+
+10:11.320 --> 10:11.590
+Right.
+
+10:11.600 --> 10:12.850
+But look at the TTL.
+
+10:12.970 --> 10:19.000
+I just set it to three specifically just to time it out for for testing reasons here.
+
+10:19.300 --> 10:27.040
+So it which is here becomes to the packet reaches here, the router determines it becomes one right
+
+10:27.280 --> 10:28.030
+reaches here.
+
+10:28.270 --> 10:29.770
+Thereafter the committed becomes zero.
+
+10:30.440 --> 10:30.750
+This is.
+
+10:30.940 --> 10:32.050
+Wait a minute.
+
+10:33.220 --> 10:34.130
+It's not reachable.
+
+10:34.150 --> 10:35.110
+I have to drop it.
+
+10:35.470 --> 10:44.710
+So the router before it drops it, it drops it and then sends at an ICMP destination unreachable ICMP
+
+10:44.710 --> 10:47.770
+message because just an IP packet is just an IP packet.
+
+10:47.770 --> 10:48.460
+That's a beauty.
+
+10:48.790 --> 10:52.290
+Everything is just an IP packet to the layer three or outers here.
+
+10:52.290 --> 10:54.700
+You we sending all this beautiful stuff.
+
+10:55.480 --> 10:57.160
+192168.123.
+
+10:58.060 --> 11:01.780
+Target is where I want you to send it back to.
+
+11:02.440 --> 11:03.100
+Yeah, look at this.
+
+11:03.340 --> 11:05.900
+We're sending what is sending to whoever the source was.
+
+11:06.130 --> 11:08.170
+But who is the source here now?
+
+11:08.380 --> 11:09.640
+This all becomes this, rather.
+
+11:09.970 --> 11:12.250
+When I don't succeed, it's 500.
+
+11:12.940 --> 11:14.500
+So now look at this.
+
+11:15.070 --> 11:24.640
+So now we got the machine, got back another packet, but it knows who sent it.
+
+11:25.630 --> 11:34.900
+This is the whole implementation of Try It Out because because the title dies right here and because
+
+11:34.900 --> 11:39.910
+that router sends back and ICMP destination unreachable or whatever.
+
+11:41.230 --> 11:47.110
+What happens here is effectively the we know who sent us, right?
+
+11:47.440 --> 11:52.510
+We know where the packet dies and that's beautiful.
+
+11:52.540 --> 11:55.240
+Might trace it out or route.
+
+11:56.140 --> 12:00.040
+Can you identify the entire path your IP packet takes?
+
+12:00.990 --> 12:02.940
+That's the question, Tracy, and I'll try to answer.
+
+12:03.780 --> 12:06.210
+Clever use of video right now.
+
+12:06.330 --> 12:06.920
+No problem.
+
+12:06.930 --> 12:08.130
+Just explain it a lot.
+
+12:08.670 --> 12:10.560
+Incremental slowly.
+
+12:10.740 --> 12:13.920
+And you will get the router IP address for each hop.
+
+12:14.700 --> 12:17.400
+So start with the one you're going to get immediately, right?
+
+12:17.400 --> 12:22.620
+Because that will decrement that VH zero and will immediately respond back with an ICMP message.
+
+12:22.620 --> 12:22.830
+Right.
+
+12:23.220 --> 12:25.680
+Doesn't always work as the path changes.
+
+12:26.010 --> 12:26.400
+Right.
+
+12:26.670 --> 12:28.320
+And ICMP might be blocked.
+
+12:28.320 --> 12:28.590
+Right.
+
+12:28.950 --> 12:29.910
+That's the problem here.
+
+12:30.330 --> 12:33.600
+Because if those emby is blocked, you're done.
+
+12:33.600 --> 12:34.650
+You cannot do anything.
+
+12:35.340 --> 12:44.130
+But the other thing is your packet might take one round, but the second title that you send might take
+
+12:44.130 --> 12:46.680
+another route, so it might get the wrong result.
+
+12:46.680 --> 12:49.020
+So Trace path is not really 100% correct.
+
+12:49.770 --> 12:52.350
+And here's an animation I did for the trace lot.
+
+12:52.830 --> 12:54.960
+So what do you do is we send a TTL.
+
+12:55.110 --> 12:56.640
+You saw this animation.
+
+12:57.420 --> 13:00.870
+I'm going to do it again because I wanted to appreciate my beautiful animation.
+
+13:01.260 --> 13:03.000
+Look at this TTL one.
+
+13:03.120 --> 13:09.330
+We send it one echo, send it to that destination and that immediately we get response from who?
+
+13:09.960 --> 13:12.900
+100 says a destination.
+
+13:12.900 --> 13:14.070
+I'm reachable, man.
+
+13:15.240 --> 13:15.600
+Why?
+
+13:15.600 --> 13:16.890
+Because we set it as one.
+
+13:16.890 --> 13:18.900
+We immediately document that and we're done.
+
+13:19.140 --> 13:21.990
+So now we know that my packet passed through this guy.
+
+13:23.850 --> 13:24.390
+All right.
+
+13:24.750 --> 13:25.800
+Let me make it to.
+
+13:26.010 --> 13:27.570
+Now it survives.
+
+13:27.570 --> 13:29.850
+The first doubter minus one.
+
+13:30.420 --> 13:36.990
+It doesn't survive the second because minus one and then minus one becomes zero, because you send two,
+
+13:37.380 --> 13:38.550
+and then it dies right here.
+
+13:39.030 --> 13:41.090
+And now we get the second, rather.
+
+13:41.100 --> 13:42.300
+So we have the first.
+
+13:43.170 --> 13:43.800
+This is out, right?
+
+13:43.800 --> 13:44.340
+And it works.
+
+13:44.610 --> 13:46.730
+We know the first hope is this.
+
+13:46.740 --> 13:47.670
+The second help is this.
+
+13:48.120 --> 13:48.440
+All right.
+
+13:48.450 --> 13:49.230
+What's the third top?
+
+13:49.470 --> 13:50.370
+That's three.
+
+13:50.790 --> 13:52.290
+Then boom, boom, boom.
+
+13:53.070 --> 13:53.340
+Right.
+
+13:53.350 --> 13:56.670
+We give this four, we get it here.
+
+13:57.300 --> 14:01.200
+And then finally five, we're going to get an echo reply from the actual one.
+
+14:01.200 --> 14:03.420
+That means, hey, we actually find the destination, right?
+
+14:03.900 --> 14:06.450
+And that's pretty much it.
+
+14:06.690 --> 14:08.430
+You know, how about we do a demo?
+
+14:10.620 --> 14:11.040
+Clear.
+
+14:13.010 --> 14:13.970
+Uh, Trace.
+
+14:14.630 --> 14:16.010
+Artie, I.
+
+14:16.170 --> 14:17.450
+I believe it's in windows.
+
+14:17.450 --> 14:21.160
+Call Trace Artie in Mac and Linux could trace it out.
+
+14:21.170 --> 14:22.250
+So trace it out.
+
+14:22.550 --> 14:23.330
+Google dot com.
+
+14:23.690 --> 14:25.110
+Let's do something else.
+
+14:25.130 --> 14:26.990
+Do I have another network here?
+
+14:27.200 --> 14:31.130
+If I out my router, that's kind of pointless because there is only one hope.
+
+14:31.430 --> 14:32.210
+But let's do it.
+
+14:32.780 --> 14:33.320
+Exactly.
+
+14:33.320 --> 14:35.240
+So my gateway is immediately that right?
+
+14:35.600 --> 14:36.020
+So that's.
+
+14:36.020 --> 14:36.500
+That's.
+
+14:36.500 --> 14:40.460
+That's kind of pointless, but let's try it out.
+
+14:40.940 --> 14:41.420
+Yeah, let's.
+
+14:41.420 --> 14:41.900
+3000.
+
+14:41.900 --> 14:42.540
+Another machine.
+
+14:42.560 --> 14:44.840
+Do I have another machine?
+
+14:44.870 --> 14:45.770
+I believe I do.
+
+14:46.220 --> 14:47.060
+All right, try this.
+
+14:47.360 --> 14:51.230
+I'm going to transfer out my other Mac book right here.
+
+14:51.350 --> 14:53.510
+254 to 10, I believe.
+
+14:53.520 --> 14:53.870
+Right.
+
+14:54.380 --> 14:55.660
+And immediately, look at this beauty.
+
+14:56.090 --> 14:58.370
+So traceroute to this, right?
+
+14:58.820 --> 15:01.700
+We immediately go to that, right?
+
+15:01.730 --> 15:07.610
+There is no other hop despite us actually going through that outer because that's what we have to go
+
+15:07.610 --> 15:09.860
+through that outer to reach my packet.
+
+15:09.860 --> 15:13.400
+But my router here acted like a switch, right?
+
+15:13.910 --> 15:16.730
+If it acts like a switch, it goes up to what, layer two.
+
+15:17.720 --> 15:19.520
+So it never actually reaches a layer three.
+
+15:19.850 --> 15:21.410
+So there is no detail.
+
+15:21.410 --> 15:26.720
+The detail doesn't get affected if you're sending something to the same net or very critical to understand
+
+15:26.730 --> 15:26.840
+it.
+
+15:26.840 --> 15:27.080
+Right.
+
+15:27.500 --> 15:28.940
+Very, very, very important.
+
+15:29.720 --> 15:32.840
+Let's write out something, I guess, and another network.
+
+15:33.290 --> 15:33.980
+Can you hear me?
+
+15:34.010 --> 15:34.280
+All right?
+
+15:34.970 --> 15:35.690
+Google dot com.
+
+15:35.690 --> 15:37.670
+Sure, definitely.
+
+15:38.060 --> 15:46.220
+The first hop now is the gateway because wipe one fourth with the 50 to 72.142 is definitely not in
+
+15:46.220 --> 15:46.860
+my subnet.
+
+15:46.880 --> 15:47.210
+Why?
+
+15:47.420 --> 15:50.930
+Because my subnet has two five, five, two, five out of five is not me.
+
+15:50.930 --> 15:57.080
+So immediately we got to this as probably I'm going to block all this stuff because all of this is my
+
+15:57.080 --> 15:59.030
+ISP and I don't want to show any of this stuff.
+
+15:59.510 --> 15:59.840
+Right.
+
+16:01.070 --> 16:01.460
+But.
+
+16:02.640 --> 16:05.280
+It shows probably everything here, right?
+
+16:05.340 --> 16:09.750
+Shows you all the path that it took, all that until it reaches Google.
+
+16:09.750 --> 16:10.020
+Right.
+
+16:10.320 --> 16:17.790
+Now, I'm going to block part of this here for security reasons, but so I'm going to block a part of
+
+16:17.790 --> 16:18.300
+this stuff.
+
+16:18.300 --> 16:24.000
+But you can see that eventually we reached the Google network here.
+
+16:24.870 --> 16:25.440
+All right.
+
+16:25.650 --> 16:27.090
+How about we summarize?
+
+16:27.480 --> 16:28.980
+So what is ICMP?
+
+16:29.070 --> 16:35.100
+That's an IP level protocol that is used to send information back and forth.
+
+16:35.100 --> 16:36.490
+Very critical protocol.
+
+16:36.510 --> 16:40.860
+Fortunately, some browsers, some firewalls block it.
+
+16:40.860 --> 16:42.960
+And if it's blocked, that means you cannot ping.
+
+16:42.960 --> 16:48.660
+You cannot send critical information, messages that you can get into weird situations ping and try
+
+16:48.750 --> 16:57.210
+it out uses it don't fragment fragmentation needed all these messages it will use to tell you that whether
+
+16:57.210 --> 17:04.980
+your host is reachable or not, no port is reachable or not, you know, and that's basically very critical
+
+17:04.980 --> 17:12.720
+infrastructure, fundamental for responsible protocol that really needs to understand it so that you
+
+17:12.720 --> 17:17.850
+can explain things better when when it happens, you know, and in the future, who knows?
+
+17:17.850 --> 17:25.080
+Maybe we can extend this ICMP messages because we have so much tools in our, you know, as they could
+
+17:25.080 --> 17:25.530
+shed.
+
+17:26.400 --> 17:28.350
+But we never use this thing.
+
+17:28.350 --> 17:31.350
+We always build on top of other stuff.
+
+17:31.350 --> 17:35.580
+You know, I wonder if we can use the ICMP for our own purposes.
+
+17:35.850 --> 17:38.910
+Now on to the next lecture.

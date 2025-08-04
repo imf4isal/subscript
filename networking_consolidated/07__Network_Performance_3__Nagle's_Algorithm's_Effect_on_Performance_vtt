@@ -1,0 +1,685 @@
+WEBVTT
+
+00:00.060 --> 00:08.530
+I believe a lot of people ran into that particular algorithm and not in a good way.
+
+00:08.550 --> 00:10.860
+Usually in a in a negative way.
+
+00:12.060 --> 00:16.710
+If you ever seen a delay in your client side app that you couldn't explain.
+
+00:16.920 --> 00:17.250
+Right.
+
+00:17.310 --> 00:18.150
+Network is good.
+
+00:18.150 --> 00:18.960
+Everything is good.
+
+00:19.650 --> 00:21.720
+But the server is not receiving my packets.
+
+00:21.830 --> 00:26.280
+Just there is a random delays that is really none deterministic.
+
+00:27.150 --> 00:27.990
+This guy.
+
+00:28.500 --> 00:33.000
+This guy is the reason Nigel's don't grow them or Nigel's algorithm.
+
+00:33.000 --> 00:35.550
+I don't know how to pronounce it right now.
+
+00:35.590 --> 00:36.180
+It doesn't go to them.
+
+00:36.180 --> 00:37.020
+Let's talk about it.
+
+00:37.380 --> 00:38.940
+Very important.
+
+00:39.180 --> 00:42.740
+Have you ever seen a delay in your back in application and find it application?
+
+00:42.750 --> 00:43.890
+This might be it.
+
+00:43.890 --> 00:44.820
+This might be it.
+
+00:45.120 --> 00:45.690
+Stuck about it.
+
+00:46.110 --> 00:52.650
+Nigel, don't go there in the till the days it goes back to the overhead of TCP, you know, sending
+
+00:52.650 --> 00:56.430
+the segments with 20 bytes and then the IP here with 20 by.
+
+00:56.430 --> 00:58.050
+So that's 40 bytes.
+
+00:58.260 --> 00:59.730
+You know, you're sending 40 bytes.
+
+01:00.480 --> 01:04.830
+You better fill this mscs with content.
+
+01:04.830 --> 01:07.200
+You better fill the segment with content, right?
+
+01:07.470 --> 01:14.910
+In the Telnet days where you type in your space and that sends a single byte and then you type in,
+
+01:14.910 --> 01:20.130
+turn that sender, then go by sending a single byte, right?
+
+01:21.880 --> 01:22.210
+Oh.
+
+01:22.690 --> 01:30.310
+Sending a single byte with a 40 byte overhead is really, you know, it kills the bandwidth.
+
+01:30.310 --> 01:32.260
+You know, you just like what a waste.
+
+01:32.830 --> 01:37.660
+And this is like way, way, way back, you know, it's just like, okay, we really don't waste.
+
+01:38.020 --> 01:39.610
+So an agent came up with the idea.
+
+01:39.610 --> 01:48.670
+It's like, wait a minute, how about how do we don't how will we wait to fill the segment fully to
+
+01:48.670 --> 01:51.340
+its maximum segment size before we send it?
+
+01:52.270 --> 01:52.570
+Right.
+
+01:52.570 --> 01:59.410
+So let the user type in, type in type and open less, whatever, enter, send any commands they want.
+
+01:59.800 --> 02:00.220
+Right?
+
+02:00.730 --> 02:06.040
+But then we're going to only send them back the segment when it's filled up with content.
+
+02:06.040 --> 02:06.310
+Right.
+
+02:08.870 --> 02:11.190
+Obviously the algorithm a little bit more complicated than that.
+
+02:11.210 --> 02:12.510
+But this is this is the idea.
+
+02:12.530 --> 02:13.340
+Let's wait.
+
+02:13.790 --> 02:14.210
+Right.
+
+02:14.540 --> 02:18.080
+Let's only send it one when the next one when the segment is full.
+
+02:18.320 --> 02:18.620
+Right.
+
+02:18.830 --> 02:21.800
+And they'll wait and they'll wait.
+
+02:22.700 --> 02:29.780
+Is what you experience in the client side as a delay and as a performance penalty, effectively?
+
+02:30.320 --> 02:31.640
+And we love performance.
+
+02:31.650 --> 02:35.330
+We don't like things that kills our performance effectively.
+
+02:35.330 --> 02:37.400
+Carol, I don't know if you know this utility call.
+
+02:37.400 --> 02:38.420
+Very, very critical.
+
+02:38.420 --> 02:39.080
+Very important.
+
+02:39.860 --> 02:41.240
+They disabled this algorithm.
+
+02:41.330 --> 02:44.720
+As you know what, our trials is being slow for no reason.
+
+02:45.050 --> 02:45.800
+There's no point.
+
+02:46.490 --> 02:48.650
+If I have data, please send a don't wait.
+
+02:48.680 --> 02:51.020
+Don't buffer on the client side operating system.
+
+02:51.020 --> 02:58.040
+Don't try to be smart send the data immediately that's that's the goal here so it's read and then one
+
+02:58.040 --> 03:05.090
+day sending a single by missing in a segment is a waste can combine a small segment and send them into
+
+03:05.090 --> 03:10.820
+one that's the goal here let's combine multiple segments like multiple data into one segment, fill
+
+03:10.830 --> 03:12.050
+the segment and then send it.
+
+03:12.890 --> 03:16.850
+The client can wait for a full MSDS before sending the segment.
+
+03:17.330 --> 03:20.050
+There's no wasted 40 byte header that we talked about, right?
+
+03:20.150 --> 03:23.480
+There's this extra header that is added to manage that stuff.
+
+03:23.720 --> 03:25.850
+He we don't want to waste that.
+
+03:25.970 --> 03:27.470
+Let's disappear for a minute here.
+
+03:29.150 --> 03:29.400
+How?
+
+03:29.420 --> 03:30.320
+Right.
+
+03:30.740 --> 03:31.610
+Here's an example.
+
+03:32.630 --> 03:36.080
+So let's assume the message is one four 1460.
+
+03:36.140 --> 03:36.310
+Right.
+
+03:36.320 --> 03:37.220
+That's the default, right?
+
+03:38.510 --> 03:42.510
+An A1 to send 500 bytes to be right.
+
+03:43.340 --> 03:51.410
+So what happens here is a writes the 500 a byte as an API says, hey, send me this 500 byte.
+
+03:51.410 --> 03:52.980
+It doesn't know anything.
+
+03:53.000 --> 03:56.150
+I just tell the operating system, hey, since 500 bytes to be.
+
+03:57.160 --> 04:00.250
+Right or as doesn't send it right.
+
+04:00.520 --> 04:02.230
+This is how an ideal algorithm works.
+
+04:03.650 --> 04:04.400
+Awaits.
+
+04:04.790 --> 04:05.780
+It weighs in the buffer.
+
+04:06.380 --> 04:13.460
+So since 500 is listed in 1460 clients way to fill the segment and then decide to send 960.
+
+04:13.490 --> 04:14.570
+What a coincidence.
+
+04:14.570 --> 04:15.410
+Exactly.
+
+04:15.710 --> 04:18.140
+It perfectly aligns.
+
+04:18.140 --> 04:19.850
+Do one for 60.
+
+04:19.930 --> 04:21.740
+Right, guys, I just did that.
+
+04:21.920 --> 04:25.760
+You know, it's an example at then to the right, you get my point.
+
+04:26.180 --> 04:26.510
+Right?
+
+04:26.810 --> 04:28.010
+We'll go to what examples?
+
+04:28.010 --> 04:32.450
+Don't say so now 960 the segments filled and then we send them back.
+
+04:32.480 --> 04:35.450
+So there is a delay right here.
+
+04:35.930 --> 04:37.010
+We waited.
+
+04:37.310 --> 04:38.510
+How long do we waited?
+
+04:38.810 --> 04:39.410
+I don't know.
+
+04:39.470 --> 04:41.060
+It all depends, to be honest.
+
+04:41.210 --> 04:47.330
+And this delay, by the way, guys, only happens when there is some data that needs to be acknowledgment.
+
+04:48.170 --> 04:48.560
+Right.
+
+04:49.280 --> 04:53.330
+It doesn't happen when you don't have anything in the to be acknowledged.
+
+04:53.330 --> 04:53.540
+Right.
+
+04:53.720 --> 04:59.750
+If there is if I'm sending this and there I don't have anything to acknowledge it immediate as in the
+
+04:59.750 --> 05:07.860
+1200 will get sent and so nature algorithm is not you know that you know extreme it gives you a lenient
+
+05:07.890 --> 05:10.010
+right away if there is no act data.
+
+05:10.220 --> 05:11.750
+Yeah let's go ahead and send it.
+
+05:11.990 --> 05:13.940
+Well, this will be clear in a minute.
+
+05:15.110 --> 05:18.230
+So is the problem with Nigel's are gone, right?
+
+05:19.460 --> 05:21.500
+Sending large data causes delay.
+
+05:21.740 --> 05:28.790
+So let's say I want to send 5000 bytes on one 4060 MBS.
+
+05:28.970 --> 05:30.650
+Right, 146 0 a.m. SS.
+
+05:31.050 --> 05:31.310
+Right.
+
+05:31.520 --> 05:32.330
+That's what I'm going to do.
+
+05:32.750 --> 05:40.460
+So that equivalent, if you do the math, three full segments of one 460, but you're going to have
+
+05:40.460 --> 05:47.680
+620 remaining bytes because that doesn't full fits the entire mess.
+
+05:47.690 --> 05:47.930
+Right.
+
+05:48.620 --> 05:49.190
+Guess what?
+
+05:49.460 --> 05:51.290
+You're going to send the segment because it's full.
+
+05:51.290 --> 05:52.720
+You're going to send the segment because it's full.
+
+05:52.760 --> 05:56.750
+You're going to send the signal because it's full and because you're waiting for an acknowledgement.
+
+05:58.210 --> 06:00.490
+You have one small segment of 620.
+
+06:01.860 --> 06:05.010
+That will not be sense.
+
+06:05.880 --> 06:06.710
+Sad.
+
+06:07.950 --> 06:09.600
+That's the delay you're going to acknowledge.
+
+06:09.780 --> 06:10.260
+And guess what?
+
+06:10.560 --> 06:13.170
+The delay you're going to see the delay.
+
+06:13.250 --> 06:14.340
+That was a little bit wrong.
+
+06:14.550 --> 06:16.160
+That was should be until here.
+
+06:16.170 --> 06:20.610
+Really, only until here was the reserve acknowledgement.
+
+06:21.000 --> 06:21.460
+Okay.
+
+06:21.480 --> 06:22.440
+We got an acknowledgement.
+
+06:22.740 --> 06:25.070
+No more act to stuff to to ask.
+
+06:25.390 --> 06:25.980
+Let's send it.
+
+06:26.730 --> 06:29.720
+And now you send the packet, the remaining six to any packet.
+
+06:30.000 --> 06:31.200
+So there is a delay.
+
+06:32.430 --> 06:36.590
+So if you're sending a large packets, all of a sudden it will ask what is going on?
+
+06:36.600 --> 06:37.720
+Why, why?
+
+06:37.740 --> 06:44.100
+There is a 40 millisecond or 50 millisecond or whatever the latency really if you the more latency you
+
+06:44.100 --> 06:51.090
+have between Amby, the larger the delay because you're going to wait for the act to come back in order
+
+06:51.090 --> 06:52.800
+to send that stinking segment.
+
+06:53.730 --> 07:00.630
+Or you can order or fill that segment with data which you don't have obviously.
+
+07:00.630 --> 07:00.960
+Right.
+
+07:01.860 --> 07:06.960
+So you can, you can you can trick either you have to solution, either disable the natural algorithm
+
+07:06.960 --> 07:13.320
+or fill your segments nicely to their message, which is very hard to do, obviously.
+
+07:13.680 --> 07:13.980
+Right.
+
+07:14.340 --> 07:18.670
+So the fourth, fourth not full segment are only sent when ack is received.
+
+07:18.690 --> 07:19.350
+We don't know about this.
+
+07:19.770 --> 07:22.230
+So that's that's the problem with Nigel algorithm.
+
+07:22.230 --> 07:24.450
+Very, very problematic thing.
+
+07:24.990 --> 07:25.980
+And disabling Nigel.
+
+07:25.980 --> 07:30.540
+I go to most clients today that I heard of disable nigel algorithm.
+
+07:30.540 --> 07:35.170
+Nobody wants latency, nobody wants performance again.
+
+07:35.700 --> 07:40.350
+If this is not clear, this is a client side only change.
+
+07:41.220 --> 07:46.340
+You know, you disable nigel algorithm in the client side because that client side is the one who said,
+
+07:46.620 --> 07:53.820
+oh, by client I mean whoever sends the data because the server also can act like a client and the server
+
+07:53.820 --> 07:55.050
+also sends data.
+
+07:55.050 --> 07:58.050
+So it has the same it's the same bullet effectively.
+
+07:58.050 --> 07:58.350
+Right.
+
+07:58.890 --> 08:05.310
+So so I know a lot of people say, hey, I either get the performance, then then there's small bandwidth.
+
+08:05.310 --> 08:06.540
+I don't care about the bandwidth.
+
+08:06.750 --> 08:07.110
+Right?
+
+08:07.860 --> 08:11.340
+So what if I send 620 bytes and not follow messages?
+
+08:11.370 --> 08:11.910
+Send it.
+
+08:13.170 --> 08:14.490
+This is called TCP, you know, delay.
+
+08:14.490 --> 08:18.450
+If you're low level in the C land, it's called TCP, you know, delay.
+
+08:18.750 --> 08:19.050
+Right.
+
+08:19.650 --> 08:22.520
+And Carol, actually in 2016, this is the commit.
+
+08:22.530 --> 08:25.830
+I found the commit they did that they disabled.
+
+08:28.180 --> 08:28.530
+Nigel.
+
+08:28.630 --> 08:33.190
+I'll go to them in 2016 completely and curl in official curl today if you have a call.
+
+08:33.790 --> 08:39.670
+Nigel is always disabled by default because the creator sorted through this, actually.
+
+08:40.180 --> 08:42.660
+Bum, bum, bum, bum, bum, bum, bum, bum, bum, bum.
+
+08:43.810 --> 08:47.920
+This is a badger, which is the Daniel Thunberg.
+
+08:48.190 --> 08:54.880
+After a few wasted hours hunting down the reason of slowness during a TLS handshake, the is the encryption.
+
+08:55.540 --> 08:58.720
+The handshake that causes the encryption after the ECP handshake.
+
+08:59.920 --> 09:05.490
+That turns out to be because TCP no delay not being set because TCP is not delayed.
+
+09:05.500 --> 09:10.150
+Not being said, I think we have enough motivation to toggle the default for this option.
+
+09:10.270 --> 09:16.050
+We now enable TCP no delay by default and allow applications to switch it up.
+
+09:16.060 --> 09:18.220
+So you can, if you want, you switch it out.
+
+09:18.370 --> 09:25.870
+So you enable TCP no delay that that tells your clients, I do not delay the packets do not delay the
+
+09:25.870 --> 09:26.380
+segments.
+
+09:26.380 --> 09:30.370
+Send immediately sitting TCP.
+
+09:30.370 --> 09:33.280
+No delay disables Nigel's algorithm.
+
+09:33.640 --> 09:41.620
+This also makes the CCP no delay and no delay unnecessary, but no TCP, no delay can be used to disable
+
+09:41.620 --> 09:41.680
+it.
+
+09:41.680 --> 09:42.550
+So they flipped it.
+
+09:43.030 --> 09:51.040
+So they had the option for the longest time, optionally, to disable Nigel's algorithm.
+
+09:52.020 --> 09:54.210
+But now they made it the default.
+
+09:54.660 --> 09:59.790
+Whether you said or not, we're going to disable it by default and you can enable it if you want.
+
+09:59.790 --> 10:05.340
+Enabled Nigella to go to them vis a vis having not been on the language, which is now a very confusing
+
+10:05.340 --> 10:05.850
+to read.
+
+10:06.270 --> 10:07.290
+Pretty cool, huh?
+
+10:07.320 --> 10:09.860
+This is Nigel algorithm, guys.
+
+10:10.680 --> 10:12.930
+So, yeah, Nigel had to go to them.
+
+10:13.290 --> 10:14.430
+A lot of people disable them.
+
+10:14.460 --> 10:15.420
+So what is Nigella giving them?
+
+10:15.420 --> 10:16.010
+Summariser.
+
+10:16.770 --> 10:19.770
+Nigella I gave them was designed to weight.
+
+10:20.750 --> 10:23.420
+When you are sender, whether a server or client.
+
+10:24.330 --> 10:29.670
+You wait for a full packet worth of MSDS.
+
+10:30.180 --> 10:32.190
+That's why you really need to understand what I MSRs means.
+
+10:32.640 --> 10:33.570
+I to understand this.
+
+10:34.050 --> 10:34.350
+Right.
+
+10:34.560 --> 10:41.310
+Let's wait for a full right while while we have acknowledgement why we have data that is not acknowledged
+
+10:41.490 --> 10:42.930
+only that only them.
+
+10:43.080 --> 10:46.620
+If I don't have any data in transit, send immediately.
+
+10:46.620 --> 10:47.100
+That's okay.
+
+10:47.490 --> 10:54.720
+But if I sent a sentence and since the data and now I have, I want to send three bytes, right then
+
+10:54.720 --> 10:58.920
+you have to wait for this segment to be filled.
+
+11:00.620 --> 11:01.190
+Yikes.
+
+11:01.610 --> 11:04.700
+And when you do that, obviously that weight.
+
+11:05.980 --> 11:07.300
+Kelsey on the sender side.
+
+11:07.510 --> 11:10.660
+So this is client and really server, right?
+
+11:11.350 --> 11:17.130
+Imagine imagine the the server trying to respond back with the I don't know, the result of a sequel
+
+11:17.140 --> 11:17.560
+query.
+
+11:17.560 --> 11:17.890
+Right.
+
+11:18.280 --> 11:21.820
+It will send send sentence and then there's one byte left, right.
+
+11:22.120 --> 11:25.360
+And then we tried to send it, but the server can't push it.
+
+11:25.750 --> 11:30.850
+Tries to push book, can't push the whole stack just because they don't acknowledge the result.
+
+11:31.540 --> 11:34.780
+Disable I guess enable TCP not delay.
+
+11:34.990 --> 11:36.940
+Write this case and yeah.
+
+11:37.180 --> 11:37.780
+See what see.
+
+11:37.780 --> 11:41.110
+And definitely I believe that will increase the performance.
+
+11:41.110 --> 11:45.280
+So that's a very critical backend configuration that you can do.
+
+11:45.280 --> 11:46.270
+And from that as well.
+
+11:46.450 --> 11:53.050
+Right, if you want your product to be more performant and yeah, add an additional no cost, I rather
+
+11:53.380 --> 11:55.590
+not wait that latency hit.
+
+11:55.600 --> 12:00.760
+Take the head latency just to wait for an acknowledgement in order to send my half a segment.
+
+12:01.360 --> 12:02.440
+No, sorry.
+
+12:02.680 --> 12:04.220
+I rather disabled android.
+
+12:04.240 --> 12:04.690
+Go them.
+
+12:06.040 --> 12:07.660
+On to the next one.

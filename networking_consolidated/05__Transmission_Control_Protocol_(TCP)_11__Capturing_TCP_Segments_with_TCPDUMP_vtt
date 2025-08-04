@@ -1,0 +1,1240 @@
+WEBVTT
+
+00:00.330 --> 00:06.660
+Now that we wrapped up the TCP section, which is one of the most important protocols really in existence,
+
+00:07.470 --> 00:12.150
+how about we actually look out how it looks like in the wire?
+
+00:12.150 --> 00:17.460
+And as usual, I'm going to use the TCP dump.
+
+00:19.310 --> 00:27.020
+Tool that it would be using throughout the course, which is a very, very popular tool to inspect and
+
+00:27.380 --> 00:30.440
+capture really any kind of packets, you know.
+
+00:30.830 --> 00:37.940
+And because the TCP sits inside the IP packet, we're going to see the IP packet and its content and
+
+00:37.940 --> 00:45.560
+TCP dumps does a good job showing us the insides of that and tries to parse it out for us.
+
+00:45.890 --> 00:47.840
+How about get started http?
+
+00:48.320 --> 00:51.980
+At least the vanilla one sets on top of TCP.
+
+00:52.010 --> 00:53.000
+It uses TCP.
+
+00:53.030 --> 00:58.550
+So if I'm going to use if I'm going to browse for a web page.
+
+00:59.220 --> 01:06.180
+For a given domain, I'm going to establish a TCP connection between myself and then domain IP address
+
+01:06.180 --> 01:07.260
+right after.
+
+01:07.260 --> 01:11.370
+Obviously I do it then hence I can get the IP address and that's what we're going to capture.
+
+01:11.370 --> 01:19.560
+And after the TCP IP handshake happens, the HTTP protocols takes over and sends specific segments,
+
+01:19.560 --> 01:23.700
+you know, using the TCP segment protocol format.
+
+01:23.880 --> 01:32.010
+And those will send the methods, get slash, you know, post anything like that to the observer and
+
+01:32.010 --> 01:35.910
+the observer will reply back with the content given to that path.
+
+01:35.910 --> 01:40.140
+So I'm going to use the example dot com for the example here.
+
+01:40.140 --> 01:41.400
+So let's get start.
+
+01:41.550 --> 01:47.370
+So as usual, going to do TSE bump dash nw that means I'll want the numbers.
+
+01:47.370 --> 01:48.210
+Right, show me that.
+
+01:48.300 --> 01:49.920
+But show me the IP addresses.
+
+01:49.920 --> 01:51.360
+Show me the protocol numbers.
+
+01:51.360 --> 01:56.580
+Don't show me hey, don't try to show me HTTP or DNS this or the host names.
+
+01:56.580 --> 01:57.540
+Just show me the numbers.
+
+01:57.540 --> 01:58.530
+I like numbers.
+
+01:58.530 --> 02:01.050
+No verbose mode please.
+
+02:01.050 --> 02:07.020
+No I e in zero the interface again you can look this up in ie of config.
+
+02:07.020 --> 02:12.360
+You can use iPhone first to find what's your interface so you don't have to listen to everything.
+
+02:12.360 --> 02:17.820
+You just listen to the interface you're actually capturing on because again, you can have wi fi ethernet,
+
+02:17.820 --> 02:22.380
+you can have loop peg loop back with a B, right?
+
+02:22.560 --> 02:27.900
+And what we're going to do here is I'm going to capture I want to know the IP address of example dot
+
+02:27.900 --> 02:28.110
+com.
+
+02:28.110 --> 02:30.840
+So what is that ping example dot com.
+
+02:31.320 --> 02:32.370
+It is this.
+
+02:32.370 --> 02:32.850
+Right.
+
+02:32.850 --> 02:34.740
+So I'm going to copy that guy.
+
+02:35.510 --> 02:36.470
+And.
+
+02:37.270 --> 02:41.200
+Do source this and.
+
+02:43.590 --> 02:51.540
+Any IP packets where the source IP is this or any IP packet where the destination is this.
+
+02:54.210 --> 03:00.810
+And I could I could add something like that and port equals 80 because I'm going to use the unencrypted
+
+03:00.810 --> 03:06.270
+HTTP protocol in this case so I can use that to to add an additional filter.
+
+03:06.630 --> 03:07.860
+And that should work, too.
+
+03:09.240 --> 03:10.710
+Let's test it out.
+
+03:11.280 --> 03:16.230
+So now we're going to be capturing TCP, right?
+
+03:16.260 --> 03:21.600
+Specifically on Port 80 and anything going to this IP and coming from this IP.
+
+03:21.630 --> 03:22.140
+Right.
+
+03:22.530 --> 03:26.790
+So let's go ahead and refresh and look at this beauty.
+
+03:27.450 --> 03:28.340
+Let's take a look.
+
+03:28.440 --> 03:30.060
+TCP guys.
+
+03:31.020 --> 03:34.620
+So that is the first IP packet we received.
+
+03:35.220 --> 03:36.780
+Let's highlight all of it.
+
+03:36.870 --> 03:37.830
+Where does it end?
+
+03:37.860 --> 03:39.000
+It ends right here.
+
+03:39.270 --> 03:43.200
+So the highlighted part is the first IP packet and.
+
+03:45.750 --> 03:49.110
+Clearly this is the one we sent, right?
+
+03:49.550 --> 03:50.080
+Right.
+
+03:50.190 --> 03:51.180
+This is what we're sending.
+
+03:51.180 --> 03:55.050
+So the time stamp IP differentiated service is zero.
+
+03:55.080 --> 04:02.100
+Time to left, 64 ID zero offset zero flag do not fragment.
+
+04:02.430 --> 04:06.570
+So now something is kicking in here is very interesting.
+
+04:06.930 --> 04:12.030
+For TCP packets, that's the first time we actually see the don't fragment.
+
+04:12.090 --> 04:16.290
+So do not fragment this IP packet.
+
+04:16.680 --> 04:28.140
+So this is either a something that Safari did, which is my browser, which is is designed to maybe
+
+04:28.140 --> 04:34.500
+send IP packets that are not fragmented for, you know, for consistency reasons and avoid the problems
+
+04:34.500 --> 04:36.090
+that we talked about in this course.
+
+04:36.900 --> 04:46.830
+Or maybe this is the operating system setting it by default to enable multi path into you discovery.
+
+04:46.830 --> 04:52.710
+What are we going to talk about in the future, you know, which is the way we detect the MTU of the
+
+04:52.710 --> 04:54.600
+network that we're in.
+
+04:55.050 --> 04:56.310
+So it's don't fragment.
+
+04:56.310 --> 04:58.680
+That means, hey, do not split my IP packets.
+
+04:58.740 --> 05:06.260
+If you detected an end to you that is smaller than than the one where the one we sent basically.
+
+05:06.270 --> 05:09.060
+So then the next thing, keep it highlighted.
+
+05:09.390 --> 05:11.250
+The next thing is protocol.
+
+05:11.280 --> 05:12.120
+The protocol.
+
+05:12.630 --> 05:14.630
+That's the bit in the TCP.
+
+05:15.480 --> 05:17.970
+And actually this is the bit in the IP.
+
+05:19.060 --> 05:24.620
+Packet header and that's six, the value is six and that's DXB.
+
+05:25.030 --> 05:34.420
+We seen that UTB was 17, TCP six, I believe ICMP was one and length is the final one, which is 64.
+
+05:34.450 --> 05:40.550
+That indicates the one that is the total length of that IP packet.
+
+05:40.570 --> 05:45.070
+And remember, guys, do you know what is the first thing we send when we want to establish a TCP connection?
+
+05:45.070 --> 05:45.700
+That's right.
+
+05:45.700 --> 05:46.480
+The CIN.
+
+05:46.600 --> 05:47.020
+Right.
+
+05:47.020 --> 05:48.310
+That's the CIN segment.
+
+05:48.360 --> 05:51.010
+It's why n so let's continue.
+
+05:51.010 --> 05:56.800
+This is the my source IP and since it's DCB, they're going to be a source port and this is my source
+
+05:56.800 --> 05:57.500
+port, right?
+
+05:57.520 --> 05:58.960
+51502.
+
+05:58.960 --> 06:01.900
+It's random randomly generated by my operating system.
+
+06:02.140 --> 06:05.140
+And then this is the destination I'm going to this IP address as an example.
+
+06:05.500 --> 06:07.930
+Where are we going are going port 80.
+
+06:07.960 --> 06:09.400
+How did I know was port three.
+
+06:09.430 --> 06:12.070
+I never wrote anything that says 80 here.
+
+06:12.250 --> 06:14.120
+Well that's the default right?
+
+06:14.140 --> 06:20.380
+If you don't say anything in the browser using HTTP protocol, they assume it's 80.
+
+06:20.620 --> 06:23.110
+If you want, specify a port, you add a colon and.
+
+06:23.960 --> 06:30.200
+Put the board there and then Colin ends basically the IP section, if you will.
+
+06:30.230 --> 06:35.960
+That's not entirely true because we actually mentioned the port TCP dump kind of mix and match here.
+
+06:36.200 --> 06:40.000
+But now we start the actual TCP IP stuff.
+
+06:40.010 --> 06:44.590
+No, the segment, the flags, these are different flags than this.
+
+06:44.600 --> 06:47.470
+This is the flags for the TCP header.
+
+06:47.480 --> 06:52.190
+Now this is the segment header and sw what is SW stand for.
+
+06:52.220 --> 06:54.760
+That's the cen.
+
+06:54.770 --> 06:55.340
+That's right.
+
+06:55.340 --> 07:01.880
+So now we're sending a syn checksum if you remember from the course we talked about the checksum in
+
+07:01.880 --> 07:06.980
+the TCP segment, that's to ensure that things are correct and not broken.
+
+07:07.130 --> 07:09.740
+And that's the sequence number.
+
+07:09.750 --> 07:11.420
+Look at how big is this?
+
+07:11.480 --> 07:16.100
+I think that's obviously starts with a sequence and that's the window size, right.
+
+07:16.130 --> 07:18.170
+We talked about window scaling, right.
+
+07:18.170 --> 07:21.460
+So that's the window size six, five, five, three, five.
+
+07:21.470 --> 07:28.490
+Again, that's not entirely all of that because there is something called the window scaling, which
+
+07:28.490 --> 07:29.510
+is a multiplication.
+
+07:29.510 --> 07:34.580
+You can this is a factor of six or 2 to 4, six, and then multiply by that.
+
+07:34.580 --> 07:38.450
+So you can go up to a gig with this thing, which is good stuff.
+
+07:38.660 --> 07:45.740
+Then the options, this is another section of the of the segments itself and the option says, hey,
+
+07:45.740 --> 07:49.190
+my maximum segment size is actually 1460.
+
+07:49.190 --> 07:50.990
+And how did we find out?
+
+07:50.990 --> 07:52.460
+That's because.
+
+07:53.770 --> 08:06.790
+From my M2 and my wife I am to you in this particular case is one 500 -20 for the IP, -20 for the headers
+
+08:06.790 --> 08:15.250
+for the DHCP and -24 the headers for the IP that gives you on 460 in op window scaling six.
+
+08:15.310 --> 08:16.780
+Nope, nope, nothing.
+
+08:16.870 --> 08:20.380
+And then this is the time stamps.
+
+08:20.380 --> 08:23.080
+That's a whole extension, right.
+
+08:23.680 --> 08:35.140
+That, that uniquely identifies the segment just in case your connection was so long and your sequences
+
+08:35.140 --> 08:41.710
+ran out of the 32 bit number, which is the 4 billion you basically sent 4 billion worth of segments.
+
+08:41.710 --> 08:42.820
+Then you're going to reset.
+
+08:42.820 --> 08:43.300
+Right.
+
+08:43.990 --> 08:48.880
+How do you avoid this wrap around is by having a timestamp.
+
+08:48.880 --> 08:51.370
+So you're going to see this timestamp all over the place.
+
+08:51.370 --> 08:51.730
+Right.
+
+08:51.910 --> 08:58.630
+And this is, I believe that a reply from the Times that these are two related to each other and this
+
+08:58.630 --> 09:00.250
+is the selective acknowledgment.
+
+09:00.250 --> 09:00.670
+Right?
+
+09:00.670 --> 09:02.510
+So I support selective acknowledgment.
+
+09:02.920 --> 09:07.420
+We're telling the server that we're supporting selective acknowledgment in case you want to acknowledge
+
+09:07.420 --> 09:09.280
+gaps and ranges.
+
+09:09.280 --> 09:10.450
+I support that.
+
+09:11.020 --> 09:12.700
+And the length is zero.
+
+09:12.700 --> 09:15.940
+So this is this length is different than this length, you guys.
+
+09:15.940 --> 09:16.390
+Right.
+
+09:16.390 --> 09:17.170
+The length.
+
+09:17.170 --> 09:21.160
+The upper length is the IP packet length and that's 64.
+
+09:21.190 --> 09:24.220
+That segment length is zero.
+
+09:24.220 --> 09:26.410
+There is no data for the segment.
+
+09:26.440 --> 09:36.010
+Literally, we didn't send anything and we talked about how TCP was it called Fast Open.
+
+09:36.430 --> 09:41.230
+You can send data with the content effectively, right?
+
+09:41.440 --> 09:42.640
+Which is pretty cool.
+
+09:43.180 --> 09:49.000
+And that in this case with the Syn, you can send some data, but that's a wasted effectively that's
+
+09:49.000 --> 09:53.760
+a wasted 64 bytes send it just to receive by the server.
+
+09:54.130 --> 09:57.490
+So that's the first IP packet which has this SYN, right.
+
+09:57.520 --> 09:59.710
+So we received something from the server.
+
+09:59.710 --> 10:02.290
+Let's take a look again length zero.
+
+10:02.320 --> 10:03.460
+It's just so sad.
+
+10:03.460 --> 10:09.250
+You know, think sending valuable you can send so valuable information with this right.
+
+10:09.250 --> 10:15.430
+And if we as backend engineers just thought about that a little bit and says, okay, how much waste
+
+10:15.430 --> 10:16.600
+is really there?
+
+10:16.600 --> 10:18.010
+There is so much.
+
+10:18.010 --> 10:22.870
+If you look through the actual network, there is so much wasted.
+
+10:22.870 --> 10:28.150
+And that's what we need to kind of appreciate here and try to do better effectively.
+
+10:29.320 --> 10:32.010
+So this is the snack basically, right?
+
+10:32.050 --> 10:34.990
+I'm not going to go through the IP packets because we know all this stuff.
+
+10:34.990 --> 10:38.500
+The length is 60 and the server is sending something.
+
+10:38.500 --> 10:40.690
+So the source is the IP address of the server.
+
+10:40.720 --> 10:47.860
+The source I port is 80, the destination is me 51502.
+
+10:47.860 --> 10:50.500
+Obviously guys, this never made it to the server.
+
+10:50.500 --> 10:53.050
+This private IP address never made it to the server.
+
+10:53.080 --> 11:00.850
+The server is seen have seen my router's public IP address, but then my router changed that.
+
+11:00.850 --> 11:05.500
+So it just appears as if it's sent to me as a as a private IP.
+
+11:05.500 --> 11:05.830
+Right.
+
+11:05.830 --> 11:13.750
+So if that is being done on my server and this is sin ach dot means ach, I believe that's what I deduced
+
+11:13.750 --> 11:14.230
+here.
+
+11:14.350 --> 11:17.830
+Checksum sequence, another sequence, another ach.
+
+11:18.280 --> 11:24.250
+So now we're asking, you know, there's an acknowledgment number, the window size, the maximum we
+
+11:24.250 --> 11:30.250
+can get, but then also have the selected acknowledgement and we have a window scaling of actually larger
+
+11:30.250 --> 11:36.850
+nine compared to the six that we send server telling us, hey, I can handle more.
+
+11:37.030 --> 11:42.670
+So this is the window size that at the buffer size of the server and this is the window size as me as
+
+11:42.670 --> 11:43.620
+a client, right?
+
+11:44.960 --> 11:45.980
+And the length is zero.
+
+11:45.980 --> 11:55.850
+So nothing said the final IP packet to finish that to finish out the the handshake is this basically
+
+11:55.850 --> 12:00.770
+doing sin ach sin snack and then attacking the final one.
+
+12:00.770 --> 12:01.110
+Right.
+
+12:01.310 --> 12:02.350
+It's interesting.
+
+12:02.870 --> 12:08.960
+I don't know if you noticed, but the the second packet came in from the server.
+
+12:09.470 --> 12:11.630
+It didn't have the donut fragment.
+
+12:12.080 --> 12:20.720
+So me going to the server, my, my IP packets were flagged to do not fragment but coming from the server.
+
+12:20.870 --> 12:21.350
+Right.
+
+12:21.350 --> 12:22.730
+It did not have that flag.
+
+12:22.730 --> 12:23.510
+It's just interesting.
+
+12:23.510 --> 12:32.690
+That means the server decided not they don't care if the fragment or not and copy from a problematic
+
+12:32.690 --> 12:37.970
+right if you're using like a protocol like quick they the both servers have to agree to do not fragment
+
+12:38.210 --> 12:43.370
+in this particular case but that's that's not that's going to not going to be a problem in this case
+
+12:43.370 --> 12:44.300
+let's continue.
+
+12:44.420 --> 12:50.210
+So obviously this is the IP is the honor fragment length 52.
+
+12:50.210 --> 12:54.080
+That's what we send back 52 and then LAN zero.
+
+12:54.080 --> 12:58.310
+So notice that we didn't send any meaningful information in the handshake.
+
+12:58.340 --> 13:05.960
+It's just, well, there is data being sent, but it's not user data if you think about it.
+
+13:05.960 --> 13:06.320
+Right.
+
+13:06.350 --> 13:07.370
+It's just length zero.
+
+13:07.370 --> 13:11.360
+It's just so sad, you know, that we're wasting this stuff, right?
+
+13:11.500 --> 13:16.970
+That's what the TCP Fast Open takes advantage of that tries to send data with that and Cook does the
+
+13:16.970 --> 13:17.450
+same thing.
+
+13:17.480 --> 13:20.210
+Not quick as a protocol does that right.
+
+13:20.210 --> 13:27.140
+As I am a handshaking, I'm going to send data, I'm going to send the TLS handshake stuff, I'm going
+
+13:27.140 --> 13:29.480
+to cram as much data as possible.
+
+13:30.140 --> 13:32.960
+So then so that's us, right?
+
+13:32.960 --> 13:38.420
+Sending to the server, acknowledging heck we got it and that's the dot because just it's just an act
+
+13:38.450 --> 13:39.710
+that is no send anymore.
+
+13:40.880 --> 13:48.320
+And then we get an IP, another IP packet and this one is a large one you guys.
+
+13:49.130 --> 13:51.890
+Because what has the response from the server.
+
+13:52.220 --> 13:53.870
+No, that's actually not the response.
+
+13:55.060 --> 14:00.600
+Remember here, we're just about to send the actual get request.
+
+14:01.160 --> 14:01.170
+Now.
+
+14:01.900 --> 14:08.560
+That's going to be large because now I'm sending a request to the server and this is the application
+
+14:08.560 --> 14:11.690
+sending stuff, because this was just the handshake.
+
+14:11.710 --> 14:18.760
+Now we're actually doing business right again, little known fragment protocol.
+
+14:18.850 --> 14:19.690
+Look at the length.
+
+14:19.840 --> 14:20.860
+It's larger, right?
+
+14:20.860 --> 14:21.780
+412.
+
+14:21.790 --> 14:25.350
+So my it's still not the maximum segment size, which is good.
+
+14:25.360 --> 14:32.380
+My request was small, but if you have cookies and stuff like that, this can really shoot up into multiple
+
+14:32.380 --> 14:33.850
+segments easily.
+
+14:33.850 --> 14:34.170
+Right?
+
+14:34.210 --> 14:41.140
+And this is where the slow start algorithm kicks in and all the, you know, the congestion control
+
+14:41.140 --> 14:42.160
+and all that stuff.
+
+14:42.160 --> 14:42.550
+Right.
+
+14:43.060 --> 14:46.420
+Then 192168254144.
+
+14:46.690 --> 14:48.900
+Same source board destination.
+
+14:48.910 --> 14:51.400
+Now we're doing a push right p right.
+
+14:51.490 --> 14:57.230
+The flag now doing sequences, acknowledgment, one options.
+
+14:57.250 --> 14:59.260
+Nothing interested here, but this is it.
+
+14:59.500 --> 15:03.280
+The actual segment size is 360, right?
+
+15:03.790 --> 15:06.730
+But the total is 412.
+
+15:07.270 --> 15:14.950
+This tells me that we have an override of over 40, but it's actually more than that, right?
+
+15:15.070 --> 15:18.850
+Because of the other options that we keep adding for the headers.
+
+15:19.240 --> 15:21.370
+But the length is like 30, 60.
+
+15:22.420 --> 15:25.900
+And look at this HTTP length, 360.
+
+15:25.900 --> 15:26.520
+I like that.
+
+15:26.530 --> 15:29.380
+So this is something that TCP actually does.
+
+15:30.040 --> 15:30.380
+Sorry.
+
+15:30.760 --> 15:31.570
+TCP dump does.
+
+15:31.570 --> 15:31.930
+Yeah.
+
+15:32.350 --> 15:34.750
+So get slash http one one.
+
+15:34.750 --> 15:39.730
+So that's what the browser sent is sends a host header example dot com.
+
+15:40.300 --> 15:42.130
+This is the start of the protocol.
+
+15:42.130 --> 15:42.540
+Right.
+
+15:42.580 --> 15:45.160
+Get the method slash is the path.
+
+15:45.190 --> 15:46.180
+Get http one.
+
+15:46.180 --> 15:48.070
+One is the protocol host.
+
+15:48.070 --> 15:53.650
+The first header example is come to the second header upgrade in secure request one accept the third
+
+15:53.650 --> 15:55.630
+header to accept all this stuff.
+
+15:55.630 --> 15:56.110
+Right.
+
+15:56.620 --> 16:00.730
+And user agent Mozilla Macintosh Intel Web Kit.
+
+16:00.730 --> 16:07.120
+This is basically for backward compatibility, you know, because although I am using Safari, you should
+
+16:07.120 --> 16:08.770
+only see a user agent of Safari.
+
+16:08.770 --> 16:15.580
+But for backward compatibility reason we have to send everything because all the web servers will not
+
+16:16.090 --> 16:19.420
+were looking previously on only certain things.
+
+16:19.550 --> 16:20.010
+Right?
+
+16:20.050 --> 16:21.400
+Otherwise they will break.
+
+16:21.400 --> 16:21.570
+Right?
+
+16:21.580 --> 16:25.690
+So that's why we send everything except language and GZIP Right.
+
+16:26.200 --> 16:30.900
+I accept this algorithms to compress, to compress the HTTP content, right.
+
+16:30.910 --> 16:32.230
+Because the Steve is large, right.
+
+16:32.800 --> 16:34.570
+And that connection keep alive.
+
+16:35.340 --> 16:37.150
+And then the server.
+
+16:37.170 --> 16:38.370
+What does the server do?
+
+16:38.400 --> 16:41.130
+The server actually sends us.
+
+16:42.040 --> 16:42.610
+Wow.
+
+16:42.610 --> 16:43.360
+Look at that.
+
+16:43.960 --> 16:45.010
+That's the server.
+
+16:45.430 --> 16:46.870
+The server census.
+
+16:46.870 --> 16:49.990
+An IP packets that is empty.
+
+16:50.590 --> 16:51.070
+Right.
+
+16:51.340 --> 16:52.210
+I take that back.
+
+16:52.900 --> 16:59.620
+They send us a segment that is empty and the IP back is around 52 bytes.
+
+16:59.620 --> 17:00.910
+And that's just an act.
+
+17:00.940 --> 17:06.550
+We're just acknowledging that we received your massive segment.
+
+17:06.640 --> 17:07.270
+Right.
+
+17:07.470 --> 17:12.190
+Well, I'm just acknowledging that that acknowledgement.
+
+17:12.280 --> 17:12.910
+Right.
+
+17:12.910 --> 17:19.180
+Is delivered to me while the process and the web server is actually executing the request, because
+
+17:19.270 --> 17:20.770
+that was the request.
+
+17:20.860 --> 17:26.050
+And only when we receive that and it's delivered to the web server, which is example com, they will
+
+17:26.050 --> 17:33.820
+start processing that get request and then they will actually send me the content and look at this huge
+
+17:33.820 --> 17:39.520
+payload and that's where that reason hopefully you guys can see the start in the end.
+
+17:39.520 --> 17:40.960
+But this is a this is it.
+
+17:41.500 --> 17:41.920
+Right.
+
+17:42.640 --> 17:44.200
+So that's the whole content.
+
+17:45.110 --> 17:48.950
+And IP and let's stop TCP.
+
+17:50.150 --> 17:54.630
+The IP packet is entirely a kilobyte.
+
+17:54.650 --> 18:00.170
+That whole thing is one kind of and again, this is an and nice website.
+
+18:00.380 --> 18:05.600
+Imagine I go to, I don't know, Twitter or some I don't know, a website that is Facebook.
+
+18:05.870 --> 18:07.670
+This is going to be huge.
+
+18:07.670 --> 18:08.120
+Right.
+
+18:08.120 --> 18:10.970
+And this makes you kind of appreciate what you guys do.
+
+18:10.970 --> 18:15.950
+You know, on the back end, it's like anything you send is goes here, right?
+
+18:16.100 --> 18:21.680
+It's like Jose Da, of course, but sometimes we don't feel it.
+
+18:21.680 --> 18:30.650
+We cram Java scripts and spaces and stuff like that and add CSS and mass and or bootstrap and a lot
+
+18:30.650 --> 18:36.260
+of junk, you know, and all of this is, you know, taking it from our performance, if you think about
+
+18:36.260 --> 18:37.580
+it, let's continue.
+
+18:38.030 --> 18:40.850
+903 It this is the word the server sent.
+
+18:40.880 --> 18:48.170
+It sends to us again the same destination, port push, checksum, sequence, window size one, three,
+
+18:48.170 --> 18:49.460
+three, the scale.
+
+18:50.120 --> 18:59.780
+And so this is they're doing some rescaling here for the congestion window option no problem times length
+
+18:59.780 --> 19:08.960
+1022 you know so that's the actual length of the HTP, you know, count which is the segment.
+
+19:08.960 --> 19:10.910
+The segment is 1022.
+
+19:10.940 --> 19:16.220
+The actual the entire IP packet is 1074.
+
+19:16.220 --> 19:25.370
+But the actual actual useful content, the content length right is 648.
+
+19:25.640 --> 19:27.350
+How many links do we have?
+
+19:27.380 --> 19:29.450
+This is as an application developer.
+
+19:29.450 --> 19:32.030
+You guys might familiar with this because you've seen this.
+
+19:32.030 --> 19:33.890
+This is what you actually send back.
+
+19:33.890 --> 19:40.250
+That is the size of the HTML content, right, that we send back, which for some reason I don't see
+
+19:40.250 --> 19:40.760
+it here.
+
+19:40.770 --> 19:40.990
+Hmm.
+
+19:41.360 --> 19:48.230
+I think I should add another flag to actually display the content because it's not here because that's
+
+19:48.230 --> 19:48.390
+the.
+
+19:48.400 --> 19:48.530
+Yeah.
+
+19:48.920 --> 19:49.580
+Okay.
+
+19:49.970 --> 19:51.830
+It says geez, episodes compressed.
+
+19:51.830 --> 19:52.370
+Right.
+
+19:52.940 --> 19:59.210
+All that stuff, all the headers, there is an E tag obviously for caching purposes, the expiration
+
+19:59.210 --> 20:02.720
+day, blah, blah, blah blah, all that stuff and then.
+
+20:04.240 --> 20:05.200
+We do this?
+
+20:06.450 --> 20:08.390
+There is another IP packet.
+
+20:08.400 --> 20:09.120
+What is that?
+
+20:09.990 --> 20:13.050
+Says Dom fragment coming from Mina.
+
+20:13.500 --> 20:17.990
+I'm now acknowledging the server as say Hey server, I got you, buddy.
+
+20:18.000 --> 20:18.600
+I got you.
+
+20:18.600 --> 20:20.160
+I got your response.
+
+20:20.460 --> 20:21.240
+That's it.
+
+20:21.480 --> 20:21.950
+Right.
+
+20:21.960 --> 20:27.350
+And then the rest of the stuff I believe is, well, we'll find out what it is.
+
+20:27.360 --> 20:27.930
+Let's see.
+
+20:27.960 --> 20:30.390
+So there's another IP packet right here.
+
+20:31.560 --> 20:33.370
+Many jobs are here and.
+
+20:34.720 --> 20:35.590
+That.
+
+20:37.030 --> 20:38.000
+That IP packet.
+
+20:38.020 --> 20:38.800
+What does it do?
+
+20:40.070 --> 20:44.270
+It's a fin f, which means hey, V-neck.
+
+20:45.810 --> 20:47.700
+Who's who's initiated the fence.
+
+20:47.730 --> 20:49.740
+Fence means we actually close the connection.
+
+20:49.780 --> 20:50.300
+Right.
+
+20:51.260 --> 20:53.090
+So that's my browser probably.
+
+20:53.090 --> 20:56.780
+I see who's who's in ask me that's my machine.
+
+20:57.230 --> 20:59.500
+My machine says hey close the connection.
+
+20:59.510 --> 21:01.700
+Usually browsers don't close the connection directly.
+
+21:01.700 --> 21:01.970
+Let's see.
+
+21:02.000 --> 21:03.110
+When did that happen?
+
+21:04.210 --> 21:06.410
+It took us like what, 200?
+
+21:06.410 --> 21:08.090
+100 microseconds?
+
+21:08.420 --> 21:09.800
+No, I take that back.
+
+21:09.800 --> 21:10.430
+Look at that.
+
+21:11.740 --> 21:14.860
+It was the connection was closed after.
+
+21:16.340 --> 21:19.520
+11 seconds of inactivity.
+
+21:19.760 --> 21:25.150
+Because remember, I was talking after we received a request and these came in later.
+
+21:25.160 --> 21:27.200
+They came in 11 seconds later.
+
+21:28.250 --> 21:28.910
+Wait a minute.
+
+21:29.120 --> 21:30.140
+What kind of math?
+
+21:30.140 --> 21:31.040
+I do this.
+
+21:31.430 --> 21:32.500
+30 seconds.
+
+21:32.510 --> 21:34.190
+31 seconds.
+
+21:34.190 --> 21:36.260
+So exactly 31 seconds.
+
+21:36.260 --> 21:37.640
+You can say 30 seconds.
+
+21:37.640 --> 21:41.050
+So that's like a very specific number Safaree has.
+
+21:41.060 --> 21:43.220
+No, I love this stuff, you guys.
+
+21:43.220 --> 21:49.250
+You know, how much can you tell about the reverse engineering and application by just looking at what
+
+21:49.250 --> 21:50.480
+the output is?
+
+21:50.480 --> 21:50.990
+Look at this.
+
+21:50.990 --> 21:57.050
+We just discovered that the time out for Safari as a browser is 30 seconds.
+
+21:57.050 --> 22:03.440
+If nobody sent the browser of the client didn't sue and didn't send or didn't browser, it didn't do
+
+22:03.440 --> 22:04.670
+anything for 30 seconds.
+
+22:04.910 --> 22:11.360
+The browser will close the connection because that's the 30 seconds, because assume this is ten, it's
+
+22:11.360 --> 22:12.590
+very close to ten, right?
+
+22:12.590 --> 22:15.470
+Almost, almost like look, this is a microsecond, right?
+
+22:15.650 --> 22:16.340
+It's very close.
+
+22:16.340 --> 22:18.350
+So it's very close.
+
+22:18.350 --> 22:22.940
+If you if you do if you minus this, there will be exactly ten, 30 seconds.
+
+22:23.360 --> 22:24.860
+I love this stuff, you guys.
+
+22:24.950 --> 22:25.790
+Yeah, I know.
+
+22:25.790 --> 22:27.830
+I'm a little bit excited about this stuff.
+
+22:27.830 --> 22:30.020
+I know, but yeah.
+
+22:30.020 --> 22:39.260
+52 I had sitting Hey Finn Finn ate up Finn and I'm friend I'm offended I'm offended I'm finished Close
+
+22:39.260 --> 22:42.650
+it length that we continue what do we do?
+
+22:42.860 --> 22:43.730
+Who's this?
+
+22:44.060 --> 22:44.720
+Who is this?
+
+22:44.720 --> 22:46.190
+This is the server saying okay.
+
+22:46.220 --> 22:46.930
+Fennec.
+
+22:47.150 --> 22:47.840
+Fennec.
+
+22:47.840 --> 22:48.680
+Fennec.
+
+22:49.560 --> 22:52.660
+And then the server responded.
+
+22:52.710 --> 22:54.270
+Okay, I agree with your fan.
+
+22:54.570 --> 22:54.860
+Right.
+
+22:54.870 --> 22:57.030
+Again, these are empty stuff segments.
+
+22:57.030 --> 23:02.490
+And then the final thing, the server or the client actually will say, okay, ach, I ask your fan
+
+23:02.490 --> 23:08.700
+and that's where we're going to be put in a TCP wait state and that connection will be closed.
+
+23:08.880 --> 23:10.020
+And yeah.
+
+23:11.640 --> 23:13.410
+That was TCP, you guys.
+
+23:13.740 --> 23:18.130
+Pretty cool stuff if you ask me.
+
+23:18.150 --> 23:19.140
+I like that stuff.
+
+23:19.140 --> 23:23.640
+I like looking deep into all this stuff and I appreciate this stuff.
+
+23:23.640 --> 23:29.620
+So by the way, you can, by the way, export the TCP dump into a file and have fun with that storage
+
+23:30.140 --> 23:30.480
+store.
+
+23:30.510 --> 23:34.130
+Let let's just do a dash W and then get to B, dump it into a file.
+
+23:34.140 --> 23:37.680
+Obviously, you need to do a dash or to read that file.
+
+23:37.680 --> 23:40.480
+You cannot just use it or text editor to do that.
+
+23:40.500 --> 23:40.990
+All right, guys.
+
+23:41.010 --> 23:41.790
+See you in the next lecture.
+
+23:41.790 --> 23:46.860
+I hope you enjoy this stuff and make sure to read the course and if you if you're enjoying it.
+
+23:47.160 --> 23:47.910
+Appreciate you guys.
+
+23:47.910 --> 23:48.300
+Thank you.

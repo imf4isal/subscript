@@ -1,0 +1,826 @@
+WEBVTT
+
+00:00.150 --> 00:06.600
+One of the common mistakes that back in engineers and database engineers that lack networking knowledge
+
+00:06.600 --> 00:14.280
+do is expose their database instances to every possible connection.
+
+00:14.860 --> 00:15.750
+That's really bad.
+
+00:16.000 --> 00:18.330
+If you're network engineer, you know this is lesson one.
+
+00:18.330 --> 00:19.200
+You have to do this.
+
+00:19.650 --> 00:23.460
+But that's part of the bridge that I keep, you know, yapping about.
+
+00:23.460 --> 00:23.820
+Right.
+
+00:24.060 --> 00:30.590
+And this course, this is the bridge of the understanding that, okay, when I spun up a false cross
+
+00:30.630 --> 00:36.360
+database, when I opened up a MongoDB instance, when I spin up this particular server, a database
+
+00:37.020 --> 00:41.640
+who can connect to it by default, we don't we never ask the question.
+
+00:41.640 --> 00:46.950
+I never asked this question a few years back, you know, ten, 80 years ago or now.
+
+00:47.010 --> 00:50.520
+I never asked this question because I was I was busy writing code.
+
+00:50.850 --> 00:52.320
+I was busy building application.
+
+00:52.320 --> 00:54.450
+I was like, I'm not yeah, this is a database.
+
+00:54.780 --> 00:55.690
+Hey, I can connect.
+
+00:55.710 --> 00:57.120
+Sure, that's the best thing ever.
+
+00:58.290 --> 01:01.830
+But the mistake here is, like, just exposing.
+
+01:02.860 --> 01:03.700
+The port.
+
+01:04.840 --> 01:07.930
+For anyone to connect is a major big no no.
+
+01:09.790 --> 01:17.710
+We see articles every day o Elasticsearch database leaked with tens of millions of users.
+
+01:18.100 --> 01:18.490
+I don't know.
+
+01:18.490 --> 01:20.800
+Pizza Hut database leaked.
+
+01:21.100 --> 01:21.430
+What?
+
+01:21.880 --> 01:28.630
+A MongoDB 700 MongoDB instance as well as file and terabytes of data want it downloaded because the
+
+01:28.630 --> 01:33.100
+more you can connect to them is you can start guessing the password and yeah, the database will.
+
+01:34.270 --> 01:42.010
+We'll try to prevent you from connecting, but with a few tries you can get in, so why not prevent
+
+01:42.010 --> 01:43.090
+it from the first place?
+
+01:43.390 --> 01:44.800
+And that's what we're going to understand today.
+
+01:44.860 --> 01:49.030
+We're going to take exemple at the post gris configuration.
+
+01:49.450 --> 01:56.830
+Definitely one of the best here to understand how you can allow certain connections from certain IP
+
+01:56.830 --> 01:58.720
+addresses but prevent others.
+
+01:59.020 --> 02:01.300
+This kind of loops back to the IP section.
+
+02:01.300 --> 02:04.930
+So if you didn't watch that, go watch the IP section before jumping to that.
+
+02:05.680 --> 02:06.370
+Let's jump into it.
+
+02:07.180 --> 02:07.600
+All right.
+
+02:07.600 --> 02:14.080
+So if you have ever spun up Applescript database, which I spun up a lot in my database course, so
+
+02:14.080 --> 02:15.460
+check that out if you're interested.
+
+02:15.820 --> 02:19.990
+But the PostgreSQL comes with a lot of configuration.
+
+02:19.990 --> 02:28.000
+One of those configuration is this this is it, PG, MBA, and this allows you to configure the unique
+
+02:28.000 --> 02:31.150
+roles to the connections specifically.
+
+02:31.660 --> 02:36.340
+So it has a bunch of headers here and I'm really interested in this is this is the networking course.
+
+02:36.340 --> 02:40.430
+I'm really interested only in the address and that's pretty much it, right?
+
+02:40.660 --> 02:45.370
+The rest of the stuff is just database specific and we can go through them, but they're not really
+
+02:45.370 --> 02:46.390
+important for this course.
+
+02:46.990 --> 02:52.060
+So what we want to do is like go through these and kind of try to understand the different configurations
+
+02:52.060 --> 02:52.330
+here.
+
+02:52.330 --> 02:53.260
+How would we jump into it?
+
+02:53.500 --> 02:57.430
+So the first one, by default, it's a local connection only.
+
+02:57.640 --> 03:02.380
+And don't confuse this local connection with loopback because it's slightly different.
+
+03:03.520 --> 03:13.450
+So this is the IPC or UNIX domain configuration where a process can talk to all script process directly
+
+03:13.450 --> 03:15.040
+without any networking stack.
+
+03:15.040 --> 03:16.750
+So no TCP is involved.
+
+03:17.050 --> 03:21.310
+You immediately talk to the process directly if you know the port, right?
+
+03:21.310 --> 03:27.370
+So you don't even go to the loopback or 12700 is just direct connection.
+
+03:27.370 --> 03:28.600
+So it's way faster.
+
+03:28.600 --> 03:34.420
+So if you can get it right and if you're in the same process, if you can guarantee that you are in
+
+03:34.420 --> 03:39.460
+the same now process in the same machine, and you can talk to the boss because you can do that.
+
+03:39.460 --> 03:47.860
+But writing an app that can do that call fast can be a little bit challenging to get.
+
+03:47.860 --> 03:49.090
+Right, right.
+
+03:49.810 --> 03:51.730
+So but that's by default.
+
+03:51.730 --> 03:53.710
+So it's allowed if you're running the same.
+
+03:54.980 --> 03:55.460
+Uh.
+
+03:55.850 --> 04:01.220
+Host You can write an ad that talks to the process directly, but that's not what we're here for.
+
+04:01.490 --> 04:05.460
+We're here to talk about the different configuration with the comes to IP addresses.
+
+04:05.470 --> 04:14.180
+So the second layer is allow another app to talk to the TCP stack to the IP loopback IP address, which
+
+04:14.180 --> 04:16.670
+is this particular puppet, right?
+
+04:17.090 --> 04:27.830
+So this kind of hard code, 127.020.1 right slash 32 means hey, I want to apply the mess to all those
+
+04:27.830 --> 04:29.270
+five things, right?
+
+04:29.600 --> 04:37.400
+To all their four pairs, which means effectively this exact IP address can connect to me.
+
+04:37.730 --> 04:47.360
+What this does is like, okay, the 127.0.01, which is the loopback address for the IPv4 slash 32 of
+
+04:47.360 --> 04:53.050
+them is the subnet mask is 32 bit and means all the bits effectively.
+
+04:53.190 --> 04:54.590
+So the hub and message everything.
+
+04:55.040 --> 04:58.580
+So you have to match exactly 127.0.0.1.
+
+04:59.060 --> 05:04.760
+So of 127.0.0.3 tries to connect that will fail the connection.
+
+05:04.760 --> 05:12.710
+So it has to be 127.0.0.1 exactly that address to be able to connect so that local specific address.
+
+05:13.610 --> 05:19.670
+And there is another configuration here that allows us to configure, say if you don't like this view,
+
+05:19.670 --> 05:21.950
+for some reason you can specify the IP mask.
+
+05:21.950 --> 05:23.390
+And we talked about this, right?
+
+05:23.840 --> 05:25.520
+This is equivalent to this.
+
+05:25.910 --> 05:27.350
+You can specify the IP math.
+
+05:27.350 --> 05:30.830
+I say you're not comfortable with this classless, you know, approach.
+
+05:30.830 --> 05:35.930
+You can specify the IP mask and we're going to you to understand that this is very critical to understand
+
+05:35.930 --> 05:36.440
+the IP math.
+
+05:36.710 --> 05:43.280
+Now, the local is not really important here, but if your database has no business to be exposed from
+
+05:43.280 --> 05:50.210
+anyone, not in the same network, not outside of Internet, no one could connect to except the machine
+
+05:50.210 --> 05:53.300
+that you're currently on where POSCO serves.
+
+05:54.170 --> 06:02.600
+Then definitely add the online 127.0201 and will allow you to connect this particular connect communication.
+
+06:03.440 --> 06:09.710
+Now, if you have an IPV six interface, which most of our community configurations have, you can add
+
+06:09.710 --> 06:13.340
+that call and call in one which represent exactly like this.
+
+06:13.340 --> 06:21.170
+But this is the IPV six version 128 because we have 128 bit and the IPV six word, you know, and that
+
+06:21.170 --> 06:24.310
+will allow IPV six connections effectively, right?
+
+06:24.680 --> 06:32.420
+So if somehow the connection that you made came from IPv4 in this case and you only allow IPV six,
+
+06:32.420 --> 06:33.080
+it will fail.
+
+06:33.380 --> 06:34.790
+I don't, I can't think of a reason.
+
+06:34.790 --> 06:36.470
+Why would you want allow both?
+
+06:37.010 --> 06:40.400
+Maybe will more security, but whatever.
+
+06:40.430 --> 06:42.230
+So that's another example here.
+
+06:42.590 --> 06:49.220
+Local Host This should cover both the local host string and really depends.
+
+06:50.000 --> 06:59.480
+Local Host The string can resolve to an IPV six which is local host string can resolve to 127001 or
+
+06:59.810 --> 07:05.540
+can resolve also to call in calling one, which means the IPV six version.
+
+07:05.780 --> 07:07.990
+So this should cover both in this case, right?
+
+07:08.020 --> 07:12.230
+And so if you want to be safe, you can just use localhost in this case.
+
+07:12.920 --> 07:15.080
+And here's one of an interesting thing.
+
+07:15.080 --> 07:21.980
+So most of the time when you connect to a database, it's almost never right in the same, you know,
+
+07:21.980 --> 07:25.850
+your application is not in the same machine as the.
+
+07:27.150 --> 07:27.770
+Database.
+
+07:27.780 --> 07:28.050
+Right?
+
+07:28.050 --> 07:31.530
+So you need to allow that user.
+
+07:31.980 --> 07:34.080
+So what you can do is effectively.
+
+07:35.370 --> 07:39.420
+All right, I wish they had an example, but you can just type in the address of that machine.
+
+07:39.930 --> 07:44.310
+Let's say you are on a network and you're in a developer network and you built a post.
+
+07:44.760 --> 07:46.440
+You spin up a post bias database.
+
+07:47.280 --> 07:47.550
+Right.
+
+07:48.180 --> 07:53.130
+And in the configuration, you only want to allow one host and that is your development machine to connect
+
+07:53.130 --> 07:53.400
+to them.
+
+07:53.850 --> 07:57.390
+You can hard core the IP address of that machine right here.
+
+07:58.990 --> 08:04.000
+But we know that sometimes the IP address change, right.
+
+08:04.270 --> 08:08.560
+Because the if you will, assigning another one sometimes when you boot up, especially if you're are
+
+08:08.620 --> 08:10.090
+an organization at work.
+
+08:10.810 --> 08:16.900
+So what you do is you can do this, you can use the subnet concept here, right?
+
+08:17.020 --> 08:22.030
+If you know your subnet and that your subnet should not really change on a regular basis, it should
+
+08:22.030 --> 08:22.750
+stay static.
+
+08:22.750 --> 08:22.900
+Right.
+
+08:22.900 --> 08:29.260
+And this after configuration was done, if you know your subnet, then you can allow only your local
+
+08:29.260 --> 08:29.590
+subnet.
+
+08:29.590 --> 08:35.800
+Let's say you're in the engineer department and there is like a marketing department that is the sales
+
+08:35.800 --> 08:38.670
+department and everyone will have different subnet.
+
+08:38.680 --> 08:44.710
+You can check this by doing IP config or if something goes off mac and the next I think and that will
+
+08:44.710 --> 08:49.270
+give you that the subnet mask if you put that subnet mask right here.
+
+08:49.510 --> 08:56.500
+So you can put your IP address and slash 24 or use that approach in this case two five, five, two,
+
+08:56.500 --> 09:00.120
+five, five or it's not going to be 25525525525.
+
+09:00.120 --> 09:01.450
+It was going to be something different.
+
+09:02.180 --> 09:03.820
+But we actually show that.
+
+09:04.630 --> 09:06.970
+So let's actually show this, right.
+
+09:07.270 --> 09:12.550
+So if I'm I'll go to if config in my Mac I think in one does its IP config.
+
+09:12.940 --> 09:13.330
+Right.
+
+09:13.540 --> 09:17.200
+And I have so many interfaces because I have Docker and still there.
+
+09:17.500 --> 09:20.170
+So much garbage left done right.
+
+09:20.170 --> 09:22.650
+So what are we going to do here?
+
+09:22.720 --> 09:26.770
+Look for my IPv4 address, which is this?
+
+09:26.770 --> 09:31.480
+This is my IPv4 1921682 2250 42144.
+
+09:31.870 --> 09:37.420
+This is my subnet mask and obviously they try to be fancy and show it in hexadecimal.
+
+09:37.420 --> 09:42.190
+So this is effectively 255255255.0.
+
+09:42.940 --> 09:43.150
+Right.
+
+09:43.450 --> 09:50.020
+So either right you can do slash 24 because like 888, right?
+
+09:50.380 --> 10:00.100
+So you can just slash 24 by doing 192168. 254 dot the dot zero slash 24.
+
+10:00.520 --> 10:01.500
+And let's go back to them.
+
+10:03.630 --> 10:03.910
+Right.
+
+10:04.000 --> 10:04.810
+You can do this.
+
+10:05.790 --> 10:10.470
+So if I am if I want to allow my machine in this case, I'm going to say one nine, two and six once
+
+10:10.470 --> 10:13.110
+again to 250 followed zero slash 24 in my case.
+
+10:13.380 --> 10:20.370
+So any IP address, right, for this particular situation, 93 two from zero one, two, three, four,
+
+10:20.370 --> 10:23.460
+four up to 255 is allowed to connect.
+
+10:23.760 --> 10:27.690
+If you want to allow only one user, we can do this right.
+
+10:27.720 --> 10:28.860
+Slash to 32.
+
+10:29.880 --> 10:31.510
+So that's kind of a trick.
+
+10:31.530 --> 10:33.330
+You can either remove that altogether.
+
+10:33.510 --> 10:34.920
+I believe you should be able to.
+
+10:35.220 --> 10:36.180
+Or you can just do this.
+
+10:36.180 --> 10:36.920
+Less than 82.
+
+10:36.960 --> 10:40.290
+32 means I have to match identically.
+
+10:40.290 --> 10:40.560
+Right.
+
+10:40.800 --> 10:41.310
+All of it.
+
+10:42.030 --> 10:44.370
+So you can put your hardcoded IP address.
+
+10:44.370 --> 10:44.690
+So.
+
+10:44.850 --> 10:50.850
+So here you would do this in a configuration where you have a developer machine and only that should
+
+10:50.850 --> 10:53.400
+access the Posco's database and you want to be secure.
+
+10:53.700 --> 10:55.350
+It's always a good practice to do that.
+
+10:55.430 --> 10:55.770
+You know.
+
+10:57.690 --> 10:59.580
+If you don't care, right?
+
+10:59.580 --> 11:06.660
+If you're if you're in an local network, you can just replace it with actually saying all and everybody
+
+11:06.660 --> 11:07.210
+will connect.
+
+11:07.230 --> 11:08.160
+Bad idea.
+
+11:08.430 --> 11:09.560
+Very, very bad idea.
+
+11:09.570 --> 11:15.390
+I know in some of my tutorials I did that, but I was using Docker and some local and I destroyed the
+
+11:15.390 --> 11:16.200
+Docker database.
+
+11:16.590 --> 11:19.650
+It literally had nothing but never use all obviously.
+
+11:19.650 --> 11:25.350
+And I always say that and all my examples never, never, never use all I.
+
+11:25.380 --> 11:30.090
+So you have to specify in a production environment you have you have to think about, okay, who can
+
+11:30.090 --> 11:31.680
+connect and be pragmatic.
+
+11:31.950 --> 11:35.080
+It's like I should I allow all these guys to connect?
+
+11:35.080 --> 11:41.250
+Should I also this and test and verify you can allow specific domains even, right?
+
+11:41.640 --> 11:44.730
+So you can play with that and then different configurations here.
+
+11:44.910 --> 11:51.630
+So it is another thing, what if you don't want to allow it's like you want to actually allow everyone
+
+11:51.630 --> 11:53.250
+except certain people.
+
+11:53.820 --> 11:56.580
+I don't know why it would do that, but you can do this.
+
+11:56.910 --> 12:01.650
+You can specify IP address and reject that IP address, slash 32.
+
+12:01.650 --> 12:03.840
+In this case, it will match all the whole thing.
+
+12:03.840 --> 12:04.110
+Right.
+
+12:05.310 --> 12:08.730
+So in this particular case, let's take a quiz, if you will.
+
+12:08.730 --> 12:10.020
+What does this mean, guys?
+
+12:10.110 --> 12:19.260
+Man, let's zoom in so you can see this mean allow everyone slash 16 is the first to buy, right?
+
+12:19.680 --> 12:20.880
+It's bit eight bit.
+
+12:20.880 --> 12:22.590
+So 1816.
+
+12:22.930 --> 12:23.220
+Right.
+
+12:23.520 --> 12:24.750
+I mean, this remains the same.
+
+12:24.990 --> 12:26.040
+This can be anything else.
+
+12:26.790 --> 12:29.450
+So this is a large subnet if you think about.
+
+12:29.460 --> 12:29.760
+Right.
+
+12:29.880 --> 12:39.330
+So this means let's say you have a subnet 1.0 and a substituted zero, you're allowing everyone effectively
+
+12:39.330 --> 12:47.070
+an all the on all the companies like my company, we use the ten zero zero approach, but we have so
+
+12:47.070 --> 12:49.260
+many subnets and we have so many departments.
+
+12:49.260 --> 12:57.960
+So I really need to be very, uh, you know, digital and I don't know if that's all right.
+
+12:58.260 --> 13:01.470
+So it's like who can connect to me as a database, right?
+
+13:02.160 --> 13:03.630
+So you can control this.
+
+13:03.990 --> 13:12.270
+But I thought this was a very interesting kind of video to make and to show you guys how this is working.
+
+13:12.480 --> 13:12.740
+Right.
+
+13:12.750 --> 13:13.860
+It's it's very critical.
+
+13:14.160 --> 13:19.710
+Any database, the this is like like 101 DB 101.
+
+13:20.010 --> 13:27.210
+If you spent a database, let only certain host connect to it, right?
+
+13:27.510 --> 13:31.890
+Because you don't want anyone to connect to it because there was a good many mistakes were okay I'm
+
+13:31.890 --> 13:32.700
+just testing.
+
+13:32.700 --> 13:33.510
+Yeah, yeah, yeah.
+
+13:33.900 --> 13:35.460
+Ole, ole, ole ole ole.
+
+13:35.940 --> 13:42.570
+And then allow everybody I'm just testing is loyal local my database I don't care but then you start
+
+13:42.570 --> 13:47.190
+building the app and you forget right and you say, well this is the configurations I used.
+
+13:47.490 --> 13:48.810
+Okay, let's take it as is.
+
+13:49.320 --> 13:53.790
+Could you both use limit on a production and expose it to a public IP errors?
+
+13:54.210 --> 14:00.030
+And since the database you said all it's going to start listening on all interfaces.
+
+14:00.450 --> 14:02.010
+That's the first bad thing, right?
+
+14:02.010 --> 14:04.560
+So that's another configuration that we can control as well.
+
+14:04.770 --> 14:07.680
+It's like, what do you what what do you want to listen to?
+
+14:07.680 --> 14:08.790
+Let's find that, actually.
+
+14:09.090 --> 14:09.780
+There you go.
+
+14:10.080 --> 14:10.680
+I found it.
+
+14:11.230 --> 14:12.750
+It's called the listen addresses.
+
+14:12.750 --> 14:13.050
+Right.
+
+14:13.710 --> 14:19.170
+So the Listen addresses, that's another configuration you have to play with, like with a port, which
+
+14:19.170 --> 14:22.020
+is five, four, three, two by default that the pulse goes for.
+
+14:22.440 --> 14:27.480
+But you can specify what addresses you want to listen on.
+
+14:27.750 --> 14:29.790
+And if I default, let's write the three through this.
+
+14:30.630 --> 14:38.160
+Specify the TCP IP addresses on which the server is to listen for connections from the client application.
+
+14:38.610 --> 14:47.280
+The value takes the form of a comma separated list hostnames a numeric so the special and three asterisk
+
+14:47.280 --> 14:49.250
+correspond to all available interfaces.
+
+14:49.260 --> 14:50.760
+And obviously you don't want that.
+
+14:51.520 --> 14:59.700
+We we talked about this right in the lesson lecture 000 the same thing column column means all IPV six
+
+14:59.700 --> 15:00.930
+addresses, right?
+
+15:00.930 --> 15:06.030
+So you need to actually specify what you want to specify here.
+
+15:06.210 --> 15:13.380
+So yeah, you can play with basically the listen addresses and specify exactly what you want to listen
+
+15:13.380 --> 15:18.420
+to because again, we don't want a malicious connections to be randomly connected to us, right?
+
+15:18.810 --> 15:25.590
+But even that right Postgres allows us to control who can connect you even if you listen to a public
+
+15:25.590 --> 15:26.880
+IP address accidentally.
+
+15:26.880 --> 15:30.480
+So yeah, 000 might be, I don't know, the default here.
+
+15:30.840 --> 15:31.070
+Right.
+
+15:31.290 --> 15:36.840
+And you're going to listen to everything, but you can choose who can connect to you.
+
+15:36.840 --> 15:40.200
+So you can you can you can control both parameters.
+
+15:40.200 --> 15:42.870
+What post will listen to as a server.
+
+15:43.270 --> 15:43.380
+Right.
+
+15:43.540 --> 15:44.130
+And the port.
+
+15:44.460 --> 15:52.320
+And then finally and finally who can connect you using there should be a configuration that you can
+
+15:52.320 --> 15:56.700
+specify here so you can see it databases very, very as a summary.
+
+15:56.700 --> 15:56.910
+Right.
+
+15:57.210 --> 15:59.880
+And it was a very critical piece of resource.
+
+16:00.270 --> 16:02.760
+So nobody can just cannot do it.
+
+16:03.180 --> 16:11.910
+You really need a secure way of blocking connections that that will never be able to connect the right.
+
+16:13.130 --> 16:20.480
+And I understand yet connecting to a database use W.A.S.P. connection is kind of different than actually
+
+16:20.480 --> 16:25.610
+connecting with a username and password and excuse me query, but the moment you have a connection,
+
+16:26.420 --> 16:30.560
+that's step one and step one takes a long time.
+
+16:31.370 --> 16:35.540
+And step one, you don't want the hacker to reach step one.
+
+16:35.900 --> 16:41.210
+I block it as a start because the moment they step one, they can start guessing their passwords and
+
+16:41.210 --> 16:41.690
+username.
+
+16:41.930 --> 16:45.740
+And boy, people just use random same password all the time.
+
+16:45.740 --> 16:47.450
+They both go slash postgres, right?
+
+16:47.780 --> 16:48.050
+Right.
+
+16:48.380 --> 16:53.810
+So that was like a elected, I thought, very valuable for network engineering for effective back end
+
+16:53.810 --> 17:00.260
+because it's really something I see all the time, all the new ways, every time all this data was leaked,
+
+17:00.440 --> 17:01.520
+this database leak.
+
+17:01.670 --> 17:02.150
+Why?
+
+17:02.510 --> 17:03.320
+Because of this.
+
+17:04.250 --> 17:08.990
+So I believe this is a critical and just I want to listen on and just who can connect you.
+
+17:09.170 --> 17:11.950
+And now you know the IP protocol.
+
+17:11.960 --> 17:15.020
+You can you you can eat and drink.
+
+17:15.020 --> 17:17.900
+This stuff is so simple, so elegant.
+
+17:18.830 --> 17:19.610
+See in the next one.
+
+17:20.220 --> 17:20.690
+Enjoy.

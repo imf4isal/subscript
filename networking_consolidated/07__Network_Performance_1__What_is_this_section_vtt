@@ -1,0 +1,61 @@
+WEBVTT
+
+00:00.090 --> 00:02.490
+All right, guys, let me talk about this section a little bit.
+
+00:02.730 --> 00:05.280
+Networking, consent for effective back in applications.
+
+00:05.550 --> 00:12.210
+Finally, we reach the bridge that we want to cross between the network engineering fundamental responsible
+
+00:12.210 --> 00:19.710
+concept that we talked about for a few sections now and now the actual practical, you know, linkage
+
+00:19.710 --> 00:26.040
+by which we end things that we encounter on a daily basis.
+
+00:26.160 --> 00:32.460
+Performance, latency, effectiveness, all of these things we're going to understand by taking these
+
+00:32.670 --> 00:40.470
+real life examples, which has some some resemblance of the networking and the back end engineering
+
+00:40.770 --> 00:41.380
+concept.
+
+00:41.460 --> 00:47.970
+So while we did mention most of these concepts across the lectures, you know, this is where I try
+
+00:47.970 --> 00:54.990
+as much as possible to cement these ideas and kind of link them to practical back end applications and
+
+00:54.990 --> 00:55.920
+front end application.
+
+00:55.920 --> 01:01.740
+Because those is going to show up because guess what, TCP or UDP are the communication or two sizes,
+
+01:01.740 --> 01:02.680
+not just one, right?
+
+01:02.910 --> 01:07.680
+So there are configurations that you can do in the client side that kind of at the back end and vice
+
+01:07.740 --> 01:08.190
+versa.
+
+01:08.250 --> 01:14.550
+So this is a very critical section I'm going to talk about in detail, talk about all these concept
+
+01:14.550 --> 01:18.030
+algorithms that affect and this section is going to continue to grow.
+
+01:18.270 --> 01:23.100
+These are a few lectures right now, but we're going to continue to grow and add and add more to it.
+
+01:23.400 --> 01:24.510
+How about we jump into it?
+
+01:24.510 --> 01:25.260
+Let's jump into it.

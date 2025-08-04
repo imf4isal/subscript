@@ -3,12 +3,14 @@ import argparse
 from pathlib import Path
 from find_subtitle_files import find_subtitle_files
 from extract_subtitles import extract_subtitles
+from consolidate_subtitles import consolidate_subtitles
 
 def main():
     parser = argparse.ArgumentParser(description='Extract subtitle files from nested directories')
     parser.add_argument('source', help='Source directory to search for subtitles')
     parser.add_argument('-o', '--output', help='Output directory (default: extracted_subtitles)')
     parser.add_argument('--dry-run', action='store_true', help='Show what would be extracted without copying')
+    parser.add_argument('--consolidate', action='store_true', help='Also create consolidated course document')
     
     args = parser.parse_args()
     
@@ -35,6 +37,14 @@ def main():
     print(f"\nExtracting to: {args.output or 'extracted_subtitles'}")
     extracted = extract_subtitles(subtitle_files, args.output)
     print(f"\nSuccessfully extracted {len(extracted)} files")
+    
+    ## consolidate if requested
+    if args.consolidate:
+        output_dir = Path(args.output or 'extracted_subtitles')
+        consolidated_path = output_dir / 'consolidated_course.md'
+        print(f"\nConsolidating subtitles into: {consolidated_path}")
+        consolidate_subtitles(extracted, consolidated_path)
+        print("Consolidation complete!")
 
 if __name__ == "__main__":
     main()

@@ -1,0 +1,835 @@
+WEBVTT
+
+00:00.120 --> 00:06.030
+While we talked about MSA as the maximum segment size, the maximum transmission unit, we really need
+
+00:06.030 --> 00:09.130
+to talk about another concept, which is the path to you as well.
+
+00:09.270 --> 00:09.590
+Right.
+
+00:09.810 --> 00:15.960
+This lecture will I can explain this and kind of cement any ideas you might have, any gaps that you
+
+00:15.960 --> 00:16.500
+might had.
+
+00:16.740 --> 00:20.070
+Hopefully this lecture is going to glue everything together.
+
+00:20.370 --> 00:24.240
+How large the packet can get is the answer here.
+
+00:24.600 --> 00:29.970
+The maximum thickness size must fit in a single aim to you, but can that grow any larger?
+
+00:31.430 --> 00:33.890
+So TCP Layer four unit is segment.
+
+00:33.890 --> 00:37.070
+We don't know this and we've been repeating this across the course, right.
+
+00:37.370 --> 00:40.160
+The segment slides it into an IP packet, which is layer three.
+
+00:40.340 --> 00:43.490
+The IP packet now has the segment plus its headers.
+
+00:43.730 --> 00:47.000
+The IP packet slides into a layer to frame.
+
+00:47.000 --> 00:47.420
+Right.
+
+00:49.250 --> 00:53.540
+And that's your Ethernet or Wi-Fi Ethernet, you know, back a frame.
+
+00:53.990 --> 00:58.130
+And then the frame has a fixed size based on your networking configuration.
+
+00:58.130 --> 01:00.950
+That's the limitation of the network interface.
+
+01:01.370 --> 01:06.950
+You know that network card, how much can this handle now?
+
+01:07.640 --> 01:13.190
+And the frame itself has a size and the size of the frame determines the size of the segment.
+
+01:13.190 --> 01:14.810
+Actually, we talked about this, right?
+
+01:15.230 --> 01:17.390
+The size of the frame.
+
+01:19.610 --> 01:21.410
+Derives everything above it.
+
+01:21.530 --> 01:26.360
+It's the most critical thing ever, and it's disappearing in 4 seconds.
+
+01:26.600 --> 01:30.500
+With the hardware empty, you know, I'm I'm the lowest level here.
+
+01:31.190 --> 01:33.920
+Maximum transmission unit is the size of the frame.
+
+01:34.220 --> 01:35.420
+We're a layer two here.
+
+01:35.720 --> 01:36.470
+And you can go.
+
+01:36.470 --> 01:37.730
+This is my actually my network.
+
+01:37.730 --> 01:42.890
+And I now see the empty you know, you can you can set that in your router.
+
+01:42.890 --> 01:50.270
+You can also set them to you if you want to run, but your ISP will only accept certain empty you at
+
+01:50.270 --> 01:50.900
+the end of the day.
+
+01:50.900 --> 01:52.280
+But you can change that if you want.
+
+01:52.310 --> 01:53.680
+Play with that, right?
+
+01:53.720 --> 02:00.080
+Hopefully you don't you don't terminate your internet during the process.
+
+02:00.500 --> 02:04.580
+So it is it is a network interface property and it defaults to 1500.
+
+02:04.790 --> 02:09.680
+Now that's that's why we talked about the Internet and our Internet is just 1500, you know, so don't
+
+02:09.680 --> 02:13.310
+bother sending anything larger than 1500 in the Internet.
+
+02:13.990 --> 02:21.560
+You know, you might say, Hussein, I never actually when I write, when I do a curl or a Python request
+
+02:21.560 --> 02:26.720
+that I know just fetch, I never or Axios, I never actually sit these thing.
+
+02:27.260 --> 02:28.130
+Yeah, you're right.
+
+02:28.130 --> 02:33.410
+Because it is decided by the protocol or the API below you write.
+
+02:34.100 --> 02:38.060
+All of this thing at the end of the day is just writing the segment, right?
+
+02:38.060 --> 02:42.830
+And writing the segments eventually writes the IP package, which is all code, right at the end of
+
+02:42.830 --> 02:43.250
+the day.
+
+02:43.580 --> 02:50.690
+But we also used you guys on using libraries and myself included, right?
+
+02:50.930 --> 02:55.090
+We barely know anything that is happening behind the scenes, unfortunately.
+
+02:55.100 --> 02:55.270
+Right.
+
+02:55.550 --> 03:01.040
+So it's really healthy to go and from time to time to kind of explore like what is going on beneath
+
+03:01.040 --> 03:01.160
+me?
+
+03:01.160 --> 03:03.380
+Can I can I actually write an app?
+
+03:03.410 --> 03:06.920
+Yeah, you can write the SI app that writes an IP packet.
+
+03:06.920 --> 03:07.670
+That's pretty much it.
+
+03:07.670 --> 03:09.680
+I don't think you can do that in Node.js.
+
+03:09.680 --> 03:09.950
+Right.
+
+03:10.040 --> 03:11.240
+Especially with this idea at all.
+
+03:12.410 --> 03:16.160
+But yeah, some networks have dump of frames that can go up to 9000 bytes.
+
+03:16.970 --> 03:20.990
+And the the question is, are there networks with larger arm to use?
+
+03:20.990 --> 03:22.010
+And we talked about this.
+
+03:22.190 --> 03:22.550
+Right.
+
+03:23.710 --> 03:29.350
+Or does Amazon use more than 9000 to use internally?
+
+03:29.950 --> 03:30.940
+I would imagine, yeah.
+
+03:31.300 --> 03:38.080
+I wouldn't be I would be surprised because the larger if it's internal and you are talking to each other
+
+03:38.080 --> 03:41.740
+and you own all the hardware and everything, why not?
+
+03:42.280 --> 03:46.900
+But I don't know what's the limitation if you go for that and that obviously you are going to need more
+
+03:46.900 --> 03:47.470
+processing.
+
+03:47.470 --> 03:52.810
+So you need really beefy network interfaces that handles that, but.
+
+03:54.630 --> 03:56.280
+The larger the frame.
+
+03:57.930 --> 04:00.030
+Then the larger the frame.
+
+04:00.270 --> 04:02.850
+Scott the pace, the larger the frame.
+
+04:03.120 --> 04:03.570
+Guys.
+
+04:04.800 --> 04:12.270
+Uh, that lower the latency again because you're going to shove more content in your frame and then
+
+04:12.270 --> 04:15.720
+you going to send it once and once it reaches.
+
+04:16.020 --> 04:19.800
+You don't have to send multiple frames anymore, right.
+
+04:19.830 --> 04:24.660
+Because you see innocent one frame or one large IP packet.
+
+04:25.320 --> 04:30.210
+Yomi has really delicious, you know, large IP jumble like a hot dog or something.
+
+04:30.210 --> 04:38.910
+You know, I don't I called Dumbo is like in this big IP packet and that goes you if it reaches in one
+
+04:38.910 --> 04:39.780
+piece, right.
+
+04:39.780 --> 04:46.860
+Assuming that and that's one limitation, you don't know if the IP back at that large IP back want arrive
+
+04:47.340 --> 04:56.460
+uncorrupted if you have hard you know a good transmission and good network with low you know A2 animation
+
+04:56.460 --> 04:57.870
+then yeah why not.
+
+04:57.870 --> 05:07.430
+But if if it's the network is unstable, then going larger is probably a bad idea because in this case
+
+05:07.890 --> 05:11.370
+any bit that is flipped, that IP packet is invalid.
+
+05:11.370 --> 05:11.640
+Right.
+
+05:12.390 --> 05:18.360
+And lot the larger it gets anything that get wrong, the whole thing you have to send again.
+
+05:18.360 --> 05:22.680
+So you get you can argue that the larger the bucket, the worse it can get.
+
+05:23.130 --> 05:30.660
+Again, this cloud provider probably did the research and and it probably decided on the optimal empty
+
+05:30.660 --> 05:31.470
+use sizes.
+
+05:31.470 --> 05:37.410
+And we're here just obviously discussing I never walked in a cloud provider before, so I don't know.
+
+05:37.890 --> 05:39.840
+But this is just fascinating to me.
+
+05:39.840 --> 05:45.030
+And they always if if any of you guys are actually working on Amazon or the cloud provider and, you
+
+05:45.030 --> 05:46.860
+know, these kind of deals and you can share.
+
+05:46.860 --> 05:47.250
+Sure.
+
+05:47.670 --> 05:48.330
+They'll be awesome.
+
+05:48.600 --> 05:48.870
+All right.
+
+05:48.870 --> 05:49.590
+So I'd be back.
+
+05:49.610 --> 05:50.310
+Adam, to you.
+
+05:50.700 --> 05:53.700
+The IBM to you usually equals the hardware them to you.
+
+05:54.390 --> 06:01.950
+Usually we say it usually and I, I mentioned IBM to you like think, oh, this, this is the IBM Beckett
+
+06:01.950 --> 06:02.310
+size.
+
+06:02.310 --> 06:03.230
+If you think about it right.
+
+06:03.810 --> 06:10.050
+It's usually equal to the hardware you which is the low level in network interface and deal one IP package
+
+06:10.050 --> 06:17.100
+should and I add this code should fit in a single frame unless you have fragmentation.
+
+06:17.100 --> 06:17.400
+Right.
+
+06:17.910 --> 06:19.440
+And then you have fragmentation.
+
+06:19.440 --> 06:20.430
+All bets are off.
+
+06:21.090 --> 06:26.850
+Large IP packets will be a fragment and do multiple frames and these frames have to be assembled.
+
+06:26.850 --> 06:37.080
+And then the frame itself has to have bits that says, Hey, please go and assemble this into a single
+
+06:37.080 --> 06:38.040
+IP packet, right?
+
+06:38.430 --> 06:46.560
+And if someone ran into a cover that in some in one or pieces of a news that I did where someone uses
+
+06:46.560 --> 06:52.980
+that fragmentation to exploit that uses exactly that right to trick the fragmentation.
+
+06:53.520 --> 06:56.430
+Uh, I don't, I don't quite remember.
+
+06:56.430 --> 07:03.690
+I'm going to reference the, the article here that I was, if I remember, I'll add a link here to one
+
+07:03.690 --> 07:08.010
+of the attacks actually that uses fragmentation to do that.
+
+07:08.010 --> 07:09.870
+And pretty nasty stuff here.
+
+07:09.870 --> 07:12.480
+But the fragmentation can be really bad here.
+
+07:13.680 --> 07:18.360
+Maximum segment size, it is determined based on them to you.
+
+07:18.420 --> 07:23.430
+Obviously the larger you can get is them to you minus obviously the headers and you're going to get
+
+07:23.460 --> 07:25.200
+no one for 60.
+
+07:25.560 --> 07:27.330
+Obviously, that's the.
+
+07:28.340 --> 07:30.050
+Golden standard size.
+
+07:30.050 --> 07:31.040
+He had one for 60.
+
+07:31.400 --> 07:38.870
+So now if you think about it, now you send data, right when you want to send actual data for your
+
+07:38.990 --> 07:39.710
+application.
+
+07:40.720 --> 07:41.740
+Think about this number.
+
+07:42.980 --> 07:43.790
+This number is the goal.
+
+07:43.790 --> 07:44.300
+The number?
+
+07:45.850 --> 07:52.780
+If you can send something in 140, 60, write one for 60, then that will fit into a single.
+
+07:54.060 --> 07:54.750
+Segment.
+
+07:55.630 --> 07:56.100
+All right.
+
+07:56.520 --> 07:59.250
+Single segment is better than two segments, right?
+
+07:59.490 --> 08:04.590
+If you can cram everything into one kilobyte, if you can compress locally in the in the client, then
+
+08:04.590 --> 08:07.020
+and send it in one K, that's good.
+
+08:07.170 --> 08:10.050
+You know, because you can send one segment instead of three, right?
+
+08:10.050 --> 08:15.990
+Because three while you can, you can't guarantee that sometimes the three segments can go together
+
+08:15.990 --> 08:21.310
+concurrently and reach at the same time based on the flow on congestion control.
+
+08:22.110 --> 08:27.420
+You can guarantee definitely a single segment will definitely be pushed immediately if it's failed,
+
+08:27.420 --> 08:33.780
+obviously, and you don't have to go to them like Nigel algorithm that we're going to talk about in
+
+08:33.780 --> 08:34.140
+a minute.
+
+08:35.340 --> 08:40.700
+So if you're sending 146 60 byte, exactly, that will fit nicely into a single image.
+
+08:40.830 --> 08:44.580
+So just keep that in mind right now.
+
+08:46.170 --> 08:46.910
+Hopefully.
+
+08:46.920 --> 08:55.510
+What are you thinking now as you as you're reading this and as as you're listening to this lecture and
+
+08:55.510 --> 09:01.740
+the course, what you will be doing is trying to link the work you do with this.
+
+09:03.490 --> 09:11.050
+And now hopefully after this course, everything will change for you because now you will appreciate
+
+09:11.380 --> 09:13.060
+the stack that you're using.
+
+09:13.720 --> 09:14.020
+Right.
+
+09:14.440 --> 09:18.700
+And you will have more curiosity when it comes to using APIs.
+
+09:18.880 --> 09:24.910
+It's like, okay, if I send certain data, like how much segments are my sending?
+
+09:25.420 --> 09:33.040
+Because you want to send as minimum number of segment and I packed full, you know, and only useful
+
+09:33.040 --> 09:38.050
+information because remember he's sending an HDB request and that transfer to multiple segments.
+
+09:38.350 --> 09:45.190
+Those segments have to hover over an order and they have to be assembled to be a request and only if
+
+09:45.190 --> 09:51.100
+they arrive all of them together, then they will be delivered to the application as a request.
+
+09:51.880 --> 09:52.200
+Right.
+
+09:52.210 --> 09:55.750
+If any segment that is missing, you can't do that.
+
+09:55.780 --> 09:59.710
+And that as obviously it fits nicely into a single frame.
+
+09:59.720 --> 10:02.560
+I took this picture from Cisco.
+
+10:03.340 --> 10:04.690
+Let me hide myself a little bit.
+
+10:06.430 --> 10:09.400
+So I thought this picture from Cisco is actually pretty good.
+
+10:10.030 --> 10:12.400
+This explains what we're trying to do nicely.
+
+10:12.400 --> 10:12.640
+Right.
+
+10:12.850 --> 10:14.770
+So this is the whole entire frame, right?
+
+10:15.790 --> 10:19.300
+And this is the 14 header rainbow and the Ethernet.
+
+10:19.590 --> 10:21.970
+And this is the 20 bytes.
+
+10:21.970 --> 10:24.370
+IP header, again, can go up to 60.
+
+10:24.760 --> 10:26.200
+This is the TCP header.
+
+10:27.070 --> 10:28.750
+20 can go up to 60.
+
+10:28.750 --> 10:29.830
+And all of these are here.
+
+10:30.160 --> 10:31.210
+This is the payload.
+
+10:32.200 --> 10:34.850
+And this is the hardware, not you, right?
+
+10:35.260 --> 10:37.300
+That's the maximum transmission unit, right?
+
+10:38.440 --> 10:40.300
+This is the frame.
+
+10:40.300 --> 10:45.250
+And this is the maximum transmission unit and the IP packet.
+
+10:45.850 --> 10:52.900
+The IP transmission unit is all this includes the IP, but the IP segment is was is everything but these
+
+10:52.900 --> 10:53.260
+headers.
+
+10:53.440 --> 10:59.560
+That's how much you actually get in the TCP MSI site, only this particular payload.
+
+10:59.560 --> 11:05.110
+So kudos to the Cisco for doing this beautiful dagger I found.
+
+11:05.110 --> 11:05.820
+It's fascinating.
+
+11:05.920 --> 11:08.140
+I want to share it.
+
+11:08.530 --> 11:14.530
+Another critical concept here, guys, and this is one of the most important thank you to return to
+
+11:14.530 --> 11:22.810
+sender so empty use our network properties right so they are different in every interface.
+
+11:23.410 --> 11:29.020
+So if you have a network like this and you have 9000 of you here, you have 1500, you have five, 12
+
+11:29.020 --> 11:29.740
+for some reason.
+
+11:29.740 --> 11:34.630
+I don't know why, but just an example here to break things and you have 1500 here.
+
+11:36.620 --> 11:37.760
+How do you know?
+
+11:38.030 --> 11:38.660
+What's your.
+
+11:39.560 --> 11:42.200
+So you can determine the maximum segment size?
+
+11:42.320 --> 11:43.670
+You have no idea.
+
+11:44.570 --> 11:45.190
+So you have to.
+
+11:45.500 --> 11:48.390
+To taste the network in order to find them.
+
+11:48.410 --> 11:51.410
+Do you meet path into you?
+
+11:51.410 --> 11:52.070
+Discovery.
+
+11:52.070 --> 11:58.850
+That particle discovers the lowest into you and that is what gets used.
+
+11:59.150 --> 12:00.110
+So how does it work?
+
+12:00.500 --> 12:02.180
+MTA is the network interface property.
+
+12:02.210 --> 12:04.910
+Each host can have different value as we talked about.
+
+12:05.180 --> 12:07.790
+You really need to use this more or less them to you.
+
+12:07.820 --> 12:08.540
+We talked about this.
+
+12:08.540 --> 12:10.100
+Why you cannot use a larger one.
+
+12:10.430 --> 12:13.540
+Because if you use the larger one, then you will have to fragment.
+
+12:13.550 --> 12:13.850
+Right?
+
+12:14.630 --> 12:19.910
+But then can you help determine the MM2 in the network path?
+
+12:20.480 --> 12:22.250
+That's how it that's how it works.
+
+12:22.250 --> 12:23.780
+So that's what it does.
+
+12:23.810 --> 12:25.400
+How it works is going to be in a minute.
+
+12:26.300 --> 12:29.600
+Clients and an IP packet with its empty you with a flag.
+
+12:29.630 --> 12:30.350
+That's how it works.
+
+12:30.740 --> 12:35.470
+So the client will send its on them to you to say I'm going to.
+
+12:35.480 --> 12:36.890
+I don't know what's them to you.
+
+12:37.460 --> 12:38.540
+This is my home to you.
+
+12:39.470 --> 12:41.150
+This is my maximum segment size.
+
+12:41.570 --> 12:44.900
+Here is an IP packet of 9000 bytes.
+
+12:45.500 --> 12:45.890
+Right.
+
+12:46.580 --> 12:48.650
+Go and don't fragment.
+
+12:48.650 --> 12:49.650
+Remember this flag.
+
+12:50.000 --> 12:52.460
+I showed you in the IP options.
+
+12:52.670 --> 12:53.690
+That is the flag.
+
+12:53.730 --> 12:59.630
+The there don't fragment like one of the flags in the IP says, hey, no matter what.
+
+12:59.840 --> 13:02.150
+Do not fragment this IP packet.
+
+13:03.020 --> 13:07.730
+It tells you that if you encounter an empty, you let lower than yourself.
+
+13:08.150 --> 13:09.710
+Write lower than the IP packet.
+
+13:10.070 --> 13:10.730
+Fail.
+
+13:11.120 --> 13:11.720
+Tell me.
+
+13:11.720 --> 13:12.650
+Fail and tell me.
+
+13:13.070 --> 13:14.000
+Fail is one thing.
+
+13:14.000 --> 13:15.620
+But tell me is the most important.
+
+13:16.310 --> 13:16.850
+Tell me.
+
+13:16.880 --> 13:17.780
+How do you tell me?
+
+13:19.380 --> 13:24.480
+ICMP shows up again, I think is one of the most coolest protocol.
+
+13:24.510 --> 13:25.350
+I really love it.
+
+13:26.720 --> 13:32.360
+So what happens here the host that their MTU is smaller will have to fragmented by can't because of
+
+13:32.360 --> 13:33.140
+the death flag.
+
+13:33.170 --> 13:33.920
+I don't fragment.
+
+13:35.780 --> 13:39.470
+So the host sent back and ICMP message fragmentation needed.
+
+13:40.220 --> 13:41.360
+That's the message it sends.
+
+13:41.390 --> 13:45.470
+That's the one of the types of the ICBM messages will say, hey.
+
+13:47.310 --> 13:54.210
+Sorry this particular guy encountered this particular ICMP, this path according to you.
+
+13:54.210 --> 13:57.570
+And it it it requires a fragmentation.
+
+13:57.690 --> 13:59.550
+But I couldn't because you told me not to.
+
+13:59.880 --> 14:02.220
+So I need to tell you that the fragmentation needed.
+
+14:03.810 --> 14:09.660
+Now, what I don't know is whether the actual empty will be included in the packet or not.
+
+14:09.900 --> 14:10.880
+Probably not.
+
+14:10.890 --> 14:13.770
+So the client will have to kind of lower that.
+
+14:13.770 --> 14:15.570
+And that's part of the algorithm.
+
+14:15.900 --> 14:21.990
+You can go read on this algorithm to read to know more about how it actually works, but that's effectively
+
+14:21.990 --> 14:23.610
+how it works to determine them to you.
+
+14:24.270 --> 14:26.400
+Once I know them, to you, I know my segment size.
+
+14:26.550 --> 14:31.560
+Once I know my maximum seconds size, I can use that to send my data effectively.
+
+14:31.860 --> 14:35.310
+This is to avoid fragmentation, as we talked about.
+
+14:36.640 --> 14:38.620
+Summary.
+
+14:38.620 --> 14:42.340
+Summary MTA is the maximum transmission unit on the device.
+
+14:42.440 --> 14:46.360
+Talked about that and assesses the maximum segment size on layer four RAM.
+
+14:47.080 --> 14:51.070
+And if you can fit more data into a single segment.
+
+14:52.070 --> 14:54.170
+You lower latency by design, right?
+
+14:55.040 --> 14:59.910
+So it is in your advantage to try to fit everything into a single segment, if you can.
+
+15:00.380 --> 15:00.740
+Right.
+
+15:00.860 --> 15:03.650
+Because this segment is better than more segments if you get.
+
+15:03.680 --> 15:09.590
+No, but obviously is very hard to do in today's day and age.
+
+15:09.920 --> 15:10.220
+Right.
+
+15:10.220 --> 15:13.690
+Because we are so bloated in the application.
+
+15:13.700 --> 15:18.080
+So we send all sorts of garbage data that we really don't need.
+
+15:18.950 --> 15:23.690
+But yeah, it's just something that makes you to appreciate what we have today.
+
+15:25.040 --> 15:27.830
+It lowers the overhead from headers and processing, right.
+
+15:27.830 --> 15:35.390
+Because, you know, instead of processing seven segments, if you can process one that's 20 times seven
+
+15:35.540 --> 15:43.850
+headers that you don't, you have to wait a minute, 40 because we have the IP and then a layer four
+
+15:44.450 --> 15:45.470
+DCP, right?
+
+15:45.680 --> 15:49.190
+So we have 40 bytes minimum because it can go more than that.
+
+15:50.540 --> 15:56.360
+But then you can discover the network lowest into you with ICMP, we talked about that and flow control.
+
+15:56.360 --> 16:00.620
+Congestion control still allows sending multiple segments without access.
+
+16:00.620 --> 16:07.490
+So this is just a note that I know that ad I guess you're having everything into one segment is nice,
+
+16:07.970 --> 16:10.430
+but yeah, we have flow control.
+
+16:10.430 --> 16:11.120
+I could just add good.
+
+16:11.120 --> 16:12.830
+Or that allows us to send multiple segment.
+
+16:12.830 --> 16:15.020
+But you still have to process these headers.
+
+16:15.350 --> 16:16.520
+Everything adds up, guys.
+
+16:16.520 --> 16:17.480
+Everything adds up.
+
+16:18.200 --> 16:22.220
+A few more headers, a little bit more latency.
+
+16:23.030 --> 16:23.360
+All right.
+
+16:23.780 --> 16:25.880
+With that, how about we jump into the next one?

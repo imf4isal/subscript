@@ -1,0 +1,3307 @@
+WEBVTT
+
+00:00.020 --> 00:03.890
+Hey guys, I hope you're enjoying the Fundamentals of Network Engineering course.
+
+00:03.890 --> 00:04.550
+And.
+
+00:05.540 --> 00:11.990
+It's almost like a year since I published this course, and there has been a similar questions that
+
+00:11.990 --> 00:13.490
+have been bubbling up.
+
+00:13.490 --> 00:25.220
+And one of the, you know, the the question that keeps coming up is related to SNI or general TLS extensions,
+
+00:25.370 --> 00:25.640
+right?
+
+00:25.850 --> 00:32.930
+And so I thought I'll bring some of my lectures that I did on YouTube and group them curated a little
+
+00:32.930 --> 00:41.120
+bit and add them as its own lecture in this extra section, and I think you're going to find it useful.
+
+00:41.690 --> 00:42.800
+Hope you enjoy it.
+
+00:43.160 --> 00:44.690
+What is going on guys?
+
+00:44.690 --> 00:49.010
+My name is Hussein and in this video I want to talk about SNI server name indication.
+
+00:49.010 --> 00:54.080
+And I did make a video about the SNI, but I learned so much after that.
+
+00:54.080 --> 01:02.390
+I want to kind of remake that video, but with a with a kind of different eyes and lens.
+
+01:02.390 --> 01:03.530
+How about we jump into it?
+
+01:03.530 --> 01:10.550
+So server name indication guide before we explain what it is, we got to know why does it exist.
+
+01:10.550 --> 01:12.500
+There is a there is a problem.
+
+01:12.530 --> 01:14.180
+There is a solution.
+
+01:14.180 --> 01:17.180
+And then SNI came to solve this problem.
+
+01:17.870 --> 01:21.300
+And here's the problem guys IP addresses this.
+
+01:21.320 --> 01:24.050
+Assume this is 1234.
+
+01:24.080 --> 01:28.670
+This is one public IP server and this is the IP address.
+
+01:28.670 --> 01:30.440
+And I have a website.
+
+01:30.740 --> 01:33.290
+And I purchased this public IP address.
+
+01:33.290 --> 01:39.140
+And you know how expensive those static IP addresses are because you want your IP address to be static.
+
+01:39.140 --> 01:39.440
+Right.
+
+01:39.440 --> 01:43.940
+Because you don't want to update the DNS every time.
+
+01:44.120 --> 01:46.370
+I mean, you can, but that's just painful.
+
+01:46.370 --> 01:52.730
+So you get a static IP address and you host your website there and you run port 80.
+
+01:53.060 --> 01:55.070
+Let's assume no security for now.
+
+01:55.070 --> 01:55.610
+Right?
+
+01:55.610 --> 01:58.490
+And then you start hosting your beautiful website.
+
+01:58.490 --> 02:03.200
+And let's say this is called a.com right.
+
+02:03.230 --> 02:04.880
+That's the website okay.
+
+02:05.030 --> 02:11.570
+And then you add an entry that says hey 8.com is actually this IP address.
+
+02:11.570 --> 02:13.240
+And that's the DNS right.
+
+02:14.500 --> 02:15.940
+Do on us.
+
+02:16.730 --> 02:20.590
+There is now the encrypted DNS and all that stuff.
+
+02:20.590 --> 02:22.510
+But I don't want to go there, man.
+
+02:22.540 --> 02:26.080
+The mess that goes recently.
+
+02:26.080 --> 02:27.130
+Oh my God.
+
+02:27.520 --> 02:28.240
+Right.
+
+02:28.270 --> 02:30.250
+It's another topic for another day.
+
+02:30.250 --> 02:30.910
+But yeah.
+
+02:30.910 --> 02:32.220
+So that's the DNS.
+
+02:32.230 --> 02:40.030
+So this client want to connect to this server says hey I want it to go to a.com when I get to make a
+
+02:40.060 --> 02:40.790
+git request right.
+
+02:40.810 --> 02:42.440
+Slash eight or com.
+
+02:42.460 --> 02:45.700
+First of all says, hey, where's the.com ping.
+
+02:45.730 --> 02:52.270
+Get the IP address and establish the TCP and three way handshake and all that jazz and says, hey,
+
+02:52.270 --> 02:53.500
+I want to go to 8.com.
+
+02:53.500 --> 02:56.970
+And now the server will say okay 8.com.
+
+02:56.980 --> 03:02.410
+There is a property called the host header here in the get request.
+
+03:02.410 --> 03:02.620
+Right.
+
+03:02.650 --> 03:06.550
+And that includes a.com right.
+
+03:07.100 --> 03:09.710
+And with that, the server receives this.
+
+03:09.860 --> 03:15.630
+Okay, you actually want to go to 8.com and you might say, Jose, what the heck are you talking about?
+
+03:15.650 --> 03:21.560
+Of course they want to go to 8.com because we just DNS that thing literally a second ago.
+
+03:21.560 --> 03:22.040
+Right.
+
+03:22.040 --> 03:28.220
+So why does the user need this extra header in the Http protocol.
+
+03:28.520 --> 03:30.110
+Well that's a good question.
+
+03:30.110 --> 03:31.190
+We'll come to that.
+
+03:31.580 --> 03:38.870
+So at dot com there are probably there is a folder here somewhere called a.com.
+
+03:38.870 --> 03:47.810
+And that is like there is an index dot HTML and there is the content JavaScript and all that jazz right.
+
+03:48.230 --> 03:49.970
+And that's fine and dandy.
+
+03:49.970 --> 03:51.230
+But here's the thing.
+
+03:51.230 --> 03:54.530
+Webmasters are greedy.
+
+03:54.920 --> 03:57.100
+They want to host multiple websites.
+
+03:57.200 --> 04:03.140
+Just one website is just a waste for a whole IP single static IP address, right?
+
+04:03.170 --> 04:09.200
+You want to host seven eight websites on the same because what what's the website is just a bunch of
+
+04:09.200 --> 04:10.970
+content like static content.
+
+04:10.970 --> 04:13.340
+Yeah, with JavaScript and all that stuff.
+
+04:13.340 --> 04:16.010
+But but yeah, it's just folders.
+
+04:16.010 --> 04:16.850
+It's just content.
+
+04:16.850 --> 04:17.930
+Just code.
+
+04:17.960 --> 04:18.680
+Right.
+
+04:18.680 --> 04:22.310
+So people and says, okay, here's what we're going to do.
+
+04:22.340 --> 04:26.780
+You can create another folder called b.com right.
+
+04:26.780 --> 04:29.600
+And then create a completely different website.
+
+04:31.320 --> 04:36.330
+xHTML, and then that should work, right?
+
+04:36.330 --> 04:45.810
+Because when you make that DNS right, entry 1.3.4 also points to be.com.
+
+04:45.810 --> 04:48.720
+So you're going to create a new DNS entry that points to the same IP address.
+
+04:48.820 --> 04:50.160
+So wait a second.
+
+04:50.400 --> 04:52.980
+Now when you make a Get request.
+
+04:54.150 --> 04:58.910
+You just specify the host header I want to go to actually b.com.
+
+04:58.920 --> 05:06.540
+Now when you actually want to make a Get request, you do the DNS, you get the public IP address and
+
+05:06.540 --> 05:11.460
+then you say TCP connection, all that jazz and then oh get request I want to go to b.com.
+
+05:11.460 --> 05:15.390
+So the server receives this all you want to go to b.com or b.com.
+
+05:15.390 --> 05:17.010
+There is the here's the folder.
+
+05:18.240 --> 05:18.930
+Take it.
+
+05:18.970 --> 05:20.550
+Be dotcom content.
+
+05:22.130 --> 05:22.970
+Awesome.
+
+05:23.120 --> 05:28.460
+But guys, all of that stuff is what this is unencrypted.
+
+05:29.280 --> 05:31.320
+This is all unencrypted.
+
+05:31.320 --> 05:35.760
+So when the encryption when Https came into the picture.
+
+05:37.630 --> 05:39.670
+This whole thing falls apart.
+
+05:40.330 --> 05:43.450
+Because here is the thing, right?
+
+05:43.630 --> 05:46.680
+I didn't still explain what this is, right?
+
+05:46.690 --> 05:48.130
+All of this stuff fall apart.
+
+05:48.130 --> 05:50.170
+And let's explain this with the Https.
+
+05:50.200 --> 05:50.500
+Right?
+
+05:50.530 --> 05:53.420
+It's the whole the whole thing with the steps.
+
+05:53.560 --> 05:54.130
+Awesome.
+
+05:54.140 --> 05:56.290
+Let's now do https.
+
+05:56.320 --> 05:56.860
+Right.
+
+05:56.860 --> 05:57.940
+So what's the difference?
+
+05:57.940 --> 05:58.360
+Hussein.
+
+05:58.360 --> 05:59.380
+It's the same thing.
+
+05:59.380 --> 06:01.900
+Well we'll see.
+
+06:02.020 --> 06:02.920
+Here's the thing.
+
+06:02.920 --> 06:06.400
+When I first of all I want to go to let's say a.com.
+
+06:06.400 --> 06:06.880
+Right.
+
+06:07.120 --> 06:07.780
+That's good.
+
+06:07.780 --> 06:09.040
+That's that's fine.
+
+06:09.040 --> 06:10.360
+I need to do the DNS.
+
+06:10.360 --> 06:13.750
+I get one, two three, four and I establish a TCP connection.
+
+06:13.750 --> 06:13.990
+Right.
+
+06:13.990 --> 06:15.340
+It's a two way connection.
+
+06:15.730 --> 06:18.130
+Send send ack ack.
+
+06:18.160 --> 06:19.960
+We talked about the TCP handshake.
+
+06:19.990 --> 06:20.440
+Check it out.
+
+06:20.440 --> 06:26.290
+But what is after the TCP connection if I am using https tls handshake.
+
+06:26.290 --> 06:26.650
+Right.
+
+06:26.680 --> 06:28.120
+What do we do in the TLS handshake.
+
+06:28.150 --> 06:30.340
+The first thing we do is client hello.
+
+06:30.700 --> 06:31.060
+Right.
+
+06:31.060 --> 06:36.010
+And we say yo sup I want.
+
+06:37.600 --> 06:39.910
+To establish a communication with you.
+
+06:39.910 --> 06:41.230
+I will establish encryption.
+
+06:41.230 --> 06:43.030
+So I'm going to agree on the key.
+
+06:43.030 --> 06:44.110
+And you're going to agree with the key.
+
+06:44.110 --> 06:45.910
+And you give me your certificate sir.
+
+06:45.910 --> 06:46.990
+So all right.
+
+06:47.110 --> 06:50.260
+So that's and that's the IP address and all that stuff.
+
+06:50.260 --> 06:50.440
+Right.
+
+06:50.440 --> 06:53.530
+So the Diffie-Hellman I'm going to go to TLS.
+
+06:53.530 --> 06:59.260
+Check out this video here right here if you want to learn more about the TLS handshake.
+
+06:59.260 --> 07:06.850
+But yeah if I get this handshake now the server is supposed to respond with the certificate, right.
+
+07:08.140 --> 07:09.730
+And once the certificate we talked about.
+
+07:09.730 --> 07:10.330
+What certificate?
+
+07:10.330 --> 07:13.630
+The certificate proves that you own a.com.
+
+07:14.790 --> 07:15.720
+But guess what?
+
+07:16.300 --> 07:20.440
+How the heck does the server know which certificate to serve?
+
+07:20.470 --> 07:23.260
+Because he or she and why?
+
+07:23.260 --> 07:25.480
+I'm misgendering the server, right?
+
+07:25.510 --> 07:27.910
+They write actually.
+
+07:28.520 --> 07:32.030
+Have two observers, so they have two certificate.
+
+07:32.300 --> 07:34.580
+How do I know which one to serve?
+
+07:35.090 --> 07:36.380
+You don't.
+
+07:36.680 --> 07:40.700
+So you're stuck because do you serve a dot?
+
+07:41.180 --> 07:44.560
+But how do you know that the user actually requested a dotcom?
+
+07:44.570 --> 07:46.280
+Nothing in the TLS.
+
+07:46.310 --> 07:47.360
+Hello.
+
+07:47.660 --> 07:50.330
+Actually specify the host name?
+
+07:50.660 --> 07:51.440
+Nothing.
+
+07:51.470 --> 07:52.520
+Absolutely nothing.
+
+07:52.520 --> 07:54.410
+It just there is an IP address.
+
+07:55.050 --> 07:55.950
+And that's it.
+
+07:55.980 --> 07:57.300
+There's nothing else.
+
+07:57.420 --> 08:00.750
+So how do you know what certificate to host?
+
+08:00.790 --> 08:08.770
+Meet is an AI, which is just a bunch of extension that adds this extra TLS.
+
+08:08.820 --> 08:09.750
+Hello?
+
+08:11.110 --> 08:11.860
+The name.
+
+08:12.920 --> 08:13.580
+And that's.
+
+08:14.820 --> 08:21.510
+So in the hole in the hello, we add a string called the SNI Server Name Indication and it's almost
+
+08:21.510 --> 08:23.880
+available on every single web server.
+
+08:23.880 --> 08:25.770
+Every single web server has this SNI.
+
+08:25.860 --> 08:33.030
+So it says a.com and now say oh, you want to go to a.com share because the server is from Boston.
+
+08:33.030 --> 08:33.930
+You say share.
+
+08:33.990 --> 08:37.500
+Let's take it to the top and bring it that certificate.
+
+08:37.530 --> 08:38.190
+All right.
+
+08:38.190 --> 08:42.810
+And then we're going to serve it a.com certificate.
+
+08:42.810 --> 08:43.050
+Right.
+
+08:43.050 --> 08:46.860
+And then the server will serve the.com certificate.
+
+08:46.860 --> 08:50.190
+If you want to establish with.com just specify b.com.
+
+08:50.190 --> 08:53.430
+And then we're going to send you back b.com certificate.
+
+08:53.430 --> 08:55.470
+And after that.
+
+08:56.190 --> 09:02.760
+Because after that we send the actual after we establish the TLS encryption and all that stuff.
+
+09:02.790 --> 09:04.650
+This will be encrypted.
+
+09:04.770 --> 09:06.840
+That was supposed to be a lock, by the way.
+
+09:06.960 --> 09:08.350
+That's a beautiful lock.
+
+09:08.370 --> 09:11.040
+And it says, okay, I want it to go to a.com.
+
+09:11.040 --> 09:17.760
+And and yeah, I want this is the host and I want to go to a.com.
+
+09:17.760 --> 09:18.260
+Right.
+
+09:18.270 --> 09:22.770
+And here is where we actually serve the content of a.com.
+
+09:22.770 --> 09:23.430
+Right.
+
+09:23.700 --> 09:31.590
+The problem here with the TLS is we didn't even reach to the stage where we don't know which certificate,
+
+09:31.590 --> 09:35.790
+which certificate to serve in order to actually reach the content.
+
+09:35.790 --> 09:36.180
+Right.
+
+09:36.210 --> 09:37.800
+That's why the connection is always terminated.
+
+09:37.800 --> 09:38.940
+So we needed an SNI.
+
+09:39.030 --> 09:46.590
+So we can either provide default certificates that capture both, which is very, very expensive.
+
+09:46.620 --> 09:48.450
+Those wild card certificate.
+
+09:48.450 --> 09:51.630
+But that's that's much better way.
+
+09:51.660 --> 09:53.070
+Obviously there are some problems here.
+
+09:53.070 --> 09:58.260
+So what happened guys questions comments in the comment section below.
+
+09:58.260 --> 10:03.420
+Guys what if I do this in Google 1234?
+
+10:04.420 --> 10:09.610
+HTP is just the IP address without host.
+
+10:09.760 --> 10:10.850
+Will this work?
+
+10:10.870 --> 10:13.720
+Write your comments below and then pause the video.
+
+10:14.110 --> 10:18.890
+So this will fail and I take it back.
+
+10:18.910 --> 10:19.580
+This.
+
+10:19.600 --> 10:21.840
+It depends on the configuration of the server.
+
+10:21.850 --> 10:24.940
+It will fail because first of all it's okay.
+
+10:24.940 --> 10:26.890
+We're going to do 12341234.
+
+10:26.920 --> 10:29.440
+Let's establish a connection to port 443.
+
+10:29.440 --> 10:31.060
+By the way if we're going to talk about that.
+
+10:31.060 --> 10:34.630
+But you guys know already I'm going to establish and I'm going to do TLS.
+
+10:34.630 --> 10:34.960
+Hello.
+
+10:34.960 --> 10:39.790
+And the SNI name will be 1234.
+
+10:39.790 --> 10:43.300
+And the server will receive it and says what the heck is 1234?
+
+10:43.300 --> 10:45.520
+I don't have a site called 1234.
+
+10:45.520 --> 10:47.500
+I don't have a site called 1234.
+
+10:47.500 --> 10:49.480
+I don't have a certificate called 1234.
+
+10:49.480 --> 10:52.030
+So that will fail.
+
+10:52.690 --> 10:57.820
+If you configure your web server to have a default certificate like let's say one two, three, four
+
+10:57.820 --> 11:01.330
+always serves 8.com, then you're going to get certificate 8.com.
+
+11:01.330 --> 11:10.450
+However, this will fail because a get host will also have 1234 on it instead of the 8.com.
+
+11:10.450 --> 11:15.070
+And then when you try to actually serve the content it says like what the heck is one, two, three,
+
+11:15.070 --> 11:15.190
+four?
+
+11:15.190 --> 11:20.590
+I don't have a host one, two, three, four again, if the server is configured to serve default content,
+
+11:20.590 --> 11:24.040
+you can serve this, so you might get away with it if you want to.
+
+11:24.070 --> 11:24.580
+Right?
+
+11:24.580 --> 11:31.000
+But yeah, I show all of that stuff in practical details because some of you yeah let me like Hussein
+
+11:31.000 --> 11:34.150
+you don't do practical videos anymore I do.
+
+11:34.150 --> 11:37.900
+I just like to relax sometime and and do virtual boarding.
+
+11:37.900 --> 11:38.530
+Sue me.
+
+11:38.560 --> 11:39.900
+Don't sue me, guys.
+
+11:39.910 --> 11:40.300
+All right?
+
+11:40.300 --> 11:41.130
+I love you.
+
+11:41.140 --> 11:41.560
+All right?
+
+11:41.560 --> 11:44.410
+So, yeah, I like to mix things up a little bit.
+
+11:44.440 --> 11:44.740
+All right.
+
+11:44.740 --> 11:47.080
+Obviously, guys, final point.
+
+11:47.470 --> 11:48.910
+SNI is not perfect.
+
+11:48.910 --> 11:52.210
+And the reason is because when we send this beautiful.
+
+11:52.630 --> 11:53.290
+This is a mess.
+
+11:53.290 --> 11:53.460
+I'm.
+
+11:53.650 --> 11:55.330
+I'm making a mess, guys.
+
+11:55.420 --> 11:55.930
+All right.
+
+11:55.930 --> 11:59.890
+If when we send this TLS handshake, there are colors.
+
+12:00.130 --> 12:01.060
+Sheesh.
+
+12:01.060 --> 12:02.950
+Why why am I not using colors?
+
+12:02.950 --> 12:04.450
+This is the TLS, by the way.
+
+12:04.450 --> 12:12.130
+If I'm sending the TLS handshake right, I'm sending a.com in plain text because this happened before
+
+12:12.130 --> 12:12.730
+the encryption.
+
+12:12.730 --> 12:13.120
+Right.
+
+12:13.120 --> 12:14.530
+So this is in plain text.
+
+12:14.530 --> 12:16.750
+So Karen here.
+
+12:19.150 --> 12:20.920
+That's supposed to be a skirt, but.
+
+12:20.920 --> 12:21.420
+Sure.
+
+12:21.430 --> 12:21.940
+Yeah.
+
+12:21.970 --> 12:25.750
+Karen can sniff, and that's how it is.
+
+12:25.900 --> 12:29.080
+Sniff, by the way, guys, and know where you're going because of and.
+
+12:29.320 --> 12:30.910
+They still know where you're going.
+
+12:31.480 --> 12:31.960
+All right.
+
+12:31.960 --> 12:33.040
+So they can know.
+
+12:33.070 --> 12:34.000
+They know where you're going.
+
+12:34.000 --> 12:34.540
+Right?
+
+12:34.930 --> 12:38.260
+Obviously they also know where you're going because you just requested a DNS.
+
+12:38.260 --> 12:40.840
+And DNS uses UDP right.
+
+12:40.840 --> 12:42.730
+And UDP is not encrypted.
+
+12:42.730 --> 12:43.330
+Right.
+
+12:43.600 --> 12:51.910
+Unless we go with DDoS, which is Firefox is enabling for us recently, which just destroyed firewalls
+
+12:51.910 --> 12:55.510
+enabled for a day or for a day, I think.
+
+12:55.510 --> 12:59.950
+And it just slammed down the DNS provider next DNS, I think.
+
+12:59.950 --> 13:03.880
+And it just like died because they had like a bug.
+
+13:03.880 --> 13:08.530
+They they basically lost the DNS provider to do the encryption.
+
+13:08.530 --> 13:09.220
+But yeah.
+
+13:09.220 --> 13:10.000
+Anyway guys.
+
+13:10.000 --> 13:17.290
+So yeah, there is a new extension called e SNI that encrypted SNI which essentially encrypt that stuff,
+
+13:17.290 --> 13:21.970
+but it will go with the Dodge the DNS over Https.
+
+13:22.000 --> 13:24.340
+All right guys, that's it for me today.
+
+13:24.370 --> 13:25.270
+That's a quick video.
+
+13:25.270 --> 13:29.410
+Just chatting a little bit about the SNI technology over virtual board.
+
+13:29.410 --> 13:32.410
+And let me know if you enjoy these kind of videos.
+
+13:32.410 --> 13:34.570
+I'm going to see you in the next one.
+
+13:34.570 --> 13:36.940
+You guys stay awesome.
+
+13:37.120 --> 13:44.770
+Server Name Indication, or SNI for short, is a TLS extension that allows the client to specify which
+
+13:44.800 --> 13:48.970
+host it wants to connect during the TLS handshake.
+
+13:49.000 --> 13:57.190
+This allows multiple domains multiple websites to be hosted in a single public IP address.
+
+13:57.190 --> 14:00.370
+We could not have done this right.
+
+14:00.520 --> 14:03.730
+Shared hosting before SNI, right?
+
+14:03.730 --> 14:07.510
+At least secure shared hosting before SNI, right?
+
+14:07.510 --> 14:10.330
+So in this video I want to talk about the following.
+
+14:10.330 --> 14:12.130
+I want to talk about what is a CNI.
+
+14:12.160 --> 14:12.820
+Right.
+
+14:12.910 --> 14:15.760
+It's like a little bit why did we invent this deck?
+
+14:15.760 --> 14:20.290
+Because that's what we don't invent anything in software engineering.
+
+14:20.290 --> 14:21.130
+Right.
+
+14:21.340 --> 14:22.510
+Without a reason.
+
+14:22.510 --> 14:22.690
+Right.
+
+14:22.690 --> 14:23.830
+So there is always a reason.
+
+14:23.830 --> 14:26.650
+So why is this we're going to talk about that a little bit.
+
+14:26.650 --> 14:28.330
+And we're going to start seeing timestamp.
+
+14:28.360 --> 14:30.790
+You can jump into the interesting part of the video.
+
+14:31.090 --> 14:36.580
+And the second part of the video, which will take most of the part of the video is really is we're
+
+14:36.580 --> 14:39.370
+going to set up an SNI with a proxy.
+
+14:39.370 --> 14:42.910
+So I am going to actually show you how to do an SNI.
+
+14:42.910 --> 14:44.470
+And what does that mean?
+
+14:44.470 --> 14:50.050
+I am going to set up not one, not two, but three.
+
+14:50.080 --> 15:01.060
+Secure Http two running on TLS 1.3 website on my Mac book, right on my Mac.
+
+15:01.730 --> 15:03.070
+And guess what?
+
+15:03.080 --> 15:03.740
+I'm going to.
+
+15:03.740 --> 15:05.930
+I'm not going to spend a single penny.
+
+15:06.290 --> 15:07.900
+Everything is going to be free.
+
+15:07.910 --> 15:08.830
+It's going to be public.
+
+15:08.840 --> 15:11.360
+Three public distinct websites.
+
+15:11.360 --> 15:11.840
+Right.
+
+15:11.840 --> 15:13.750
+And I'm going to give them distinct names.
+
+15:13.760 --> 15:17.300
+This website I don't know is going to call it Jenny's Donuts.
+
+15:17.300 --> 15:19.130
+And this is a marked tire.
+
+15:19.130 --> 15:19.610
+Pros.
+
+15:19.610 --> 15:23.090
+And the third one I think is Ali's iPhone repair.
+
+15:23.120 --> 15:23.600
+Right.
+
+15:23.600 --> 15:27.230
+And all of them are just a bunch of applications that are running on my website.
+
+15:27.230 --> 15:29.060
+So we're going to show you how to do that.
+
+15:29.360 --> 15:30.470
+Stay tuned.
+
+15:30.470 --> 15:34.850
+And finally, we're going to talk about a little bit of the limitation of this server name indication.
+
+15:34.850 --> 15:41.060
+Because nothing nothing is perfect and how Cloudflare and others from Apple, I think invented this
+
+15:41.060 --> 15:43.610
+new proposal called encrypted SNI.
+
+15:43.760 --> 15:44.000
+Right.
+
+15:44.000 --> 15:48.110
+We're going to talk about that if you're interested about all that jazz, stay tuned.
+
+15:48.120 --> 15:48.830
+If you're new here.
+
+15:48.830 --> 15:49.310
+Welcome.
+
+15:49.310 --> 15:50.120
+My name is Hussein.
+
+15:50.120 --> 15:52.820
+In this channel we discuss all sorts of software engineering by example.
+
+15:52.820 --> 15:56.330
+So if you want to become a better software engineer, consider subscribing and hit that bell icon so
+
+15:56.330 --> 15:59.240
+you get notified every time I upload a new video.
+
+15:59.240 --> 16:02.180
+With that said, let's just jump into the.
+
+16:02.910 --> 16:04.170
+As in I what is this and I.
+
+16:04.200 --> 16:06.560
+Okay, so here's the problem we're trying to solve.
+
+16:06.570 --> 16:07.020
+Okay.
+
+16:07.740 --> 16:09.300
+I want to host a website.
+
+16:09.330 --> 16:10.980
+Why do you need to host a website?
+
+16:11.010 --> 16:11.580
+Duh.
+
+16:11.610 --> 16:16.770
+You need a public IP address so people can communicate with you routing.
+
+16:16.770 --> 16:20.490
+Or you cannot host it on 192168.1.1.
+
+16:20.490 --> 16:20.940
+Right.
+
+16:20.940 --> 16:26.670
+Or ten .0.0.2 unfortunately, because that's a private IP address, it's not routable.
+
+16:26.850 --> 16:30.480
+Well, you can do some port forwarding, but that's out of caution right now.
+
+16:30.780 --> 16:31.260
+Yeah.
+
+16:31.260 --> 16:32.640
+So you need a public IP address.
+
+16:32.640 --> 16:34.410
+You need a content right.
+
+16:34.440 --> 16:43.470
+You need HTML pages NodeJS application Python Django right IIs anything right.
+
+16:43.710 --> 16:46.980
+Proxy nginx anything that serves web traffic.
+
+16:46.980 --> 16:47.670
+Right.
+
+16:47.880 --> 16:55.170
+The final thing you need is a DNS record that tells, that makes this ugly IP address into a beautiful
+
+16:55.170 --> 16:58.440
+address that you can send to your users, and they can go to your website.
+
+16:58.470 --> 17:08.760
+Jeni's donut.com right Mark tire pros and is iPhone services repair right I don't know Steve's brothel
+
+17:08.760 --> 17:09.420
+right.
+
+17:09.420 --> 17:11.250
+All anything right.
+
+17:11.250 --> 17:14.670
+And that domain will point to the public IP address okay.
+
+17:14.670 --> 17:15.240
+So.
+
+17:16.130 --> 17:16.940
+What I want.
+
+17:16.970 --> 17:20.270
+If I want to start multiple websites, right?
+
+17:20.300 --> 17:21.140
+What do I do?
+
+17:21.170 --> 17:23.450
+Well, you need another public IP address.
+
+17:23.480 --> 17:24.350
+Nope.
+
+17:24.440 --> 17:25.790
+That's so expensive.
+
+17:25.820 --> 17:27.230
+Nobody has that money, man.
+
+17:27.260 --> 17:29.480
+Nobody has that kind of cash.
+
+17:29.510 --> 17:31.310
+Public IP is are so expensive.
+
+17:31.340 --> 17:37.790
+So people turned into this thing called shared hosting, where they want to host multiple websites into
+
+17:37.790 --> 17:39.200
+a single public IP address.
+
+17:39.200 --> 17:40.070
+Yes, sir.
+
+17:40.100 --> 17:41.210
+It is possible.
+
+17:41.210 --> 17:43.100
+So we did hacking.
+
+17:43.100 --> 17:45.200
+We did some hacking stuff.
+
+17:45.200 --> 17:46.310
+How do we do it?
+
+17:46.340 --> 17:47.990
+Well, that's how we do it.
+
+17:48.020 --> 17:51.230
+We want to host multiple websites in a single public IP address.
+
+17:51.230 --> 17:53.330
+Well, we need some trickery.
+
+17:54.410 --> 17:56.780
+People of the internet in Http 1.1.
+
+17:56.810 --> 17:59.720
+They invented this hackery and it's called the host header.
+
+17:59.750 --> 18:02.150
+It's not really a hack, but it's very critical.
+
+18:02.300 --> 18:07.850
+This solves the problem of proxying because you couldn't do proxying without the host header back.
+
+18:07.850 --> 18:14.240
+In Http 1.0 and Http 1.1, they introduced the host and they killed two birds with one stone.
+
+18:14.240 --> 18:15.860
+I'm sorry Peter.
+
+18:15.950 --> 18:19.730
+We fed two birds with one stone.
+
+18:19.880 --> 18:20.930
+Okay.
+
+18:21.260 --> 18:22.250
+Geez.
+
+18:22.250 --> 18:23.030
+Okay.
+
+18:23.060 --> 18:25.340
+Host okay, so we introduced the host header.
+
+18:25.340 --> 18:34.070
+And now if you specify during your get request you have to specify which host do you really mean.
+
+18:34.070 --> 18:34.550
+Right.
+
+18:34.580 --> 18:38.150
+You might say well I am actually I just connected to it.
+
+18:38.150 --> 18:39.350
+But no that's not enough.
+
+18:39.380 --> 18:41.150
+You have to tell me with every request.
+
+18:41.180 --> 18:42.710
+What do you mean?
+
+18:42.710 --> 18:44.000
+It's a stateless request.
+
+18:44.030 --> 18:45.230
+Http is stateless.
+
+18:45.230 --> 18:46.670
+So once you tell me that.
+
+18:46.670 --> 18:49.220
+Well I have a key to key off with.
+
+18:49.220 --> 18:49.700
+Right?
+
+18:49.700 --> 18:50.330
+I'm going to key.
+
+18:50.330 --> 18:52.130
+Hey, if you really.
+
+18:52.130 --> 19:02.750
+Yes, you're you have established a designated TCP connection with my public IP address one 144 .1.1.1
+
+19:02.750 --> 19:09.230
+yeah, but if you send me a Get request saying, hey, I want I want Jeni's donuts, right.
+
+19:09.260 --> 19:11.120
+Host I'm going to look at the host.
+
+19:11.120 --> 19:12.230
+Oh you want Jeni's donut.
+
+19:12.230 --> 19:17.030
+That's that folder in user var okay.
+
+19:17.030 --> 19:21.560
+And if you say I want Steve's brothel oh whoa.
+
+19:21.680 --> 19:23.660
+Let's go to that website then.
+
+19:23.660 --> 19:24.050
+Okay.
+
+19:24.130 --> 19:30.050
+That folder or maybe it's, it's another port running on another application on port 8080.
+
+19:30.080 --> 19:30.290
+Oh.
+
+19:30.290 --> 19:30.950
+Let's go there.
+
+19:30.950 --> 19:32.990
+That's where we put the brothel there.
+
+19:33.020 --> 19:33.200
+Okay.
+
+19:33.200 --> 19:37.870
+And then if you want to go to I don't know Mark Tyler Pro.
+
+19:37.880 --> 19:38.690
+So that's folder.
+
+19:38.690 --> 19:41.510
+And then we can key off the stuff that seems to be solved.
+
+19:41.510 --> 19:41.840
+The problem.
+
+19:41.840 --> 19:43.160
+Why do we need a CNI then.
+
+19:43.370 --> 19:52.040
+Well host sir is part of Http which is the data portion which is not secure.
+
+19:52.070 --> 19:52.900
+Right.
+
+19:52.910 --> 19:58.280
+So if you used Https then and then you establish the communication.
+
+19:58.280 --> 20:02.540
+We don't have that information right during the TLS.
+
+20:02.540 --> 20:04.190
+So we need a problem.
+
+20:04.190 --> 20:05.420
+We need to solve this problem.
+
+20:05.420 --> 20:08.660
+We need to know this host earlier okay.
+
+20:08.660 --> 20:12.950
+We need a host header during TLS.
+
+20:12.980 --> 20:13.280
+Right.
+
+20:13.280 --> 20:15.800
+And we talked about I'm going to reference the video here okay.
+
+20:15.890 --> 20:19.910
+So if I'm doing TLS with you I'm doing a client.
+
+20:19.910 --> 20:20.660
+Hello.
+
+20:20.750 --> 20:23.750
+Give me a way to tell you the host.
+
+20:23.780 --> 20:24.410
+Right.
+
+20:24.410 --> 20:29.750
+And you serve me what certificate matches your host.
+
+20:29.750 --> 20:32.270
+Because that's part of the Https, right.
+
+20:32.420 --> 20:40.580
+Because you know cert https, you come with a certificate that proves that you are a marks tire pros
+
+20:40.580 --> 20:41.720
+or Jamie's donut.
+
+20:41.720 --> 20:42.200
+Right.
+
+20:42.200 --> 20:47.150
+You need to obtain this certificate from a certificate authority.
+
+20:47.270 --> 20:52.160
+So how do you know during TLS negotiation what host to use.
+
+20:52.160 --> 20:52.580
+Right.
+
+20:52.580 --> 20:54.560
+That's part of another problem to solve.
+
+20:54.560 --> 20:55.010
+Right.
+
+20:55.010 --> 21:02.360
+So we need to know that does meet SNI sing server name indication okay.
+
+21:02.360 --> 21:06.350
+So server name indication during the TLS I'm going to go through an example here.
+
+21:06.350 --> 21:06.650
+Right.
+
+21:06.650 --> 21:10.190
+And it's supported in major browsers IIs supports it.
+
+21:10.280 --> 21:12.980
+Nginx supports it HAProxy supports it.
+
+21:12.980 --> 21:17.320
+Other proxy supported I don't have a whole list, but it's a thing now right.
+
+21:17.330 --> 21:21.260
+It's already have this limitations and we're going to talk about it at the end of the video.
+
+21:21.260 --> 21:21.980
+But yeah.
+
+21:22.730 --> 21:28.760
+So jumping to TLS 1.3, if you're not on TLS 1.3 please be in TLS 1.3.
+
+21:28.760 --> 21:31.370
+Guys don't be on 1.2 okay.
+
+21:31.640 --> 21:32.210
+Yeah.
+
+21:32.240 --> 21:37.190
+It's much, much more powerful, much more secure single round trip instead of two.
+
+21:37.190 --> 21:38.270
+All that jazz, right.
+
+21:38.270 --> 21:39.200
+And here's the thing.
+
+21:39.200 --> 21:41.000
+We have Mark Taylor prose here.
+
+21:41.000 --> 21:43.220
+And there's the IP and there's the index.
+
+21:43.220 --> 21:43.640
+Right.
+
+21:43.670 --> 21:44.360
+The HTML.
+
+21:44.360 --> 21:45.890
+And this guy sends a client.
+
+21:45.890 --> 21:46.370
+Hello.
+
+21:46.370 --> 21:49.460
+That's how you always use work without SNI.
+
+21:49.580 --> 21:49.970
+Okay.
+
+21:50.330 --> 21:51.050
+This in the client.
+
+21:51.050 --> 21:54.410
+Hello says hey, I support this at Key Exchange.
+
+21:54.410 --> 21:58.580
+I support these symmetrical key algorithm ciphers.
+
+21:58.580 --> 22:00.800
+Please tell me what to do okay.
+
+22:00.800 --> 22:04.070
+And it's going to do a Diffie-Hellman in the middle as well.
+
+22:04.070 --> 22:08.780
+It's going to generate the private and public key, merge them and send it to the other side.
+
+22:08.780 --> 22:15.140
+I'm not going to talk about that in this video, but the public the server here receives it and it will
+
+22:15.140 --> 22:22.220
+send a server hello with a certificate immediately because it only have one certificate in this case,
+
+22:22.220 --> 22:22.400
+right?
+
+22:22.400 --> 22:24.470
+Because it only hosts one website.
+
+22:24.470 --> 22:24.950
+Right.
+
+22:24.950 --> 22:28.330
+So it will send the certificate of Mark to browse.
+
+22:28.370 --> 22:28.870
+Okay.
+
+22:28.880 --> 22:33.950
+Along with maybe an ocsp stapling and other jazzy stuff.
+
+22:33.950 --> 22:34.400
+Right.
+
+22:34.400 --> 22:39.380
+And then obviously once they establish the symmetric key, they agree on it.
+
+22:39.380 --> 22:43.400
+This guy encrypts the Get request and send it and then yeah, this receives it.
+
+22:43.400 --> 22:45.590
+And that's how TLS 1.3 works.
+
+22:45.590 --> 22:45.910
+Right.
+
+22:45.950 --> 22:47.450
+That's how we serve the certificate.
+
+22:47.810 --> 22:53.510
+The problem with that what if I have three websites I have Jenny's farm, strawberry farm, I have Alice
+
+22:53.510 --> 22:53.600
+I.
+
+22:53.830 --> 22:54.420
+On come.
+
+22:54.430 --> 22:57.510
+I have marked pros and all share the same public IP.
+
+22:57.520 --> 22:59.970
+So it's a single TCP connection, right?
+
+22:59.980 --> 23:03.010
+But it serves a different domain I need more.
+
+23:03.630 --> 23:07.560
+Discriminator, some other stuff to discriminate this thing.
+
+23:07.890 --> 23:11.160
+So and I meet S and I make a client.
+
+23:11.190 --> 23:11.640
+Hello.
+
+23:11.640 --> 23:12.930
+And in the client.
+
+23:12.960 --> 23:13.410
+Hello.
+
+23:13.410 --> 23:17.330
+By the way I am going to ally-iphone.com.
+
+23:17.340 --> 23:18.750
+I don't want Jenny's.
+
+23:19.560 --> 23:21.270
+I want an iphone.com I.
+
+23:21.300 --> 23:26.250
+You have to explicitly tell me now that you told me that.
+
+23:26.280 --> 23:31.620
+Well I can okay I I'm going to look at that and I'm going to show you how to do it, initiate proxy
+
+23:31.650 --> 23:32.670
+and look at that.
+
+23:32.670 --> 23:37.830
+And then it says oh Ali iPhone I'm going to serve you the certificate of Ali iphone.com okay.
+
+23:37.830 --> 23:43.920
+And then obviously the negotiation of Diffie-Hellman have done they they agreed on a symmetric key and
+
+23:43.920 --> 23:47.910
+they encrypted it perfect for security and all that jazz.
+
+23:47.940 --> 23:52.110
+They decrypt the bat, send the headers that come all the beautiful stuff.
+
+23:52.110 --> 23:52.650
+Right.
+
+23:53.190 --> 23:54.300
+Cool stuff guys.
+
+23:54.300 --> 23:54.780
+Right.
+
+23:57.230 --> 23:59.270
+Let's go to the demo, guys.
+
+23:59.300 --> 23:59.600
+All right.
+
+23:59.600 --> 24:00.740
+So here's what we're going to do.
+
+24:00.770 --> 24:04.800
+We're going to host not two not one not three.
+
+24:05.330 --> 24:13.490
+We're going to host three secure Http two websites on my Mac right.
+
+24:13.610 --> 24:20.810
+With TLS 1.3 and all of that with three distinct domains and all of that for free.
+
+24:20.840 --> 24:24.530
+We're going to use no ip.com because I'm cheap like that okay.
+
+24:24.560 --> 24:28.370
+I'm not going to pay a provider to do all that stuff when I can do it here.
+
+24:28.400 --> 24:28.820
+Okay.
+
+24:28.820 --> 24:31.060
+Just to show you that you can actually do it.
+
+24:31.070 --> 24:33.890
+You don't need fancy stuff, right?
+
+24:33.920 --> 24:38.330
+Eventually I'm going to make a cloud video, but I'm just like that, right?
+
+24:38.330 --> 24:39.500
+I want to do different things.
+
+24:39.500 --> 24:46.460
+So what I'm going to do, I'm going to open a port 80, port 443 on my router that maps to my Mac address
+
+24:46.460 --> 24:50.780
+so that an external traffic goes to my internal Mac address.
+
+24:50.780 --> 24:53.060
+I'm going to close those ports after the video.
+
+24:53.060 --> 24:55.100
+So this is just to show you.
+
+24:55.100 --> 24:56.230
+And here's what we're going to do.
+
+24:56.240 --> 25:01.130
+We're going to do a proxy because that's what I know I know I'm going to make another video in the future.
+
+25:01.130 --> 25:04.020
+I'm going to reference the full course H.R.
+
+25:04.070 --> 25:05.420
+Proxy that I did.
+
+25:05.450 --> 25:06.410
+It's free.
+
+25:06.410 --> 25:07.010
+Yeah.
+
+25:07.160 --> 25:07.940
+Go check it out.
+
+25:07.940 --> 25:11.420
+It's a proxy from nuts to bolts.
+
+25:11.900 --> 25:13.400
+Is that how you say nuts to bolt?
+
+25:13.400 --> 25:14.930
+Yeah, all that stuff, man.
+
+25:14.960 --> 25:15.980
+Go enjoy it.
+
+25:16.020 --> 25:16.430
+Right.
+
+25:16.430 --> 25:19.480
+I'm going to show I alpn right.
+
+25:19.490 --> 25:24.350
+Application layer protocol negotiation to do H2 because H2 is cool ish.
+
+25:24.350 --> 25:24.860
+Right.
+
+25:24.860 --> 25:26.570
+Then we're going to do TLS 1.3 as well.
+
+25:26.610 --> 25:27.110
+Right.
+
+25:27.140 --> 25:29.150
+Let's just jump into the demo.
+
+25:29.510 --> 25:38.360
+All right guys I have here on my Mac three web servers that I spin up with three distinct websites.
+
+25:38.360 --> 25:38.890
+Right.
+
+25:38.900 --> 25:41.180
+The first website is called Ali's website.
+
+25:41.540 --> 25:46.280
+This guy's repairs iPhones and the application is running on port 8080.
+
+25:46.580 --> 25:54.650
+And the second website is running on port 8081 and it's Jeni's donuts website.
+
+25:54.650 --> 25:58.070
+And then finally there is Mark website, right?
+
+25:58.250 --> 25:58.790
+Yeah.
+
+25:58.820 --> 26:03.680
+Mark repairs tires and he's an expert garage, right.
+
+26:03.680 --> 26:06.020
+He has a garage who repairs cars, all right.
+
+26:06.020 --> 26:07.400
+And tires and all that stuff.
+
+26:07.400 --> 26:10.310
+And his website is running on port 8082.
+
+26:10.310 --> 26:12.170
+All of them are running on my Mac.
+
+26:12.170 --> 26:12.890
+Right.
+
+26:12.890 --> 26:16.250
+And let's just test this thing out.
+
+26:16.820 --> 26:21.170
+So that's the first website is running on port 8080.
+
+26:21.230 --> 26:21.800
+Okay.
+
+26:22.070 --> 26:23.330
+Just an image.
+
+26:23.330 --> 26:26.120
+That's the second website 8081.
+
+26:26.330 --> 26:28.310
+That's the third website 8082.
+
+26:28.340 --> 26:29.060
+Cool.
+
+26:29.510 --> 26:29.930
+All right.
+
+26:29.930 --> 26:33.490
+So what I want to do next is I'm going to spin up an H.R.
+
+26:33.530 --> 26:34.340
+Proxy.
+
+26:34.370 --> 26:34.910
+Right.
+
+26:34.910 --> 26:36.380
+I already installed the proxy.
+
+26:36.380 --> 26:38.600
+I'm not going to go through the process again.
+
+26:38.600 --> 26:44.870
+I'm going to reference the video for the H.R proxy course, just to go through it and to do the details
+
+26:44.990 --> 26:45.560
+of it.
+
+26:45.650 --> 26:46.190
+Okay.
+
+26:46.430 --> 26:50.900
+So let's go ahead and spin up a some configuration.
+
+26:50.900 --> 26:51.350
+Right.
+
+26:51.350 --> 26:55.430
+So we're going to do here is I'm going to create a configuration for H.R proxy.
+
+26:55.550 --> 26:59.690
+Right I'm just going to call it I don't know a website dot cfg okay.
+
+26:59.840 --> 27:06.170
+And the proxy proxy requires a front end where things connect to right.
+
+27:06.890 --> 27:08.240
+I'm going to call it F anything.
+
+27:08.240 --> 27:08.690
+Right.
+
+27:08.810 --> 27:16.550
+And then I'm going to bind all my interfaces right on port 80 for a start.
+
+27:16.550 --> 27:17.030
+Right.
+
+27:17.030 --> 27:20.000
+Because for now let's just do a port 80 okay.
+
+27:20.000 --> 27:24.200
+And here's what I want to do I want to do right.
+
+27:24.200 --> 27:29.750
+So I want to use the mode Http because I want this to be a layer seven proxy okay.
+
+27:29.750 --> 27:30.320
+All right.
+
+27:30.350 --> 27:37.880
+Now that we're playing on this layer seven proxy layer seven layer, what we want to do is essentially
+
+27:37.880 --> 27:38.910
+add more information here.
+
+27:38.930 --> 27:40.400
+Let's add some timeouts right.
+
+27:40.400 --> 27:42.440
+The timeout is a client timeout.
+
+27:42.440 --> 27:47.330
+I want the client to essentially give up right.
+
+27:47.330 --> 27:52.340
+If the client is stopped send me an information after 10s I want to close this connection.
+
+27:52.340 --> 27:54.470
+And I'm going to create a back end here called Ali.
+
+27:55.040 --> 27:55.490
+Right.
+
+27:55.490 --> 28:00.980
+And the back end Ali is basically going to port to the Ali server, right.
+
+28:00.980 --> 28:06.650
+Which is 127.0.0.1 on port 8080.
+
+28:06.680 --> 28:06.980
+Right.
+
+28:06.980 --> 28:09.380
+That's 880 conveniently.
+
+28:09.380 --> 28:10.370
+Does it tell me?
+
+28:11.430 --> 28:13.680
+Yeah, this is 1880.
+
+28:14.280 --> 28:15.000
+All right.
+
+28:15.000 --> 28:16.860
+And let's use some timeouts.
+
+28:16.890 --> 28:21.810
+Timeout server DNS I explained all that stuff in the other video.
+
+28:21.810 --> 28:30.480
+But essentially when do you want how long do you want me to if I want to connect to the server what
+
+28:30.480 --> 28:32.580
+is the back end timeout servers.
+
+28:32.580 --> 28:34.320
+Let's just use the default thing.
+
+28:34.350 --> 28:37.140
+10s is just good enough.
+
+28:37.140 --> 28:39.360
+And then Jenny, another back end.
+
+28:39.390 --> 28:40.500
+What's the server for?
+
+28:40.500 --> 28:40.910
+Jenny?
+
+28:40.920 --> 28:46.920
+Jenny server server 127.0.0.1 8081 I think.
+
+28:46.950 --> 28:47.280
+Yeah.
+
+28:47.780 --> 28:49.290
+Then let's just use the timeout.
+
+28:49.320 --> 28:49.920
+Timeout.
+
+28:49.920 --> 28:53.400
+Right now we have all the timeouts.
+
+28:53.400 --> 28:59.310
+We need to also make sure that all the modes are also Http, right.
+
+28:59.310 --> 29:03.540
+So we're all playing on the same layer, the layer seven.
+
+29:03.540 --> 29:09.900
+Essentially that's very critical if we want to start reading the host headers and other stuff like that
+
+29:10.050 --> 29:10.320
+okay.
+
+29:10.320 --> 29:12.030
+So let's go ahead and try that.
+
+29:12.030 --> 29:12.990
+Looks like it's good.
+
+29:12.990 --> 29:14.280
+So let's just do that.
+
+29:14.280 --> 29:14.760
+All right.
+
+29:14.760 --> 29:16.500
+So now I'm listening to port 80.
+
+29:16.530 --> 29:17.490
+Let's test this thing.
+
+29:18.350 --> 29:18.650
+Yeah.
+
+29:18.650 --> 29:20.630
+So if I go to localhost.
+
+29:21.600 --> 29:23.370
+That points me to Ali's website.
+
+29:23.370 --> 29:24.630
+Always, right.
+
+29:24.660 --> 29:25.170
+Okay.
+
+29:25.170 --> 29:27.450
+If I go to Hussein Mac.
+
+29:28.550 --> 29:29.680
+That also takes me.
+
+29:29.690 --> 29:31.390
+That goes, that's my host name, right?
+
+29:31.400 --> 29:34.640
+If I go to my public IP address, what's my public IP address?
+
+29:34.640 --> 29:36.140
+That's my public IP address.
+
+29:36.140 --> 29:38.330
+If I go to that right.
+
+29:38.660 --> 29:44.920
+It also takes me to that because my public IP address, I have a rule on my router that says, hey,
+
+29:44.930 --> 29:52.850
+anything from the public internet on port 80 on your router forwarded to my machine Hussain Mac on port
+
+29:52.850 --> 29:55.840
+80 and anything on 443 also do it the same thing.
+
+29:55.850 --> 29:58.160
+Okay, we have all the pieces.
+
+29:58.160 --> 30:01.340
+The next piece is let's create three domain names.
+
+30:01.340 --> 30:04.850
+That all goes to each one of these guys.
+
+30:04.850 --> 30:05.270
+Okay.
+
+30:05.270 --> 30:06.770
+How do we create domain names.
+
+30:06.770 --> 30:07.190
+Right.
+
+30:07.220 --> 30:08.300
+Very simple.
+
+30:08.300 --> 30:13.910
+Go to no ip.com and register for free I already registered right.
+
+30:13.910 --> 30:18.260
+So if I if you go there I'm going to create now three host names.
+
+30:18.260 --> 30:18.650
+Right.
+
+30:18.650 --> 30:20.600
+So let's go ahead and create the host names.
+
+30:20.600 --> 30:22.190
+I'm going to create a host name here.
+
+30:22.190 --> 30:26.960
+And I'm going to use void default I don't know something like a DNS king.
+
+30:26.990 --> 30:28.040
+Let's do DNS king.
+
+30:28.070 --> 30:28.550
+Sure.
+
+30:28.550 --> 30:32.510
+And I'm going to call this Ali Dash website okay.
+
+30:33.160 --> 30:35.230
+And that points this.
+
+30:36.720 --> 30:39.300
+Ali Dash website dot com.
+
+30:39.300 --> 30:45.000
+It's a free obviously the DNS because you don't get to choose a beautiful name, right.
+
+30:45.030 --> 30:50.220
+That points to this public IP address and you're going to create that host name okay.
+
+30:50.220 --> 30:51.570
+That's Ali website.
+
+30:51.840 --> 30:56.610
+The second website I'm going to do Jenny Dash website just to remember.
+
+30:56.610 --> 30:58.050
+And it's also DNS king.
+
+30:58.050 --> 30:58.880
+So we don't remember.
+
+30:58.890 --> 31:01.890
+We don't forget and we create an A record.
+
+31:01.920 --> 31:06.870
+And then finally Mark Dash website and then finally the DNS name.
+
+31:07.230 --> 31:08.700
+And I think we're good.
+
+31:08.700 --> 31:09.180
+Right.
+
+31:09.180 --> 31:10.710
+So now we have three website.
+
+31:10.710 --> 31:12.990
+And that's what gives you it gives you three four by default.
+
+31:12.990 --> 31:14.820
+You don't have to pay anything okay.
+
+31:14.820 --> 31:17.280
+So now after a while right.
+
+31:17.280 --> 31:23.190
+If I take this or this or this, all of them will point to what to my public IP address.
+
+31:23.190 --> 31:23.310
+Right.
+
+31:23.340 --> 31:27.960
+Which is this guy 47.111, which will always take me to what?
+
+31:27.990 --> 31:29.190
+To Ali's website.
+
+31:29.190 --> 31:29.550
+Right.
+
+31:29.550 --> 31:30.780
+But I do not want that.
+
+31:30.780 --> 31:39.240
+I want to do this if statement right, I want hey, if the host which by default all browsers sends
+
+31:39.240 --> 31:47.190
+right on the Get request because we're Http 1.1 and above always sends the host header, we know which
+
+31:47.190 --> 31:48.570
+host do you really mean.
+
+31:48.570 --> 31:49.620
+We can key off that.
+
+31:49.620 --> 31:53.970
+And we're playing on the proxy Http layer which is layer seven.
+
+31:53.970 --> 31:55.530
+So we can do that right.
+
+31:55.530 --> 31:57.240
+So now let's let's try that.
+
+31:57.240 --> 31:59.400
+Maybe it's it's going to take time to update.
+
+31:59.400 --> 32:01.050
+But it looks like it's already updated.
+
+32:01.200 --> 32:06.240
+So Ali's website and Jenny's website all of them will essentially get updated.
+
+32:06.240 --> 32:06.570
+Okay.
+
+32:06.570 --> 32:12.360
+Let's go back to the configuration here and do one last thing okay.
+
+32:13.370 --> 32:17.150
+If we're going to do, we're going to we're going to remove this.
+
+32:17.420 --> 32:20.080
+We're going to only use the back end.
+
+32:20.090 --> 32:20.290
+Ali.
+
+32:20.330 --> 32:21.970
+We're going to add an if statement here.
+
+32:21.980 --> 32:24.260
+If the header.
+
+32:25.180 --> 32:29.170
+Host is equal to.
+
+32:29.800 --> 32:35.920
+Jenny Dash website does dot DNS king?
+
+32:35.950 --> 32:37.180
+Is that what we called it?
+
+32:37.210 --> 32:38.010
+Dot com.
+
+32:38.020 --> 32:38.620
+So yeah.
+
+32:38.620 --> 32:41.260
+Yes DNS king.com.
+
+32:41.560 --> 32:43.900
+Then I want you to use that right.
+
+32:45.560 --> 32:48.140
+If use the back end.
+
+32:48.860 --> 32:49.600
+Oh, wait a second.
+
+32:49.610 --> 32:50.180
+This is Ali.
+
+32:50.180 --> 32:54.260
+So, Jenny, I want to use Jenny if the Jenny's website.
+
+32:54.260 --> 32:58.160
+And I want you to use Ali back end if.
+
+32:58.880 --> 33:06.410
+The header of host is equal to alley dash website dot DNS king.com.
+
+33:06.980 --> 33:09.130
+I think she means case sensitive.
+
+33:09.140 --> 33:10.250
+I might be wrong there.
+
+33:10.460 --> 33:10.970
+Okay.
+
+33:11.210 --> 33:13.610
+Use back end mark.
+
+33:13.610 --> 33:14.150
+Right.
+
+33:14.180 --> 33:14.930
+If.
+
+33:17.120 --> 33:18.080
+Header.
+
+33:18.290 --> 33:19.250
+Host.
+
+33:19.660 --> 33:20.750
+Dash I.
+
+33:21.640 --> 33:23.950
+And Mark website.
+
+33:23.980 --> 33:25.420
+Dot DNS.
+
+33:27.710 --> 33:28.100
+Com.
+
+33:29.350 --> 33:30.100
+Up until here.
+
+33:30.100 --> 33:36.340
+We don't we didn't we didn't use any and I this is just pre right.
+
+33:37.240 --> 33:37.900
+All right.
+
+33:37.900 --> 33:42.790
+Let's clean things up a little bit I think that should do it.
+
+33:44.510 --> 33:44.990
+All right.
+
+33:44.990 --> 33:46.040
+So now.
+
+33:46.860 --> 33:48.510
+All the config looks good.
+
+33:49.640 --> 33:51.710
+Let's take a look.
+
+33:52.010 --> 33:53.330
+So if I go to.
+
+33:53.360 --> 34:03.500
+So if I go to Jenny's website DNS king.com, you can see that now this guy serves me this.
+
+34:03.680 --> 34:05.480
+How about we go to Mark.
+
+34:05.480 --> 34:13.640
+If I go to Mark website dot DNS king.com you can see that Mark website is served.
+
+34:13.640 --> 34:15.590
+And finally.
+
+34:16.470 --> 34:18.180
+Uh, if I go to.
+
+34:18.450 --> 34:19.710
+What is the final?
+
+34:19.710 --> 34:20.360
+Was it Ali?
+
+34:20.370 --> 34:21.360
+Ali website?
+
+34:21.840 --> 34:24.660
+You can see that Ali's website is served.
+
+34:24.690 --> 34:25.410
+All right guys.
+
+34:25.410 --> 34:27.010
+So now we have pre.
+
+34:27.510 --> 34:29.670
+But this is not secure.
+
+34:29.700 --> 34:31.050
+How do we do security.
+
+34:31.080 --> 34:34.170
+We need certificate for each of these guys.
+
+34:34.170 --> 34:37.500
+So we're going to use Letsencrypt to get a certificate.
+
+34:37.560 --> 34:39.380
+Certificate for each of these puppies.
+
+34:39.390 --> 34:40.090
+Let's do this.
+
+34:40.110 --> 34:40.470
+Okay.
+
+34:41.750 --> 34:43.460
+I'm going to spin up a new one.
+
+34:43.460 --> 34:44.030
+Right.
+
+34:44.510 --> 34:46.910
+The command for to get a certificate.
+
+34:46.910 --> 34:49.820
+So let's make sure you have Letsencrypt installed.
+
+34:49.820 --> 34:50.170
+Right.
+
+34:50.180 --> 34:52.010
+And again I went through that process.
+
+34:52.010 --> 34:57.350
+I'm not going to go through it again, but I'm using Letsencrypt certificate authority to get a certificate
+
+34:57.350 --> 34:58.520
+for my three domains.
+
+34:58.520 --> 34:59.360
+Let's do this.
+
+34:59.360 --> 35:04.100
+So sudo cert bot cert only because that's what I'm interested in.
+
+35:04.100 --> 35:06.290
+And dash dash standalone okay.
+
+35:06.290 --> 35:07.370
+That's how I do it.
+
+35:07.400 --> 35:12.680
+When I do that you're going to be prompted and we have to do it sudo because they put the private keys
+
+35:12.680 --> 35:14.390
+and public keys in a secure place.
+
+35:14.390 --> 35:16.100
+So you need to be root for that.
+
+35:16.100 --> 35:17.090
+And here's the thing.
+
+35:17.090 --> 35:19.160
+What is your domain.
+
+35:19.160 --> 35:20.240
+What should we do first.
+
+35:20.240 --> 35:20.660
+What domain.
+
+35:20.660 --> 35:25.340
+Let's do Ali first Ali dash website dot DNS king.com.
+
+35:25.340 --> 35:25.640
+Right.
+
+35:25.640 --> 35:28.260
+Is that the website I think so obtaining a new website.
+
+35:28.790 --> 35:32.240
+Oh we forgot something very important guys here's the thing.
+
+35:32.720 --> 35:41.450
+We before you let's do this again before since to do an to do a certificate.
+
+35:41.450 --> 35:47.480
+What let's the sudo thing what the what the cert bot does is actually listening on port 80in order to
+
+35:47.480 --> 35:50.720
+communicate with the cert bot with the with a certificate.
+
+35:50.720 --> 35:55.160
+But since we are already listening to this, we have to kill the proxy, right?
+
+35:55.160 --> 36:00.260
+Because it's listening to it's listening to the port 80.
+
+36:00.560 --> 36:01.670
+So let's do it again.
+
+36:03.420 --> 36:03.720
+Right.
+
+36:03.720 --> 36:06.810
+And it's called a Ali Dash website.
+
+36:06.910 --> 36:09.720
+The DNS king.com.
+
+36:09.840 --> 36:14.220
+And we do that obtaining your certificate and cleaning up challenges.
+
+36:14.310 --> 36:17.550
+All that jazz and done guys.
+
+36:17.550 --> 36:18.090
+Done.
+
+36:18.090 --> 36:18.780
+That's it.
+
+36:18.810 --> 36:21.450
+Here's my private key and here's the public key.
+
+36:21.450 --> 36:24.810
+And there is magic that we have to do right.
+
+36:24.930 --> 36:31.710
+That we need to merge the public key and the private key in one key and one key.
+
+36:31.710 --> 36:34.230
+And we put that in in a proxy.
+
+36:34.230 --> 36:40.110
+And we're going to merge this guy using a command called Cat I think as I was called.
+
+36:40.110 --> 36:42.750
+Yeah I think it's called cat right.
+
+36:42.750 --> 36:45.300
+I'm going to cat this guy.
+
+36:46.980 --> 36:49.860
+With this guy.
+
+36:51.180 --> 36:51.960
+Right.
+
+36:53.640 --> 36:56.790
+And I'm going to t that.
+
+36:57.330 --> 36:59.310
+I think I have to do sudo as well.
+
+36:59.610 --> 37:01.260
+T is basically writing.
+
+37:01.260 --> 37:04.530
+I want to write this to users as I what's called users.
+
+37:04.530 --> 37:10.080
+Hussein Nasser and I the same folder and yeah let's call it Ali Pim right.
+
+37:10.080 --> 37:18.600
+Because that's my key now that's the certificate that the proxy will need to have in order to listen
+
+37:18.690 --> 37:20.970
+in order to serve through the server.
+
+37:20.970 --> 37:21.390
+Hello.
+
+37:21.420 --> 37:22.230
+Let's do that.
+
+37:22.230 --> 37:23.250
+And I'm done.
+
+37:23.250 --> 37:24.690
+We have one now.
+
+37:24.690 --> 37:25.200
+Okay.
+
+37:25.200 --> 37:27.120
+Let's do the rest of the two as well.
+
+37:27.120 --> 37:27.570
+Right.
+
+37:28.370 --> 37:29.450
+Very similar thing.
+
+37:29.490 --> 37:37.400
+Okay, so we just bought only let's do Jenny Dash website dot DNS king.com.
+
+37:38.360 --> 37:42.110
+Right Jenny this time Jenny let's do Jenny.
+
+37:42.140 --> 37:43.250
+Thank you Jenny.
+
+37:43.280 --> 37:45.500
+Now we do pseudo cat.
+
+37:45.560 --> 37:47.840
+We take this puppy.
+
+37:50.510 --> 37:51.320
+Paste.
+
+37:51.320 --> 37:55.400
+And then with this puppy.
+
+37:58.080 --> 37:59.050
+Paste.
+
+37:59.190 --> 38:09.690
+And then I want a t that sudo t that write it into users say author s and I and call it genie dot pen.
+
+38:10.110 --> 38:11.130
+Done.
+
+38:11.520 --> 38:12.330
+How about the third one?
+
+38:12.330 --> 38:13.890
+Let's do a mark.
+
+38:14.990 --> 38:16.000
+Zuckerberg.
+
+38:16.010 --> 38:16.970
+Let's do it.
+
+38:17.570 --> 38:20.630
+Mark dot website dot DNS King.
+
+38:20.630 --> 38:23.470
+That's a shady website I don't think anyone would click on.
+
+38:26.780 --> 38:29.240
+Oh my God, that's a shady website.
+
+38:29.660 --> 38:30.020
+All right.
+
+38:30.050 --> 38:30.620
+Done.
+
+38:31.340 --> 38:32.240
+Okay.
+
+38:32.240 --> 38:34.100
+The shady side is ready.
+
+38:34.490 --> 38:35.360
+Okay.
+
+38:35.720 --> 38:36.440
+Let's do.
+
+38:36.770 --> 38:38.060
+What is it, cat?
+
+38:38.390 --> 38:40.430
+I don't know Linux much guys.
+
+38:40.430 --> 38:47.090
+By the way, just FYI, I barely know the basics of things here.
+
+38:47.120 --> 38:50.470
+Okay, then you do sudo t.
+
+38:50.520 --> 38:53.030
+I've used windows all my life.
+
+38:53.030 --> 38:55.040
+Pretty much recently.
+
+38:55.040 --> 38:56.240
+The past three years.
+
+38:56.240 --> 38:58.310
+I started working with Linux, so.
+
+38:59.240 --> 39:00.260
+So I'm not.
+
+39:00.260 --> 39:08.780
+I know the Linux gurus are yelling at me, and there's pretty much 100 better ways of doing this, I
+
+39:08.780 --> 39:09.380
+know.
+
+39:09.380 --> 39:10.100
+Okay.
+
+39:10.220 --> 39:10.580
+All right.
+
+39:10.580 --> 39:11.840
+So who's this guy?
+
+39:11.870 --> 39:12.200
+Mark.
+
+39:12.200 --> 39:12.940
+Mark, pen.
+
+39:13.040 --> 39:13.670
+All right.
+
+39:13.670 --> 39:15.680
+We have all the keys, guys.
+
+39:15.680 --> 39:20.630
+So what we need to do next if I can type vim.
+
+39:21.690 --> 39:22.950
+Website dot config.
+
+39:22.950 --> 39:23.820
+And here's what I'm going to do.
+
+39:23.850 --> 39:33.830
+We're going to enable bind to 000 zero watt 443 guys we're binding on 443 right.
+
+39:33.840 --> 39:35.450
+Secure TLS.
+
+39:35.460 --> 39:36.030
+Hello.
+
+39:36.030 --> 39:40.050
+In order to do SNI with 443 it's very simple.
+
+39:40.170 --> 39:44.010
+Literally after 443 because that's what you're listening to.
+
+39:44.080 --> 39:46.650
+That's what tells me that you're doing TLS right.
+
+39:46.650 --> 39:48.210
+You do SSL right.
+
+39:48.210 --> 39:51.480
+Because I don't know why it's called TLS because it's just legacy stuff.
+
+39:51.480 --> 39:51.930
+Right.
+
+39:51.930 --> 39:57.230
+And then you start listing your certificate one by one after the other, right?
+
+39:57.240 --> 40:00.250
+You do SSL, SR, CRT, SRT.
+
+40:00.660 --> 40:02.790
+That's the Dodge Challenger SRT.
+
+40:02.970 --> 40:03.600
+All right.
+
+40:04.230 --> 40:05.160
+Hellcat.
+
+40:05.160 --> 40:05.420
+All right.
+
+40:05.490 --> 40:08.820
+That's users Hussein Nasr Xin'ai.
+
+40:08.820 --> 40:11.370
+And let's start with Ali okay.
+
+40:11.730 --> 40:13.800
+Dot p m and then space.
+
+40:13.800 --> 40:16.050
+And then you do the other SRT which is what.
+
+40:17.230 --> 40:18.490
+A user's.
+
+40:20.350 --> 40:22.690
+Hussein Nasser as Jenny.
+
+40:22.850 --> 40:23.470
+Jenny.
+
+40:23.500 --> 40:24.740
+Let's serve Jenny.
+
+40:25.390 --> 40:27.040
+And then foreign one CRT.
+
+40:27.280 --> 40:28.570
+What do we do as users?
+
+40:30.370 --> 40:31.150
+Hussein Nasser.
+
+40:32.430 --> 40:32.730
+It's an.
+
+40:33.090 --> 40:34.500
+And then finally marked Penn.
+
+40:34.560 --> 40:43.110
+And then finally we want to enable Http two as well right through which is an application layer protocol
+
+40:43.110 --> 40:43.770
+negotiation.
+
+40:43.770 --> 40:43.950
+Right.
+
+40:43.950 --> 40:48.870
+So in order to do that you literally just do a LPN space H2.
+
+40:48.900 --> 40:51.840
+And I want to also Http 1.1.
+
+40:51.870 --> 40:52.700
+Is that how you do it.
+
+40:52.710 --> 40:54.930
+No I think it's just slash dot 101.
+
+40:54.930 --> 40:55.530
+Right.
+
+40:55.890 --> 40:56.820
+That's it.
+
+40:57.210 --> 40:59.580
+You save and we try.
+
+40:59.610 --> 41:03.180
+Hopefully we get it from the server time proxy F website.
+
+41:05.890 --> 41:06.490
+All good.
+
+41:06.490 --> 41:07.270
+Looks like it's working.
+
+41:07.270 --> 41:09.700
+And we explained what what this error means.
+
+41:09.700 --> 41:16.180
+Actually it's just the the length of the bit length of the Diffie-Hellman parameters telling you that
+
+41:16.180 --> 41:16.810
+it's too low.
+
+41:16.810 --> 41:17.140
+Right.
+
+41:17.140 --> 41:19.210
+But our websites are shady anyway.
+
+41:19.210 --> 41:19.840
+Who cares?
+
+41:19.840 --> 41:21.370
+Nobody's getting hacked them.
+
+41:21.670 --> 41:25.030
+All right, let's test this driver, guys.
+
+41:26.080 --> 41:30.410
+All right, let's do this.
+
+41:30.890 --> 41:32.500
+Ali, go!
+
+41:33.100 --> 41:36.760
+Oh my God, we are secure.
+
+41:36.790 --> 41:39.400
+Babes, we are secure.
+
+41:39.550 --> 41:42.490
+Ali website is legit.
+
+41:42.490 --> 41:47.110
+And not only legit, it's also TLS 1.3 babes.
+
+41:47.110 --> 41:48.330
+Because that's.
+
+41:48.340 --> 41:50.260
+That's how we roll, babes.
+
+41:50.290 --> 41:50.950
+Look at that.
+
+41:50.950 --> 41:51.700
+Look at that.
+
+41:51.760 --> 41:53.100
+That's actually TLS 1.3.
+
+41:53.110 --> 41:53.830
+How about that?
+
+41:54.490 --> 41:55.300
+It is public.
+
+41:55.300 --> 41:55.570
+Guys.
+
+41:55.570 --> 41:57.340
+This website is public.
+
+41:57.370 --> 41:57.610
+Ali.
+
+41:57.610 --> 41:58.900
+Website about Jenny.
+
+41:58.930 --> 42:00.070
+Jenny.
+
+42:00.940 --> 42:01.510
+That's not.
+
+42:01.510 --> 42:03.550
+My name is Jenny from the block.
+
+42:03.550 --> 42:04.300
+Look at that.
+
+42:04.300 --> 42:06.570
+Jenny from the block is selling donuts.
+
+42:06.580 --> 42:07.230
+Babes.
+
+42:07.240 --> 42:07.900
+Look at that.
+
+42:07.900 --> 42:09.750
+Jenny, go!
+
+42:09.890 --> 42:10.540
+Jenny.
+
+42:10.610 --> 42:11.590
+About Mark.
+
+42:13.280 --> 42:14.480
+Mark brothel.
+
+42:14.630 --> 42:16.430
+Hey, Mark.
+
+42:16.460 --> 42:22.220
+Website is up for grabs.
+
+42:22.250 --> 42:23.660
+Look at that, guys.
+
+42:23.700 --> 42:25.520
+All TLS 1.3.
+
+42:25.820 --> 42:27.920
+All right, guys, that was the an.
+
+42:28.760 --> 42:31.850
+Let's go back to the slides and complete this video.
+
+42:31.880 --> 42:32.600
+All right guys.
+
+42:32.600 --> 42:36.880
+So we have done the demo guys.
+
+42:36.890 --> 42:38.420
+Isn't that cool right.
+
+42:38.450 --> 42:40.670
+Wasn't that cool ish right.
+
+42:40.670 --> 42:42.410
+So is this thing perfect?
+
+42:42.440 --> 42:44.630
+No guys, that's the problem.
+
+42:44.810 --> 42:46.850
+It's an AI does.
+
+42:46.880 --> 42:47.840
+Here's the problem with this.
+
+42:47.840 --> 42:48.140
+An AI.
+
+42:48.170 --> 42:50.450
+It sends the hostname in clear text.
+
+42:50.480 --> 42:51.050
+Why is it clear?
+
+42:51.260 --> 42:53.030
+Hussein, you said it's part of the TLS.
+
+42:53.060 --> 42:54.620
+Yes, it's part of client.
+
+42:54.620 --> 42:55.520
+Hello.
+
+42:55.610 --> 42:56.900
+Hello?
+
+42:56.930 --> 42:59.570
+Hello is not encrypted yet.
+
+42:59.570 --> 43:03.620
+Because the client hello is the first attempt to request encryption.
+
+43:04.070 --> 43:07.130
+All right, so we don't have encryption there.
+
+43:07.130 --> 43:07.370
+Right.
+
+43:07.370 --> 43:10.730
+So any extension there is probably not encrypted.
+
+43:10.730 --> 43:18.440
+That includes the Ocsp online certificate status protocol request for stapling.
+
+43:18.440 --> 43:21.440
+You know, to to make sure the certificate is valid or not.
+
+43:21.440 --> 43:24.950
+All of that is not encrypted.
+
+43:24.950 --> 43:25.670
+So.
+
+43:26.550 --> 43:30.800
+If you're paranoid of privacy, right?
+
+43:30.810 --> 43:36.350
+Governments, your government still can see which domains you go to, right?
+
+43:36.360 --> 43:40.050
+So all these nasty domains that you go to, they see them.
+
+43:40.050 --> 43:42.610
+It's clear DNS is unencrypted.
+
+43:42.630 --> 43:45.570
+Well, until someone figured out or not.
+
+43:45.990 --> 43:46.740
+Right.
+
+43:47.160 --> 43:50.730
+But until now DNS is not encrypted okay.
+
+43:50.760 --> 43:57.420
+If you use Firefox by the way, you can really you can really be in a tank, dude.
+
+43:57.510 --> 44:00.690
+Firefox is badass, right?
+
+44:00.690 --> 44:03.110
+You can just do aboutconfig.
+
+44:03.120 --> 44:04.050
+Oh my God.
+
+44:04.050 --> 44:05.860
+You can enable Esni.
+
+44:05.910 --> 44:08.610
+You can enable Doge.
+
+44:08.670 --> 44:13.170
+You can enable so much cool stuff with Firefox.
+
+44:13.200 --> 44:15.030
+It's a beast of a browser.
+
+44:15.210 --> 44:19.080
+I don't know if you can do those chrome, Chrome just kind of give you out of the box.
+
+44:19.080 --> 44:20.280
+I might be wrong though.
+
+44:20.580 --> 44:21.690
+Right, yeah.
+
+44:21.690 --> 44:23.330
+So what's the solution for SNI?
+
+44:24.600 --> 44:25.560
+There is no privacy.
+
+44:25.560 --> 44:25.740
+Right?
+
+44:25.740 --> 44:26.760
+We talked about that.
+
+44:26.790 --> 44:28.070
+No privacy at all.
+
+44:28.080 --> 44:28.320
+Right.
+
+44:28.350 --> 44:30.290
+Because they can see the domains.
+
+44:30.300 --> 44:32.850
+They cannot see what you're searching for.
+
+44:32.850 --> 44:33.300
+Right.
+
+44:33.450 --> 44:35.880
+If you're Google, they cannot see what you're searching for.
+
+44:35.880 --> 44:38.730
+But they they know you're going to Google, right.
+
+44:38.760 --> 44:39.390
+Maybe.
+
+44:39.390 --> 44:41.310
+And they can block you if they want to.
+
+44:41.550 --> 44:42.060
+Right.
+
+44:42.450 --> 44:46.530
+With with with this and I, they can look at the client.
+
+44:46.560 --> 44:46.770
+Hello.
+
+44:46.770 --> 44:47.650
+And look at that.
+
+44:47.670 --> 44:50.580
+It says hey you're doing that right.
+
+44:52.790 --> 44:56.990
+SNP is the new proposal to encrypt SNP.
+
+44:57.020 --> 44:57.440
+Right?
+
+44:57.440 --> 44:58.010
+The client.
+
+44:58.040 --> 44:58.340
+Hello.
+
+44:58.430 --> 44:58.970
+Union client.
+
+44:59.000 --> 44:59.480
+Hello.
+
+44:59.510 --> 45:05.420
+We want to encrypt that portion that says hey server.
+
+45:05.450 --> 45:10.250
+Hello sub I want this host by the way.
+
+45:10.250 --> 45:11.270
+It's encrypted right.
+
+45:11.300 --> 45:19.280
+And the way Cloudflare really figured this out with Apple and other people.
+
+45:20.690 --> 45:22.610
+I'm sorry I don't remember their names right now.
+
+45:22.610 --> 45:24.980
+I'm going to add them post video.
+
+45:24.980 --> 45:25.550
+Right.
+
+45:25.550 --> 45:31.310
+But the way they figured it out, the encrypted SNP is actually because think about it, you know what
+
+45:31.310 --> 45:32.720
+do you encrypt this with?
+
+45:32.750 --> 45:35.210
+You don't have anything right.
+
+45:35.240 --> 45:36.350
+What do you encrypt this with.
+
+45:36.380 --> 45:37.820
+You cannot encrypt it with anything.
+
+45:37.820 --> 45:41.390
+You just started about to start the session for God's sake.
+
+45:41.420 --> 45:42.410
+You don't have nothing.
+
+45:42.440 --> 45:44.060
+Okay, but here's what they say.
+
+45:44.060 --> 45:47.180
+They say, okay, what do people do before TLS?
+
+45:47.360 --> 45:51.080
+So like, well before TLS, I established the TCP connection.
+
+45:51.080 --> 45:52.760
+Well, what do you do before TCP connection?
+
+45:52.760 --> 45:54.290
+Well, I need the IP address.
+
+45:54.290 --> 45:54.680
+Right.
+
+45:54.680 --> 45:55.550
+And I need the port.
+
+45:55.550 --> 45:56.330
+I have the port.
+
+45:56.510 --> 45:57.860
+It's port 443.
+
+45:57.860 --> 45:59.180
+But what do you do.
+
+45:59.210 --> 46:00.170
+You need the IP address.
+
+46:00.500 --> 46:02.240
+How do you get the IP address.
+
+46:02.240 --> 46:02.540
+Right.
+
+46:02.630 --> 46:04.200
+Well the user doesn't give it to you.
+
+46:04.220 --> 46:05.960
+You give you give you the domain.
+
+46:06.230 --> 46:11.090
+So you do a query on something this thing called DNS domain name server.
+
+46:11.090 --> 46:14.540
+And you ask for the IP address and you get the IP address.
+
+46:14.540 --> 46:19.970
+And from the IP address you connect this TCP TCP connection.
+
+46:19.970 --> 46:23.110
+And then after you establish a TCP connection you do all that jazz right.
+
+46:23.780 --> 46:26.450
+Pretty cool stuff right.
+
+46:26.450 --> 46:29.900
+So they said Cloudflare said wait a second.
+
+46:30.020 --> 46:32.390
+We we are a DNS provider.
+
+46:32.390 --> 46:41.960
+What if we provided a record in the DNS with a public key encryption matching the domain right, and
+
+46:41.960 --> 46:45.760
+the user and the owner of the domain just puts that up, right.
+
+46:45.770 --> 46:49.130
+So the public key will have a matching private key.
+
+46:49.130 --> 46:58.070
+So when I want to go to Steve's brothel right I will make a query to the DNS.
+
+46:58.070 --> 47:01.670
+And then Steve's brothel will have a public IP address.
+
+47:01.670 --> 47:06.170
+And I can get the public IP of Steve's website.
+
+47:06.170 --> 47:06.740
+Right.
+
+47:06.740 --> 47:12.290
+And then I get that, and then I establish the TCP connection three sink and all that jazz.
+
+47:12.320 --> 47:12.680
+Right?
+
+47:12.710 --> 47:13.880
+Three way handshake.
+
+47:14.390 --> 47:17.690
+Got the TCP connection about the client.
+
+47:17.720 --> 47:18.230
+Hello.
+
+47:18.260 --> 47:23.930
+I got the public IP and public key of that domain.
+
+47:23.930 --> 47:31.010
+I will encrypt that SNI and I will send it across the client.
+
+47:31.040 --> 47:31.520
+Hello.
+
+47:31.520 --> 47:37.400
+So the server now knows obviously because now I'm using a new extension called Esni.
+
+47:37.430 --> 47:37.910
+Right.
+
+47:37.940 --> 47:40.210
+The server will receive okay this is an SNI.
+
+47:40.670 --> 47:42.200
+Oh this guy is smart.
+
+47:42.290 --> 47:48.140
+They they actually obtained it from a DNS record okay okay cool I think I can deal with it.
+
+47:48.140 --> 47:49.970
+I have the matching private key.
+
+47:49.970 --> 47:51.890
+It's an asymmetric encryption obviously.
+
+47:51.890 --> 47:53.000
+And we talked about encryption.
+
+47:53.000 --> 47:54.590
+Guys I'm going to reference it here.
+
+47:54.590 --> 47:57.710
+And then we're going to take the private key and lock it.
+
+47:57.740 --> 47:59.080
+Take that key.
+
+47:59.090 --> 48:03.590
+Oh this guy wants to go to Steve's brothel okay.
+
+48:03.800 --> 48:04.130
+All right.
+
+48:04.130 --> 48:08.960
+Once we got that and then Steve's a what happened to Steve?
+
+48:08.990 --> 48:09.170
+Yeah.
+
+48:09.200 --> 48:09.680
+Nothing.
+
+48:09.680 --> 48:11.450
+So we get that, and then.
+
+48:11.450 --> 48:13.190
+And then obviously everything happens.
+
+48:13.310 --> 48:17.750
+We surf back the certificate for Steve's brothel and all that jazz, right?
+
+48:18.110 --> 48:19.520
+Cool stuff, guys.
+
+48:19.520 --> 48:20.080
+Cool ish.
+
+48:20.090 --> 48:22.070
+But you got to think about that.
+
+48:22.070 --> 48:24.680
+Guys, this has to happen.
+
+48:24.680 --> 48:30.470
+The DNS request is a UDP connectionless thing to the server right.
+
+48:30.470 --> 48:32.000
+So it's unencrypted.
+
+48:32.090 --> 48:32.900
+So.
+
+48:33.620 --> 48:37.490
+The whole thing is moot if you don't encrypt DNS.
+
+48:37.490 --> 48:45.610
+And I'm going to make another video about Dodge and Dot, which is DNS over Https and DNS over TLS.
+
+48:45.620 --> 48:51.110
+And there's a lot of drama between people fighting over which people which thing to use.
+
+48:51.140 --> 48:58.430
+I'm leaning toward DNS over Https because we don't want to use custom port for things, and I don't
+
+48:58.430 --> 49:02.360
+care about you measuring DNS request.
+
+49:02.390 --> 49:03.260
+Who cares?
+
+49:03.260 --> 49:04.790
+It's a request, right?
+
+49:05.420 --> 49:07.550
+Nobody needs to monitor any traffic.
+
+49:07.910 --> 49:12.920
+But the on that I'm on that boat, obviously.
+
+49:13.080 --> 49:13.310
+Right.
+
+49:13.310 --> 49:17.600
+But yes, you have to encrypt the DNS and so does a lot of stuff to encrypt guys.
+
+49:17.600 --> 49:17.930
+Right.
+
+49:17.930 --> 49:20.350
+So all right summary.
+
+49:20.360 --> 49:21.790
+What did we discuss guys.
+
+49:21.800 --> 49:24.560
+Well we discussed what is SNI.
+
+49:25.100 --> 49:28.520
+This is server name indication during TLS.
+
+49:28.550 --> 49:32.270
+You tell me which host do you really want right.
+
+49:32.270 --> 49:34.040
+I'm going to give you the certificate of the host.
+
+49:34.040 --> 49:40.310
+And I'm going to do smart thing behind the scenes to to actually serve you content for that host.
+
+49:40.310 --> 49:40.590
+Right.
+
+49:40.610 --> 49:46.090
+So there's like three folders where the website are, I'm going to serve content from the right website
+
+49:46.100 --> 49:46.640
+folder.
+
+49:46.670 --> 49:47.180
+Right.
+
+49:47.180 --> 49:52.130
+So we showed how to set up a CNI with a proxy that was long.
+
+49:52.130 --> 49:52.700
+Right.
+
+49:53.120 --> 49:54.470
+We did that finally.
+
+49:54.470 --> 50:00.140
+And then finally we talked about the limitation of SNI and the invention.
+
+50:00.140 --> 50:01.910
+Beautiful invention of S.
+
+50:01.910 --> 50:03.080
+And I hope you enjoyed this video.
+
+50:03.080 --> 50:05.600
+Guys, I want to see you in the next one.
+
+50:05.750 --> 50:07.070
+You guys stay awesome.

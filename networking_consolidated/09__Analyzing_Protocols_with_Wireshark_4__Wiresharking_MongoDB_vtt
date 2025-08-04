@@ -1,0 +1,1453 @@
+WEBVTT
+
+00:00.090 --> 00:01.040
+What's going on, guys?
+
+00:01.050 --> 00:07.560
+My name is Hussein and welcome to another episode of Wireshark them all where we Wireshark every single
+
+00:07.560 --> 00:10.290
+protocol and existing and back end engineering.
+
+00:10.290 --> 00:12.440
+So how about we jump into it today?
+
+00:12.450 --> 00:19.620
+Today we are Wireshark working MongoDB is going to be extreme fun.
+
+00:19.620 --> 00:27.960
+So MongoDB guys is a NoSQL database that's a key value store and I already spun up Mongo Atlas database
+
+00:28.260 --> 00:30.630
+with a user and, and all that stuff.
+
+00:30.630 --> 00:37.680
+They, they give me a free instance with three three shards, three clusters, one cluster of three
+
+00:37.680 --> 00:38.370
+shards.
+
+00:38.370 --> 00:44.070
+And we're going to just basically run this code which connects to the database, does a little bit of
+
+00:44.070 --> 00:47.460
+sleep just because I want to see what's going on there.
+
+00:47.460 --> 00:50.940
+And then connects to the database called Thunderbolt, which I created there.
+
+00:51.270 --> 00:57.030
+It gets the employee and literally find the employee that is named Hussein and then execute a search
+
+00:57.030 --> 00:57.780
+cursor.
+
+00:57.780 --> 01:01.680
+And then once we get the search cursor, we print it and then after that we close the connection.
+
+01:01.680 --> 01:03.450
+So I'm going to show you that.
+
+01:03.450 --> 01:11.490
+And then slowly I'm going to start breaking up the connections one by one after each operation.
+
+01:11.490 --> 01:11.850
+Right?
+
+01:11.850 --> 01:12.990
+So how about we do that?
+
+01:12.990 --> 01:21.300
+So here's a Wireshark I filtered based on the Amazon's public IP addresses, which is the which is the
+
+01:21.300 --> 01:24.660
+provider I'm using for Mongo Atlas for MongoDB Atlas.
+
+01:24.660 --> 01:25.580
+So that's the IP address.
+
+01:25.590 --> 01:29.670
+So now anything going to that IP address will be logged here.
+
+01:29.670 --> 01:42.150
+And another thing I did, I use SSL key log NPM package for Node.js to spit up the session TLS keys
+
+01:42.150 --> 01:45.660
+because MongoDB is always encrypted by default.
+
+01:47.040 --> 01:49.380
+Golf upload for MongoDB team.
+
+01:49.380 --> 01:50.430
+That's awesome.
+
+01:50.550 --> 01:50.970
+Right?
+
+01:50.970 --> 01:56.640
+So because it's encrypted, I won't be won't be able to see it in work unless I decrypted.
+
+01:56.640 --> 02:02.880
+And in order to do that, I split up the key logs, write the key log, which I showed how to do it
+
+02:02.880 --> 02:16.380
+in http two video when we wireshark STB two and once we do that, I said that that key ta ta ta ta Wireshark
+
+02:16.380 --> 02:19.920
+And the TLS option here, where is it?
+
+02:21.030 --> 02:21.720
+Right here.
+
+02:22.230 --> 02:28.320
+And that basically will allow Wireshark to decrypt the keys because no one in the middle can actually
+
+02:28.320 --> 02:29.130
+decrypt anything.
+
+02:29.130 --> 02:32.970
+Right until unless they have the final exchange keys.
+
+02:32.970 --> 02:37.140
+And this works on any cypher, whether development, elliptic, curve development, anything.
+
+02:37.140 --> 02:37.270
+Right.
+
+02:37.320 --> 02:39.570
+Because you are at the end, you're at the client.
+
+02:39.570 --> 02:41.250
+So you do have the keys.
+
+02:41.250 --> 02:48.180
+This is just an option for for for for Node.js to spit out this key so we can use them for debugging
+
+02:48.180 --> 02:48.720
+purposes.
+
+02:48.720 --> 02:49.260
+All right.
+
+02:49.260 --> 02:50.400
+How about we jump into it?
+
+02:50.400 --> 02:52.500
+So I'm going to go ahead and run.
+
+02:52.500 --> 02:55.410
+I'm going to go ahead and run node test dogs.
+
+02:55.560 --> 02:59.880
+And what this will do, it will literally connect.
+
+03:01.920 --> 03:02.610
+Spence.
+
+03:03.690 --> 03:05.460
+Brent and then close.
+
+03:06.740 --> 03:07.460
+That's it.
+
+03:08.120 --> 03:12.800
+So Prince Hussein, which is the employee we found and then close the connection.
+
+03:13.160 --> 03:16.850
+Let's go to beautiful, beautiful Wireshark.
+
+03:17.770 --> 03:20.050
+Look at all this stuff.
+
+03:20.290 --> 03:23.200
+So that's what I love about Wireshark.
+
+03:23.230 --> 03:27.310
+It actually know that we're dealing with MongoDB.
+
+03:27.340 --> 03:27.910
+Look at that.
+
+03:27.910 --> 03:29.670
+It actually knows the protocol.
+
+03:29.680 --> 03:31.380
+It does all that stuff.
+
+03:31.390 --> 03:37.510
+So how about we go through that stuff and then slowly after we go through all the operations until we
+
+03:37.510 --> 03:38.740
+close the connection?
+
+03:38.740 --> 03:39.700
+Where's the fun?
+
+03:39.700 --> 03:40.570
+Right here.
+
+03:42.680 --> 03:43.580
+I don't see Fin.
+
+03:43.760 --> 03:44.360
+What is the fin?
+
+03:44.360 --> 03:44.840
+Fin?
+
+03:45.380 --> 03:46.220
+There is a fin.
+
+03:46.310 --> 03:46.880
+Yeah.
+
+03:47.060 --> 03:49.610
+Until we close the connection, let's go through that stuff.
+
+03:49.760 --> 03:52.260
+So Mongo uses TCP.
+
+03:52.280 --> 03:53.950
+So obviously, since then.
+
+03:53.960 --> 03:54.990
+Ack ack.
+
+03:55.010 --> 03:57.140
+So that's the three way handshake which we talked about.
+
+03:57.140 --> 04:02.540
+So every TCP connection has to be first agreed on the sequence number that we will be used.
+
+04:03.000 --> 04:09.320
+It's basically a number and you have to to agree for client sequence number and a server sequence number
+
+04:09.320 --> 04:15.200
+that will be used to label those packets that you send across the wire so they can be reorders, so
+
+04:15.200 --> 04:18.140
+they can be retransmitted if they are lost and things like that.
+
+04:18.620 --> 04:24.710
+Client Hello TLS 1.3 Go beautiful one Go look at this.
+
+04:24.710 --> 04:30.710
+There's one with the three and this is my mongo client, Node.js, right?
+
+04:30.710 --> 04:36.500
+And so look at all this beautiful cipher suites, powerful suites, powerful suites.
+
+04:36.890 --> 04:40.430
+Look at that stuff it elliptic curve two for Hellman.
+
+04:40.640 --> 04:41.030
+Yeah.
+
+04:41.030 --> 04:42.560
+There is a Diffie Hellman one.
+
+04:42.740 --> 04:43.430
+Right.
+
+04:43.880 --> 04:45.650
+It's all right.
+
+04:45.650 --> 04:46.100
+All right.
+
+04:46.100 --> 04:46.970
+That's good stuff.
+
+04:46.970 --> 04:47.570
+Good stuff.
+
+04:47.570 --> 04:48.350
+Good stuff.
+
+04:48.350 --> 04:53.930
+You can use any of these encryption methods, cipher suites, methods, right?
+
+04:55.550 --> 05:07.370
+And then since we're using TLS 1.3 sort of her name is and I will go into this shard so shard 0001 that's
+
+05:07.370 --> 05:10.730
+the primary chart that we're hitting and then doing all that stuff.
+
+05:10.730 --> 05:17.430
+Support, supports, support the session tickets, that's part of the TLS or is it part of Kerberos?
+
+05:17.450 --> 05:18.650
+I'm not sure about that.
+
+05:18.650 --> 05:22.100
+I don't think you can do Kerberos until you support a version.
+
+05:22.100 --> 05:23.300
+This is the most important thing.
+
+05:23.300 --> 05:28.430
+We support 1.2 and 1.3 and we send that stuff right.
+
+05:28.430 --> 05:29.420
+I'm not going to go through all that stuff.
+
+05:29.450 --> 05:31.790
+We went through the details.
+
+05:31.790 --> 05:39.080
+The server says Let's use TLS 1.3 to communicate, but we have to say 1.2.
+
+05:39.080 --> 05:47.900
+Unfortunately, because there are dumb routers in the web that unfortunately blocks the USB 1.3 on the
+
+05:47.900 --> 05:48.260
+version.
+
+05:48.260 --> 05:49.490
+So this is fake.
+
+05:49.490 --> 05:50.570
+This is not really two years.
+
+05:50.570 --> 05:51.920
+1.2, right?
+
+05:51.920 --> 05:59.600
+The real version somewhere right here where we actually say, hey, it is to us 1.3 supported version.
+
+05:59.750 --> 06:01.640
+So there you go, it's under supported version.
+
+06:01.640 --> 06:04.880
+That's where we had to add a new kit just to do that stuff.
+
+06:05.180 --> 06:05.510
+All right.
+
+06:05.510 --> 06:10.670
+So we exchange the key and then acknowledge, send the certificate, the server sends the certificates
+
+06:10.670 --> 06:11.630
+and all that stuff.
+
+06:11.630 --> 06:12.950
+Verify the certificate.
+
+06:13.250 --> 06:17.930
+That's the server and acknowledge, acknowledge some TCP loss.
+
+06:17.930 --> 06:18.530
+And there is this.
+
+06:18.530 --> 06:20.750
+The first thing we send a query.
+
+06:20.750 --> 06:22.100
+What is this query?
+
+06:23.300 --> 06:25.850
+All right, Mongo wire protocol.
+
+06:25.850 --> 06:27.110
+We're using the wire.
+
+06:27.110 --> 06:27.950
+Mongo protocol.
+
+06:27.950 --> 06:29.780
+So it's a specific protocol for mongo.
+
+06:29.960 --> 06:32.450
+It's around 300 bytes.
+
+06:32.480 --> 06:33.260
+Not that big.
+
+06:33.260 --> 06:33.950
+That's good.
+
+06:34.250 --> 06:35.780
+And look at this.
+
+06:35.780 --> 06:38.180
+We're querying a database called admin.
+
+06:38.180 --> 06:41.570
+Technically, I didn't say any of that stuff.
+
+06:41.570 --> 06:44.060
+The admin database is not created by me.
+
+06:44.060 --> 06:46.400
+I didn't create it and didn't do anything.
+
+06:46.400 --> 06:48.680
+And there's no collection called Dollar Sign CMD.
+
+06:48.680 --> 06:53.450
+That's probably some some built in collection that we just apparently use.
+
+06:53.990 --> 06:54.620
+All right.
+
+06:55.160 --> 06:58.160
+And then we query this is the thing we ask for.
+
+06:58.160 --> 07:08.630
+We ask for so many other information which as for the compression type we ask for, that's the SSL,
+
+07:08.630 --> 07:09.680
+forgot what it stands for.
+
+07:09.710 --> 07:18.920
+This is the the LDAP alternative I forgot was stands for the master is is the one I'm connected to is
+
+07:18.920 --> 07:19.400
+the master.
+
+07:19.400 --> 07:21.590
+I want to connect to the master client.
+
+07:21.590 --> 07:28.520
+Can I say the driver I'm connecting through from Node.js and this is the version of the MongoDB client
+
+07:28.520 --> 07:30.820
+and all that stuff you look at.
+
+07:30.830 --> 07:35.030
+That's compression, what kind of compression I'm using, and that's it.
+
+07:36.050 --> 07:42.890
+And the server obviously acknowledges that I received your query and then sends back the reply.
+
+07:42.890 --> 07:51.740
+And the reply in the reply says, Hey, here's the list of hosts that you can connect to.
+
+07:51.740 --> 07:53.180
+This is awesome, by the way, guys.
+
+07:53.330 --> 07:55.970
+So this is the three shorts that we talked about.
+
+07:56.240 --> 08:01.640
+So I connected, I believe, to this one, this is the master and we're going to find out.
+
+08:01.760 --> 08:06.170
+And they gave us like, by the way, this is this is another two shards that you can connect to.
+
+08:06.170 --> 08:08.480
+So it's almost like a client side sharding.
+
+08:08.480 --> 08:08.900
+Right.
+
+08:09.200 --> 08:10.730
+And that's how MongoDB works.
+
+08:10.730 --> 08:12.320
+The client site is aware of the Shard.
+
+08:13.430 --> 08:14.000
+All right.
+
+08:14.510 --> 08:17.110
+And set name the atlas we're using.
+
+08:17.120 --> 08:18.200
+Atlas is master.
+
+08:18.200 --> 08:18.410
+Yes.
+
+08:18.410 --> 08:20.750
+You're connected to the master or you connect to the secondary.
+
+08:20.750 --> 08:21.230
+Nope.
+
+08:21.320 --> 08:22.460
+Or you connect to the primary.
+
+08:22.460 --> 08:24.770
+This is the primary one is the primary.
+
+08:24.770 --> 08:25.340
+Right.
+
+08:25.340 --> 08:27.770
+And that's all that other stuff.
+
+08:27.770 --> 08:30.740
+Look at that electable.
+
+08:30.740 --> 08:34.490
+Whether this is elective or not, a W is region.
+
+08:34.490 --> 08:34.820
+Where?
+
+08:34.820 --> 08:35.390
+Where is it?
+
+08:35.390 --> 08:36.410
+It's in the east.
+
+08:36.440 --> 08:37.640
+All the information is there.
+
+08:37.640 --> 08:38.030
+By the way.
+
+08:38.030 --> 08:39.110
+This is encrypted, guys.
+
+08:39.110 --> 08:42.680
+But I managed to decrypt it because I'm using that we talked about right.
+
+08:43.370 --> 08:43.910
+Like that.
+
+08:43.910 --> 08:44.660
+What other stuff?
+
+08:44.660 --> 08:49.640
+Election ID don't care about that really late last right.
+
+08:49.820 --> 08:53.960
+Max Bhasin the binary JSON that is that it.
+
+08:53.960 --> 08:54.580
+I think so.
+
+08:55.010 --> 08:58.610
+I'm not an expert in Mongo, so I don't know what what all this stuff is.
+
+08:58.610 --> 09:03.790
+Most of the stuff I know basic stuff the the versions meanwhile are version max erasure.
+
+09:03.830 --> 09:04.580
+This is the response.
+
+09:04.940 --> 09:07.200
+That's a little bit of a lengthy response, huh?
+
+09:08.480 --> 09:09.170
+And that's it.
+
+09:09.170 --> 09:10.070
+So query.
+
+09:10.070 --> 09:11.270
+And here's the thing, guys.
+
+09:11.360 --> 09:14.600
+You'll notice that after that.
+
+09:16.190 --> 09:21.020
+The client also sends another query, and that's what left me a little bit baffled.
+
+09:21.290 --> 09:24.020
+So we're sending another query around 124.
+
+09:24.020 --> 09:28.850
+And what we're asking here, we're doing this SAS cell start thing, right?
+
+09:29.450 --> 09:30.640
+So let's let's Google this.
+
+09:30.700 --> 09:30.890
+All right.
+
+09:30.890 --> 09:34.610
+So it's simple authentication and security layer protocol.
+
+09:35.000 --> 09:37.520
+So simple authentication.
+
+09:37.970 --> 09:39.650
+Security protocol.
+
+09:39.650 --> 09:41.900
+So that's the protocol that they're using.
+
+09:42.860 --> 09:43.840
+SCRAM.
+
+09:43.850 --> 09:48.800
+That's another hashing algorithm that Mongo uses.
+
+09:48.800 --> 09:52.460
+And apparently this is they they are agreeing on this stuff.
+
+09:54.700 --> 09:58.210
+I didn't know a scream is I had to look at this scram.
+
+09:58.210 --> 10:04.510
+So it stands for salted challenge response authentication mechanism scram.
+
+10:04.510 --> 10:10.360
+So this is apparently an authentication mechanism and there are two there are many types there shall
+
+10:10.360 --> 10:11.020
+one.
+
+10:11.680 --> 10:14.110
+Why are we still using sha one guys?
+
+10:14.290 --> 10:16.300
+Cha cha one is dead.
+
+10:16.300 --> 10:18.100
+It's been proven to be weak.
+
+10:18.250 --> 10:20.170
+So an apparently.
+
+10:20.170 --> 10:21.490
+What am I using here?
+
+10:21.490 --> 10:22.810
+I'm using SHA one.
+
+10:24.010 --> 10:25.840
+I probably is not a bad idea.
+
+10:25.870 --> 10:33.100
+No big deal because this person has to also decrypted this in order to get into the show and to to to
+
+10:33.100 --> 10:33.690
+break it.
+
+10:33.790 --> 10:37.810
+I don't see I don't see it as a big deal unless you guys disagree.
+
+10:37.810 --> 10:38.710
+What do you think?
+
+10:39.280 --> 10:39.640
+So, yeah.
+
+10:39.640 --> 10:41.740
+So this is the first societal query.
+
+10:41.740 --> 10:44.230
+And then it replies back and it says.
+
+10:45.810 --> 10:47.580
+We are having conversations.
+
+10:47.580 --> 10:49.230
+So this is like a conversation.
+
+10:49.230 --> 10:54.280
+So there's a lot of shadiness just to establish the MongoDB connection.
+
+10:54.340 --> 10:54.990
+Hmm.
+
+10:55.140 --> 10:55.770
+All right.
+
+10:56.040 --> 10:57.650
+So we have done.
+
+10:57.660 --> 10:59.320
+Are we done false?
+
+10:59.340 --> 11:00.120
+We're not done.
+
+11:00.120 --> 11:01.500
+So it's almost like a conversation.
+
+11:01.500 --> 11:06.260
+I don't know the protocol and how it works, but this is extremely chatty.
+
+11:06.270 --> 11:06.860
+Look at this.
+
+11:06.870 --> 11:10.230
+We're going to see that this is the first query reply.
+
+11:10.260 --> 11:12.150
+The second query and reply.
+
+11:12.180 --> 11:15.210
+The third query almost the same thing.
+
+11:15.210 --> 11:17.810
+We're going to the admin cmd collection.
+
+11:17.820 --> 11:20.090
+We're just having the conversation again.
+
+11:20.100 --> 11:25.950
+There is some negotiation that's going on and then we get a reply back and it's not done yet.
+
+11:25.950 --> 11:33.060
+And then until the fourth query, the fourth round trip, we say, Yo, let's continue hassling.
+
+11:33.150 --> 11:37.560
+And then we say, done, and then we're done.
+
+11:37.560 --> 11:38.070
+The connection.
+
+11:38.070 --> 11:41.400
+So this I believe this is just the connection part.
+
+11:41.400 --> 11:44.250
+So we're and we're going to see that later.
+
+11:44.400 --> 11:47.010
+When I continue that, I think we'll just hear.
+
+11:48.180 --> 11:49.830
+That was just here.
+
+11:50.280 --> 11:52.580
+So a little bit slow, if you ask me.
+
+11:52.590 --> 11:53.040
+Right.
+
+11:54.240 --> 11:59.220
+And this is the first request, request, extensible message format.
+
+11:59.700 --> 12:00.960
+Is this the XML?
+
+12:00.960 --> 12:05.010
+Is that what Extensible Message format is that just XML?
+
+12:05.580 --> 12:06.810
+That's what XML stands for.
+
+12:06.810 --> 12:09.870
+Write, Extensible Message, Markup Language.
+
+12:09.870 --> 12:10.560
+Maybe it's different.
+
+12:10.560 --> 12:11.760
+I think it's a different thing.
+
+12:12.690 --> 12:13.200
+All right.
+
+12:13.200 --> 12:15.480
+So what are we're sending the query.
+
+12:15.510 --> 12:17.760
+The user is sending the query defined find.
+
+12:17.760 --> 12:18.030
+Right?
+
+12:18.030 --> 12:19.410
+We're sending a find.
+
+12:19.470 --> 12:21.690
+That's the find right here.
+
+12:21.690 --> 12:22.050
+Right.
+
+12:22.050 --> 12:25.740
+So this we're going to find out that this doesn't do anything.
+
+12:25.740 --> 12:27.600
+This is all client side logic.
+
+12:27.600 --> 12:32.760
+We're getting getting the database, getting the collection until you want to do something.
+
+12:32.860 --> 12:34.170
+It's the client.
+
+12:34.170 --> 12:37.500
+And Mongo is lazy is a lazy load approach, right.
+
+12:37.500 --> 12:45.810
+Where I found out by actually stopping in each step and there are no network packets sent when you're
+
+12:45.810 --> 12:46.710
+doing this stuff.
+
+12:46.740 --> 12:49.500
+Only even here you don't do send anything.
+
+12:49.500 --> 12:52.170
+It's only here actually we're going to find out that right.
+
+12:52.440 --> 12:54.870
+So find we're going to find.
+
+12:54.870 --> 13:01.710
+And on the employees collection, did we specify the the collection here or the database?
+
+13:01.710 --> 13:02.160
+I mean.
+
+13:03.340 --> 13:08.590
+The database that we specify the database, we specified the collection, but none of the database.
+
+13:09.040 --> 13:10.060
+So that's the filter.
+
+13:10.090 --> 13:12.940
+Hussein, I want to go to who find me Hussein.
+
+13:13.750 --> 13:14.980
+The name Hussein.
+
+13:15.460 --> 13:18.490
+Retain key show document.
+
+13:18.790 --> 13:21.020
+Look at all that stuff, man.
+
+13:21.040 --> 13:22.270
+The timestamp.
+
+13:22.270 --> 13:24.180
+And there's the DB thunderbolt.
+
+13:24.190 --> 13:24.700
+Right.
+
+13:25.360 --> 13:25.990
+Awesome.
+
+13:25.990 --> 13:27.430
+And we acknowledge the server.
+
+13:27.440 --> 13:29.410
+Say, I got your request.
+
+13:29.410 --> 13:34.190
+And now here's what I think is this is just weird.
+
+13:34.210 --> 13:39.470
+It's not really a request because it's coming from the server, so it should be a reply or a response.
+
+13:39.500 --> 13:43.960
+So I think this is a problem in Wireshark working.
+
+13:44.290 --> 13:49.780
+Wireshark just expanding the messages and treating it as a request where it is actually a response?
+
+13:50.260 --> 13:51.130
+I think so.
+
+13:51.670 --> 13:54.220
+So we're going to cursor, a beautiful cursor.
+
+13:54.220 --> 13:56.350
+This is a client side cursor.
+
+13:56.350 --> 14:00.200
+We're going to show that because we asked for everything, basically, right?
+
+14:00.400 --> 14:07.570
+We ask for to array and we get back an array of every single element, which is one basically, and
+
+14:07.570 --> 14:09.670
+the ID, the object ID of the element.
+
+14:10.180 --> 14:10.720
+Right.
+
+14:10.720 --> 14:12.460
+And the string, which is name Hussein.
+
+14:12.880 --> 14:20.170
+If you notice here, this is 5f2, 5f2 and the name is Hussein.
+
+14:20.470 --> 14:26.110
+And then we get the the collection and the ID and all that stuff.
+
+14:26.110 --> 14:30.880
+Okay, the cluster time we're for, for some reason, we're exchanging the cluster time a lot.
+
+14:30.880 --> 14:32.920
+And I don't know what's the purpose of this.
+
+14:32.920 --> 14:33.970
+That's very interesting.
+
+14:34.930 --> 14:37.360
+I think it's just for syncing purposes.
+
+14:37.360 --> 14:38.650
+That would be interesting to know.
+
+14:39.280 --> 14:39.600
+All right.
+
+14:39.600 --> 14:40.560
+Some lost packages.
+
+14:40.570 --> 14:41.480
+No problem.
+
+14:41.500 --> 14:42.670
+Another request.
+
+14:42.740 --> 14:43.060
+Hmm.
+
+14:43.510 --> 14:44.730
+We didn't send another request.
+
+14:44.740 --> 14:45.440
+That's weird.
+
+14:45.460 --> 14:48.460
+So if you look at this request, that request.
+
+14:48.460 --> 14:49.290
+I didn't do that.
+
+14:49.350 --> 14:51.790
+Just say in sessions.
+
+14:52.270 --> 14:52.600
+It's like.
+
+14:52.750 --> 14:55.000
+Almost like it's ending the session.
+
+14:55.180 --> 15:01.650
+Well, that is a document and says IDE this gives you a value a for a five, eight, eight.
+
+15:01.690 --> 15:03.370
+I didn't do any of that stuff.
+
+15:03.760 --> 15:06.520
+Only thing I did is print it and just close the connection.
+
+15:06.520 --> 15:11.620
+So maybe that's part of the closing the connection and that's the client sending it, right?
+
+15:12.430 --> 15:16.270
+And that's and then the time stamp and we're going to all look at this admin.
+
+15:16.270 --> 15:17.350
+I didn't do that.
+
+15:17.380 --> 15:24.430
+We're doing something to the admin that MongoDB client is sending a request to the admin.
+
+15:24.910 --> 15:26.990
+Oh, look at that.
+
+15:27.010 --> 15:29.400
+This is part of a negotiation with the shorts.
+
+15:29.410 --> 15:30.090
+Look at that.
+
+15:30.120 --> 15:33.300
+Says, Hey, I prefer the primary.
+
+15:33.310 --> 15:35.950
+Well, we are connected to the primary.
+
+15:35.950 --> 15:36.580
+All right.
+
+15:36.610 --> 15:37.930
+What's wrong with you, sir?
+
+15:38.720 --> 15:39.310
+Oh, awesome.
+
+15:39.520 --> 15:40.510
+No, no, no, no.
+
+15:40.840 --> 15:41.500
+This is good.
+
+15:41.860 --> 15:46.240
+And then we get a response back from the server saying what?
+
+15:46.240 --> 15:51.790
+Server saying OC one cluster time.
+
+15:52.000 --> 15:54.610
+Don't really care about the cluster time now and the operation.
+
+15:55.690 --> 15:56.370
+That's nothing.
+
+15:56.380 --> 15:58.990
+It's just responding back with a response.
+
+15:59.230 --> 16:04.090
+So I didn't send that as a client, as a user, as a developer, I didn't write that.
+
+16:04.750 --> 16:05.860
+It's all Mongo.
+
+16:06.190 --> 16:13.420
+And then obviously this is the close of the connection, the fin or is it fennec so that the client
+
+16:13.420 --> 16:15.250
+initiating the closing of the connection.
+
+16:15.520 --> 16:17.780
+Look at all that stuff.
+
+16:17.800 --> 16:18.280
+All right, guys.
+
+16:18.280 --> 16:19.360
+So here's what we're going to do now.
+
+16:19.360 --> 16:21.400
+So we went through all that stuff.
+
+16:21.910 --> 16:27.740
+This is a very basic MongoDB request to pull all that stuff.
+
+16:27.760 --> 16:33.940
+How about we spice things a little bit and I'm going to copy this thing.
+
+16:35.310 --> 16:36.570
+And do it right here.
+
+16:37.680 --> 16:40.710
+Right after the connect, I'm going to close the connection.
+
+16:41.510 --> 16:45.470
+And I was sleeping here just because I noticed that.
+
+16:45.470 --> 16:47.630
+I think that it's almost like a bug here.
+
+16:47.630 --> 16:50.390
+When we don't close, we close immediately.
+
+16:50.390 --> 16:54.890
+We get a reset on the can the on the on the TCP stack.
+
+16:54.890 --> 16:58.670
+So I'm just adding milliseconds so we avoid the reset.
+
+16:59.270 --> 17:02.150
+So let's go ahead and clear, which we shouldn't get.
+
+17:02.150 --> 17:05.660
+If you think about it, we shouldn't get this reset less than.
+
+17:06.850 --> 17:08.890
+Then one second.
+
+17:09.970 --> 17:10.990
+And then done.
+
+17:11.470 --> 17:12.340
+Let's take a look.
+
+17:13.150 --> 17:13.720
+All right.
+
+17:14.530 --> 17:15.610
+Three way handshake.
+
+17:16.390 --> 17:17.830
+TLS handshake.
+
+17:18.520 --> 17:19.340
+All the way.
+
+17:19.360 --> 17:28.690
+We get a query reply, a query reply, a query reply, a query reply.
+
+17:28.720 --> 17:29.470
+That's where we show it.
+
+17:29.470 --> 17:29.980
+Right.
+
+17:30.070 --> 17:31.360
+And then often.
+
+17:31.630 --> 17:39.460
+So for round trips, that is, man, if you the next time you establish a DHCP connection, a MongoDB
+
+17:39.460 --> 17:40.550
+client connection.
+
+17:40.570 --> 17:43.360
+Think about this as a back end engineer.
+
+17:43.390 --> 17:45.220
+Think about what you're doing.
+
+17:45.370 --> 17:45.940
+Right?
+
+17:45.940 --> 17:48.970
+So pull this connection as much as possible if you can.
+
+17:49.660 --> 17:56.830
+And then the eagerly load them because lazy load this thing they use there will feel it because it is
+
+17:56.830 --> 18:00.880
+extremely slow, especially if you're if your MongoDB is all over there.
+
+18:01.420 --> 18:02.410
+And this is another thing.
+
+18:02.410 --> 18:07.510
+Guys like your MongoDB clients should be very close to the to the to the MongoDB database.
+
+18:07.660 --> 18:15.580
+Mine is mine is in the West and a client is the West and the database is somewhere in the east.
+
+18:15.580 --> 18:16.030
+Right.
+
+18:16.030 --> 18:17.680
+So that's bad anyway.
+
+18:17.680 --> 18:18.940
+But all right.
+
+18:19.330 --> 18:20.980
+So let's move this a little bit.
+
+18:21.250 --> 18:25.180
+Just this sense for four packets.
+
+18:25.240 --> 18:26.200
+Yikes.
+
+18:26.230 --> 18:28.930
+And now I'm going to.
+
+18:29.650 --> 18:31.460
+Do it all the way here.
+
+18:31.480 --> 18:32.110
+Right.
+
+18:32.290 --> 18:35.170
+So this, this and this.
+
+18:35.170 --> 18:42.220
+And you've got a guy is going to notice that nothing I'm saying nothing will be sent to the to the server
+
+18:42.220 --> 18:42.910
+after that.
+
+18:43.090 --> 18:45.160
+It's the exact same thing.
+
+18:45.700 --> 18:48.070
+Exact same thing.
+
+18:48.100 --> 18:48.550
+Right.
+
+18:48.550 --> 18:49.180
+So.
+
+18:49.840 --> 18:50.890
+Let's go over them again.
+
+18:52.390 --> 18:53.110
+Query.
+
+18:53.140 --> 18:54.040
+Reply.
+
+18:54.400 --> 18:56.110
+Query reply.
+
+18:56.140 --> 18:57.970
+Query reply.
+
+18:58.000 --> 18:59.380
+Query reply.
+
+19:00.240 --> 19:00.970
+And that's it.
+
+19:00.990 --> 19:01.710
+And Finn?
+
+19:02.900 --> 19:10.700
+So whatever we did here, all this work, it's all lazy, loaded.
+
+19:10.820 --> 19:14.350
+All of this is the lazy loading client side, which is good thing, right?
+
+19:14.360 --> 19:17.330
+So this is to avoid extra roundtrips.
+
+19:17.330 --> 19:17.840
+Right.
+
+19:17.840 --> 19:19.310
+And DB Thunderbolt.
+
+19:19.310 --> 19:19.850
+This is.
+
+19:19.850 --> 19:21.770
+Yeah, give me the Thunderbolt database.
+
+19:21.770 --> 19:25.160
+But why do you if not, we're not going to use it immediately.
+
+19:25.160 --> 19:27.650
+I'm not going to send a request to get you a thunderbolt.
+
+19:27.740 --> 19:31.790
+All right, so let's let's pool this connections that cost as much as possible.
+
+19:31.790 --> 19:35.120
+So you want the Thunderbolt database, you want the collection employees.
+
+19:35.120 --> 19:36.920
+Okay, I'm not going to send the request yet.
+
+19:37.010 --> 19:41.780
+You want to find the the employees that name Hosain.
+
+19:41.780 --> 19:43.190
+Okay, I'm not going to send it yet.
+
+19:43.370 --> 19:43.790
+Why?
+
+19:43.790 --> 19:47.030
+Because technically, you didn't consume the search cursor yet.
+
+19:47.030 --> 19:49.400
+Because what other methods do you have, guys?
+
+19:49.460 --> 19:49.580
+It.
+
+19:51.530 --> 19:52.100
+Is it next?
+
+19:52.100 --> 19:53.210
+Yeah, I think it's called next.
+
+19:53.210 --> 19:54.620
+So this is next.
+
+19:54.620 --> 19:57.600
+We'll do something else than to array for example, right.
+
+19:58.280 --> 20:04.730
+Once I do next or to array that will do all of this in one trip.
+
+20:04.730 --> 20:08.150
+So they're kind of optimizing things which I'm going to give them.
+
+20:09.440 --> 20:13.820
+I'm going to give them the props for that.
+
+20:13.820 --> 20:14.630
+That's good.
+
+20:15.140 --> 20:15.950
+But look at this.
+
+20:15.950 --> 20:16.910
+Look at this stuff.
+
+20:17.810 --> 20:20.810
+And here is my message.
+
+20:20.810 --> 20:22.070
+Request, message, request.
+
+20:22.160 --> 20:25.190
+Here the request extensible message format.
+
+20:25.340 --> 20:28.640
+So that's the extensible message format that we sent, right?
+
+20:29.120 --> 20:30.440
+That's our query.
+
+20:30.440 --> 20:35.510
+And the second one is basically the response for this, right?
+
+20:35.570 --> 20:36.800
+Well, that's that's the first one.
+
+20:36.800 --> 20:37.220
+Sorry.
+
+20:37.220 --> 20:42.050
+That's the second request that that the client just does send with that.
+
+20:42.050 --> 20:43.460
+We don't know what's going on there.
+
+20:43.730 --> 20:46.340
+It's sending it to the admin database.
+
+20:46.340 --> 20:48.110
+So some sort of messaging.
+
+20:48.650 --> 20:53.900
+So this is like I think the exchanging of information about the cluster, about the stuff like that.
+
+20:54.080 --> 20:57.050
+But yeah, that's the idea of this stuff.
+
+20:57.050 --> 20:58.820
+And then finally we close the connection.
+
+20:59.420 --> 21:02.690
+All right, the last thing I want to do is something I didn't do offline.
+
+21:02.690 --> 21:06.440
+But I'm going to do it with you because I'm I'm very courageous.
+
+21:07.220 --> 21:10.220
+Not really is I'm going to try this.
+
+21:10.220 --> 21:15.830
+I'm going to see what happened when I do this cursor dot next.
+
+21:17.880 --> 21:21.630
+So this will give me the next result.
+
+21:22.230 --> 21:26.100
+We'll see what will happen when I do this.
+
+21:26.190 --> 21:28.200
+I'm going to resolve all this.
+
+21:28.230 --> 21:30.570
+Let's just do this and see what will happen.
+
+21:32.270 --> 21:32.990
+And it's just.
+
+21:32.990 --> 21:34.460
+Sure, let's just print it.
+
+21:35.390 --> 21:35.990
+That.
+
+21:36.700 --> 21:37.840
+Oh, it's clear.
+
+21:38.410 --> 21:38.950
+Clear.
+
+21:42.000 --> 21:42.590
+Clear.
+
+21:42.810 --> 21:43.470
+And then.
+
+21:43.470 --> 21:44.370
+Boom.
+
+21:46.240 --> 21:51.640
+So the normal queries, no more queries, normal queries, extensible message format.
+
+21:51.640 --> 21:52.510
+The same thing.
+
+21:52.540 --> 21:53.740
+It's the same thing, guys.
+
+21:55.120 --> 21:56.020
+It's the same thing.
+
+21:56.020 --> 21:58.550
+Maybe it's not really an array.
+
+21:58.570 --> 21:59.740
+So this is the request.
+
+22:00.460 --> 22:01.570
+This is the response.
+
+22:01.720 --> 22:03.720
+Are like, that's a little bit different.
+
+22:03.730 --> 22:04.540
+The cursor.
+
+22:04.960 --> 22:06.150
+It's first batch.
+
+22:06.160 --> 22:06.900
+It is an array.
+
+22:07.720 --> 22:08.770
+I guess is the same thing.
+
+22:09.910 --> 22:10.250
+All right.
+
+22:10.270 --> 22:10.990
+Never mind.
+
+22:11.980 --> 22:14.430
+It's just giving you the same results, right?
+
+22:14.470 --> 22:16.060
+But just one at a time.
+
+22:16.060 --> 22:16.480
+So.
+
+22:16.600 --> 22:17.590
+So this is.
+
+22:17.590 --> 22:21.190
+This is a whenever you want something, you just ask for it.
+
+22:21.190 --> 22:22.930
+And you get the second one and the second one.
+
+22:22.930 --> 22:23.710
+Second one like that.
+
+22:23.710 --> 22:30.010
+So there will be a roundtrip for each one of them versus if you do two array, they will all be brought
+
+22:30.010 --> 22:30.520
+locally.
+
+22:30.520 --> 22:30.940
+So.
+
+22:32.110 --> 22:35.470
+Kind of a server side versus client side cursor.
+
+22:35.500 --> 22:36.040
+All right, guys.
+
+22:36.040 --> 22:37.010
+That's it for me today.
+
+22:37.030 --> 22:38.020
+That was Mongo.
+
+22:38.440 --> 22:40.540
+Wireshark, MongoDB.
+
+22:40.570 --> 22:41.780
+I'm going to see you on the next one.
+
+22:41.800 --> 22:42.670
+You guys stay awesome.
+
+22:42.700 --> 22:43.140
+Goodbye.

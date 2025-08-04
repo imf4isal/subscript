@@ -1,0 +1,622 @@
+WEBVTT
+
+00:00.060 --> 00:00.630
+All right.
+
+00:00.990 --> 00:11.760
+The fun began UDP the user data gram protocol, a very critical protocol that is used very widely and
+
+00:11.760 --> 00:14.280
+is sits right on top of the Internet protocol.
+
+00:14.280 --> 00:19.020
+So if you don't want to make sure to watch the IP section, the Internet bureau is actually because
+
+00:19.800 --> 00:25.710
+that's the most important thing to understand, because everything now and top of IP, any data is on
+
+00:25.710 --> 00:28.530
+top of IP, but this is one of the most critical ones.
+
+00:28.950 --> 00:31.800
+So how about we jump into the UDP section?
+
+00:31.980 --> 00:32.790
+Very critical.
+
+00:33.090 --> 00:35.160
+The user data gram protocol.
+
+00:36.180 --> 00:40.110
+I only get confused like why is it called user data protocol?
+
+00:40.110 --> 00:46.800
+I over I talked about that many times like why is it user like I thought everything is used by users
+
+00:46.800 --> 00:47.640
+at the end of the day.
+
+00:47.640 --> 00:50.100
+Why, why this particular thing is called user.
+
+00:50.250 --> 00:54.270
+No, but yeah, it's a data gram effectively you and the.
+
+00:57.310 --> 00:57.630
+Yeah.
+
+00:57.640 --> 01:00.250
+So it stands for user data.
+
+01:00.250 --> 01:06.760
+Gram protocol is a layer for Oracle, so it sits right on top of layer three, which is the IP protocol,
+
+01:07.120 --> 01:13.120
+and it has the ability to address something that we never did before with the IP address.
+
+01:13.120 --> 01:15.160
+Host Hey, this is the IP address of this.
+
+01:15.160 --> 01:16.780
+Host Boom.
+
+01:17.800 --> 01:25.210
+But with the UDP, this is the first time we can actually address processes in a host using the concept
+
+01:25.210 --> 01:25.960
+of ports.
+
+01:26.920 --> 01:34.450
+Now you can have this host can have many applications running and we can send to the same IP address,
+
+01:34.900 --> 01:40.390
+multiple requests that goes through multiple application in the same host and uniquely identify them
+
+01:40.390 --> 01:41.230
+by the port.
+
+01:41.710 --> 01:43.570
+And that is critical concept here.
+
+01:44.260 --> 01:49.810
+Simple protocol to send and receive data was designed for this particular and I don't know which one
+
+01:49.810 --> 01:56.140
+was designed for the TCP or UDP, but I decided to talk about you to be forced just because it's so
+
+01:56.140 --> 01:56.830
+much simpler.
+
+01:57.160 --> 02:03.130
+And it is basically it's like a simpler set to keep includes kind of UDP if you think about it.
+
+02:03.130 --> 02:03.400
+Right.
+
+02:03.460 --> 02:09.940
+It just it does the same job, but UDP is way simpler, doesn't have all the bells and whistles that
+
+02:09.940 --> 02:13.960
+TCP does, but simple protocol to send and receive data.
+
+02:14.800 --> 02:15.670
+And here's the thing.
+
+02:16.000 --> 02:18.460
+Prior communication doesn't is not required.
+
+02:18.850 --> 02:21.010
+This is actually a double edged sword, if you think about it.
+
+02:21.340 --> 02:21.570
+Right.
+
+02:22.480 --> 02:23.860
+It's a stateless protocol.
+
+02:24.220 --> 02:26.980
+And you will notice me using this word all the time.
+
+02:26.980 --> 02:28.180
+Stateful stateless.
+
+02:28.180 --> 02:29.050
+Stateful stateless.
+
+02:29.050 --> 02:32.290
+Because that's how we think in engineering, software engineering.
+
+02:32.290 --> 02:33.910
+You know, it's a stateless versus stateful.
+
+02:34.360 --> 02:35.380
+UDP stateless.
+
+02:35.590 --> 02:40.120
+There is no state stored in the server, just like IP.
+
+02:40.120 --> 02:46.330
+We don't store anything in the router or the machine about the IP packets, about the UDP.
+
+02:46.330 --> 02:46.900
+Same thing.
+
+02:47.080 --> 02:48.070
+There's nothing stored.
+
+02:48.550 --> 02:51.790
+You send a datagram it arrives and it goes away.
+
+02:52.000 --> 02:59.410
+There is unlike TCP you were going to see that TCP is still the host cause all sorts of nuts stuff from
+
+02:59.410 --> 02:59.980
+the server.
+
+03:00.190 --> 03:07.000
+Like we start at the window size, we start the sequences, we make sure the sequences are correct with
+
+03:07.180 --> 03:14.410
+the flow window controls, the buffer, so much stuff we store that DCP but UDP is stateless.
+
+03:16.790 --> 03:19.070
+Another result, prior communication is not required.
+
+03:19.750 --> 03:24.740
+Hey, you can just send a data game to anyone stateless both about it.
+
+03:24.890 --> 03:28.010
+No knowledge is required and it's a very tiny header.
+
+03:28.610 --> 03:31.730
+Yes, we still need headers unfortunately for UDP.
+
+03:32.060 --> 03:38.810
+So the IP package has a 20 by todo a very large rate if you think about it and then add eight on top
+
+03:38.810 --> 03:42.550
+of that for UDP in eight byte header diagonal.
+
+03:43.490 --> 03:44.330
+Here's a use cases.
+
+03:44.330 --> 03:47.210
+Some use cases at least video streaming.
+
+03:47.540 --> 03:47.860
+Right.
+
+03:47.920 --> 03:49.760
+You want to send video, right.
+
+03:50.610 --> 03:57.590
+UDP is a great because you really don't want you don't care if some of the frames a frame here.
+
+03:57.590 --> 04:01.280
+I mean the video frames, you know, not the layer two frames.
+
+04:02.000 --> 04:04.850
+So you don't really care if some of the frames are dropped.
+
+04:04.940 --> 04:07.880
+You know, it's like you're going to get some distorted, right?
+
+04:08.240 --> 04:10.440
+UDP is not really guaranteed delivery.
+
+04:10.460 --> 04:12.860
+That's one thing we should really talk about, right?
+
+04:13.640 --> 04:19.150
+So as a result, if you want to send a lot of huge data that you don't really care about consistency
+
+04:19.170 --> 04:21.350
+hundred percent than good VPN.
+
+04:21.800 --> 04:25.420
+Same thing because you can't use re VPN with TCP.
+
+04:25.460 --> 04:25.700
+Right.
+
+04:25.790 --> 04:26.930
+Is just a bad idea.
+
+04:26.940 --> 04:34.540
+You get something called TCP meltdown because you already communicate with DHCP most of the time.
+
+04:34.550 --> 04:41.420
+And then if the VPN itself packets everything into segments, then you have to retransmit the retransmission.
+
+04:41.420 --> 04:44.560
+It's just becomes really annoying, you know?
+
+04:44.570 --> 04:49.910
+So VPNs, you mostly use the UDP easily, most VPNs use IP directly.
+
+04:49.910 --> 04:54.500
+So it's IP in IP, it's called, hey, put an IP in another IP backer.
+
+04:55.160 --> 05:03.710
+So your IP packet that gets sent regardless the naked IP packet, the VPN will put in another IP packet
+
+05:03.710 --> 05:09.380
+and encrypts that right and that IP packet will be destined to the VPN server.
+
+05:09.710 --> 05:15.560
+So all where your ISP sees is IP, a flood of IP packets going to one server.
+
+05:15.560 --> 05:17.930
+It's like what is going on, right?
+
+05:18.170 --> 05:25.100
+So immediately you go to they go you see the IP packets going to one direction, but the VPN will unpack
+
+05:25.100 --> 05:30.170
+that IP packet and we'll see another IP packet inside it that goes to the actual correct destination.
+
+05:30.470 --> 05:35.000
+That's why the VPN knows where you're going, but the ISP doesn't make sense.
+
+05:35.330 --> 05:37.130
+So we kind of kind of talk about VPN here.
+
+05:37.520 --> 05:41.690
+So UDP uses VPN some some implementations uses UDP.
+
+05:41.690 --> 05:46.580
+I believe open VPN uses UDP, if I'm not mistaken, DNS.
+
+05:47.920 --> 05:49.080
+Domain name server.
+
+05:49.090 --> 05:49.510
+We don't know.
+
+05:49.510 --> 05:50.360
+We didn't talk about it.
+
+05:51.460 --> 05:59.470
+Specifically here, but it's a very well known protocol that resolves the hostname to an IP address
+
+06:00.010 --> 06:05.830
+because most users only deal with the hostnames, you know, Google dot com, Hosain and also dot com.
+
+06:06.670 --> 06:14.230
+But that resolves down to an IP address that IP packets can be sent to because you cannot send an IP
+
+06:14.230 --> 06:15.960
+packet to a name string.
+
+06:15.970 --> 06:17.410
+So you need this protocol to.
+
+06:19.180 --> 06:24.820
+Flip the hostname to an IP and every time you have a mapping you have poisoning.
+
+06:25.420 --> 06:29.110
+So there is something called DNS poisoning at all.
+
+06:29.620 --> 06:31.060
+Convert IP addresses to Mac.
+
+06:31.270 --> 06:34.720
+There's something called our poisoning because you poison the well as a rule.
+
+06:34.870 --> 06:37.570
+So anything anytime you have a mapping, you have a problem.
+
+06:38.560 --> 06:43.690
+So there's DNS poisoning where someone intercept this UDP back and change them to point to somewhere
+
+06:43.690 --> 06:43.930
+else.
+
+06:44.860 --> 06:47.020
+Very nasty stuff if it happens.
+
+06:48.130 --> 06:55.330
+Because someone can go to google dot com, send a UDP packet, dadgum right intercepts it and the response
+
+06:55.330 --> 07:00.520
+back was like, hey, okay, this is actually Google does go and put your IP the IP areas of an attacker
+
+07:00.520 --> 07:00.910
+server.
+
+07:02.110 --> 07:10.580
+So you just direct someone to resolve to your IP address instead of the actual Google IP address.
+
+07:10.600 --> 07:11.540
+Very scary stuff.
+
+07:11.560 --> 07:16.120
+Web RTC, Web RTC, Web real time communication.
+
+07:16.120 --> 07:17.740
+I made a whole video about it on YouTube.
+
+07:18.100 --> 07:26.410
+It's a very popular web protocol that uses UDP because you see UDP is not exposed directly as a raw
+
+07:26.410 --> 07:27.640
+socket in the browser.
+
+07:28.000 --> 07:32.830
+I guess for security reasons, nothing is really exposed as the raw sockets either.
+
+07:32.830 --> 07:39.100
+Use Wan-Bissaka's which uses TCP, which uses HDTV, which uses DCB, or you can use web RTC to communicate
+
+07:39.100 --> 07:43.060
+between two peers directly through UDP effectively.
+
+07:43.630 --> 07:45.910
+You know, and web RTC is the protocol for that.
+
+07:46.570 --> 07:50.200
+So it uses UDP and and there are many, many other cases that I didn't mention here.
+
+07:50.440 --> 07:58.060
+You can build your own UDP protocol game or as a game implementation, usually use UDP because they
+
+07:58.060 --> 08:01.720
+don't want the extra overhead that TCP has.
+
+08:01.990 --> 08:08.860
+And I just GCP does so much and it's a good thing for if you want out-of-the-box communication, but
+
+08:08.860 --> 08:12.160
+sometimes if it does too much you go to the you to be.
+
+08:12.160 --> 08:18.490
+So thank god we have a protocol that is simple like UDP, you know, peer to peer directly.
+
+08:18.910 --> 08:22.030
+So let's talk about multiplexing and multiplexing.
+
+08:22.600 --> 08:24.430
+So very simple.
+
+08:24.730 --> 08:28.690
+The idea of multiplexing is take multiple input and shove it into one.
+
+08:28.990 --> 08:30.760
+The idea of demarcating flexing.
+
+08:30.970 --> 08:32.080
+Take one input and.
+
+08:34.410 --> 08:35.820
+Put it into multiple output.
+
+08:36.870 --> 08:43.780
+And that's what it is because the idea we have now different apps each have different port, but we
+
+08:43.800 --> 08:45.030
+have one IP address.
+
+08:45.450 --> 08:53.310
+All of these will be shoved into one wire as a single IP packet that goes to a single destination.
+
+08:53.310 --> 09:00.780
+So you're multiplexing multiple inputs into one and then you're multiplexing it into the actual target
+
+09:00.780 --> 09:01.410
+applications.
+
+09:02.190 --> 09:02.460
+Right.
+
+09:02.940 --> 09:03.960
+And that's the power here.
+
+09:03.960 --> 09:11.640
+So you can send to Port 53, consider packets to Port 68, and you can send a packet from to Port 69,
+
+09:11.640 --> 09:12.210
+78.
+
+09:12.210 --> 09:14.700
+And then you always need a source port.
+
+09:14.700 --> 09:15.810
+I get this question all the time.
+
+09:15.810 --> 09:16.980
+Why do you need the source port?
+
+09:17.040 --> 09:19.710
+Because how do you know how to send the data back.
+
+09:19.710 --> 09:24.480
+Yeah, we know that I source IP and but how do I know which apps and that.
+
+09:25.660 --> 09:28.330
+Packet write we are data gram.
+
+09:28.510 --> 09:30.580
+To be specific you would need the source port.
+
+09:30.580 --> 09:31.930
+We need the destination party.
+
+09:32.320 --> 09:34.270
+So that's basically it, right?
+
+09:34.510 --> 09:34.990
+Ports.
+
+09:35.290 --> 09:38.920
+Now identify the app or the process effectively.
+
+09:39.340 --> 09:42.340
+And I just realized that I'm covering that thing, right.
+
+09:42.340 --> 09:44.710
+So this is this is what we had here.
+
+09:45.010 --> 09:49.060
+So port 53, 68 did take over something in the here.
+
+09:49.110 --> 09:50.230
+I don't believe I did.
+
+09:50.920 --> 09:51.280
+So yeah.
+
+09:52.090 --> 09:56.950
+App y port 68 and then app Z is 6097 there.
+
+09:56.950 --> 10:02.560
+So app one can talk to app the app two can talk to app x, app three can talk to app z.
+
+10:02.980 --> 10:08.590
+It doesn't matter as long as there is a unique identifier of these four pair or four or stuff.
+
+10:08.860 --> 10:14.140
+Source Port Source IP destination IP destination port.
+
+10:14.140 --> 10:17.320
+And I use this to uniquely identify where you're going.
+
+10:17.320 --> 10:23.230
+Every data gram is uniquely identified and once you understand this that ECP will be easy because it
+
+10:23.230 --> 10:24.100
+is identical.
+
+10:24.130 --> 10:25.510
+Same concept here.
+
+10:25.930 --> 10:27.850
+Alright, let's take an example.
+
+10:28.270 --> 10:34.060
+App one on ten 001 sends data to app excellent and 002.
+
+10:34.210 --> 10:40.420
+So app one is port 55, five, 55, 55 and then app.
+
+10:41.830 --> 10:47.380
+X is part of history, by the way, spoiler alert 53 is actually a DNS server port.
+
+10:48.910 --> 10:50.530
+So there's attention paid for the 53.
+
+10:51.550 --> 10:52.000
+Right.
+
+10:52.870 --> 10:55.330
+And this is what the packet looks like, right?
+
+10:55.360 --> 10:57.190
+The IP packet will have their destination.
+
+10:57.190 --> 11:00.580
+IP URLs ten zero zero to the source ip address ten 001.
+
+11:01.360 --> 11:05.050
+But the destination port is 53 and this is that data.
+
+11:05.380 --> 11:06.400
+This is layer four.
+
+11:06.430 --> 11:08.830
+The green is layer for the orange is layer three.
+
+11:08.830 --> 11:09.100
+Right.
+
+11:09.610 --> 11:11.140
+So 53 is the destination.
+
+11:11.140 --> 11:13.150
+And then five, five, five, five is the source.
+
+11:13.570 --> 11:19.090
+There's other stuff as well we're going to talk about in the next lecture of the actual UDP header.
+
+11:19.630 --> 11:22.030
+But this is it and app X responds.
+
+11:22.030 --> 11:22.840
+How does it respond?
+
+11:22.870 --> 11:26.200
+Well, it puts the destination as the IP address destination.
+
+11:26.200 --> 11:30.340
+It puts the destination port in the destination port segment.
+
+11:30.370 --> 11:30.730
+Right.
+
+11:30.730 --> 11:32.800
+In the UDP section.
+
+11:33.010 --> 11:33.280
+Right.
+
+11:33.580 --> 11:38.710
+And then the source is 53 and the destination, the source IP resistance 002.
+
+11:39.010 --> 11:40.780
+That's building that very simple stuff.
+
+11:41.470 --> 11:44.920
+So as a summary, UDP is a very simple layer four protocol.
+
+11:45.070 --> 11:49.780
+It has a destination port, has a source port, has a bunch of data you can put the data in.
+
+11:50.140 --> 11:50.590
+That's it.
+
+11:51.130 --> 11:57.100
+Stateless doesn't have any really state doesn't have any prior knowledge.
+
+11:57.100 --> 11:59.320
+You don't need a connection established.
+
+11:59.350 --> 12:00.130
+That is a constant.
+
+12:00.130 --> 12:04.930
+Is the connection less that has no concept of a connection that I establish between the client and server
+
+12:04.930 --> 12:05.910
+to connect it.
+
+12:05.980 --> 12:07.270
+Because they know each other.
+
+12:07.270 --> 12:07.930
+They connect.
+
+12:08.230 --> 12:09.580
+They don't need to know each other.
+
+12:09.730 --> 12:11.230
+They just send packets.
+
+12:11.440 --> 12:16.540
+And then the packets are arrived at this destination, you know which port you're going to, you know
+
+12:16.780 --> 12:18.400
+which port you want to respond back.
+
+12:18.790 --> 12:20.020
+That's that UDP.
+
+12:20.110 --> 12:25.270
+Very elegant, very simple, very popular use cases are really limitless.
+
+12:25.690 --> 12:30.940
+Video streaming DNS, Web RTC, many, many use cases.
+
+12:31.660 --> 12:33.310
+Let's jump to the next lecture.
+
+12:33.760 --> 12:37.030
+I'm going to talk about the UDP packet anatomy.

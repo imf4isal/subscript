@@ -1,0 +1,304 @@
+WEBVTT
+
+00:00.390 --> 00:03.900
+Be fast open.
+
+00:04.290 --> 00:04.680
+Wait.
+
+00:04.680 --> 00:06.480
+I can send data during the handshake?
+
+00:06.510 --> 00:07.910
+Yes, very.
+
+00:07.920 --> 00:08.850
+You can.
+
+00:09.570 --> 00:11.340
+That's actually pretty neat.
+
+00:11.760 --> 00:16.710
+So we talked about we talked about the TCP handshake.
+
+00:16.710 --> 00:16.910
+Right.
+
+00:16.920 --> 00:18.990
+Is like sense and EC and ACH.
+
+00:19.380 --> 00:26.220
+It's kind of sad that I am sending this this data, then this this packets and they are empty.
+
+00:26.220 --> 00:27.330
+There's nothing in them.
+
+00:28.290 --> 00:29.370
+It's just a single bit.
+
+00:29.370 --> 00:36.270
+If you look at the TCP header, you know, the the the layer Florida, the TCB, they went through just
+
+00:36.270 --> 00:38.970
+a single bit and nothing with the bunch of sequences and that's it.
+
+00:39.900 --> 00:40.800
+That's so sad.
+
+00:41.880 --> 00:44.040
+I could send data, the handshake.
+
+00:44.610 --> 00:45.450
+But guess what?
+
+00:45.450 --> 00:49.520
+We don't trust you because I need to trust you in order to send data.
+
+00:50.520 --> 00:56.760
+So people came up with this idea, what if I send you a pre-authorization authentication?
+
+00:56.760 --> 00:58.410
+I talked to you once.
+
+00:58.800 --> 01:00.870
+Here's a proof that I did talk to you before.
+
+01:01.620 --> 01:04.050
+This is specifically cool.
+
+01:04.050 --> 01:09.240
+If you want to send if you want to establish multiple TB connection from the same horse to the same
+
+01:09.240 --> 01:10.320
+destination effectively.
+
+01:10.320 --> 01:11.700
+Right, which is very common.
+
+01:11.700 --> 01:11.910
+Right.
+
+01:11.910 --> 01:20.160
+TCP IP is very common like the browser when you first open it htp one one specifically it it just fires
+
+01:20.160 --> 01:27.330
+up six DC connections just like that because it wants to paralyze, but it can't because of other problems
+
+01:27.450 --> 01:35.070
+that we talked about with with TCP and yeah ahead of line blocking and all sides have had a blind block
+
+01:35.070 --> 01:36.540
+and so there's a problem.
+
+01:36.540 --> 01:40.320
+So what it does is like it opens took DC back action and tries to.
+
+01:41.790 --> 01:43.290
+Demand triplex in this case.
+
+01:43.800 --> 01:46.150
+The request on this DCP connections.
+
+01:46.150 --> 01:46.350
+Right.
+
+01:47.070 --> 01:49.710
+Just like a multipart DCP in this case.
+
+01:49.780 --> 01:50.070
+Right.
+
+01:51.330 --> 01:56.100
+So what does the DCP fast open do?
+
+01:58.210 --> 01:59.380
+The handshake is slow.
+
+01:59.680 --> 02:00.460
+We know it.
+
+02:01.120 --> 02:02.050
+The handshake slow.
+
+02:03.160 --> 02:04.150
+I already know the server.
+
+02:04.150 --> 02:05.690
+I have a stubborn connection to prior.
+
+02:05.710 --> 02:11.650
+Can we use a predetermined token to send data immediately during the handshake?
+
+02:11.890 --> 02:13.300
+Can I do that, sir?
+
+02:14.020 --> 02:17.290
+Meet TCP fast open.
+
+02:17.290 --> 02:21.910
+All this fast open or TFO?
+
+02:22.420 --> 02:23.320
+Easy to follow.
+
+02:26.200 --> 02:27.940
+TCP fast open.
+
+02:28.210 --> 02:29.070
+Let's take an example.
+
+02:29.120 --> 02:31.810
+Let's hide here because it's not really.
+
+02:33.730 --> 02:35.950
+So the client and server establish this connection one.
+
+02:36.250 --> 02:36.610
+Right.
+
+02:37.330 --> 02:42.760
+And they agreed sort of all and sends an encrypted cookie back to the client.
+
+02:44.770 --> 02:49.090
+And they're kind stores that t if oh cookie for later usage.
+
+02:49.540 --> 02:54.910
+They client want to create another connection from the same server from the component to the same server
+
+02:55.090 --> 03:00.880
+and it's just the different port that's what the change right in this case the client center sin.
+
+03:01.870 --> 03:03.430
+Data center data.
+
+03:03.850 --> 03:09.580
+Actual data beautiful segment has a data in the thin right.
+
+03:10.740 --> 03:14.430
+How long does it take to fall cookie in the recipe option?
+
+03:14.550 --> 03:20.640
+So the three options that we talked about, you know, that that so that we're adding a cost to the
+
+03:20.640 --> 03:21.900
+header is a year, guys, right.
+
+03:22.230 --> 03:27.750
+So it's more than 20 by today or in this case because I'm adding a different type of or cookie dough
+
+03:28.180 --> 03:30.150
+for this device, vast open cookie.
+
+03:30.270 --> 03:32.940
+The server authenticates the cookie and sends back the response.
+
+03:33.450 --> 03:41.250
+Actually, if there is a response in this case, it include the response and the snack, which is part
+
+03:41.250 --> 03:43.050
+of the handshake and the final leak.
+
+03:43.560 --> 03:44.490
+Isn't that cool?
+
+03:44.820 --> 03:45.060
+Right.
+
+03:45.240 --> 03:48.360
+So the best use case for this.
+
+03:48.360 --> 03:48.990
+What comes?
+
+03:49.410 --> 03:51.790
+So what comes immediately after TCP handshake?
+
+03:52.080 --> 03:57.150
+The DNS, the one that establishes the encryption.
+
+03:57.390 --> 04:01.950
+So most of our data is actually TLS, if you think about it.
+
+04:02.190 --> 04:10.590
+So if I can send this steals data with the first send, I would have saved Emily what a few milliseconds.
+
+04:10.590 --> 04:11.790
+Not if you actually a lot.
+
+04:12.030 --> 04:12.300
+Right.
+
+04:12.930 --> 04:20.160
+Instead of waiting all these roundtrips right you can send data and every really you can really save
+
+04:20.160 --> 04:23.400
+a lot of bandwidth a millisecond latency wise.
+
+04:23.980 --> 04:24.180
+Right.
+
+04:24.840 --> 04:30.240
+So Tier four was actually enabled by default in Linux, 3.13 was enabled back when.
+
+04:30.540 --> 04:30.790
+Right.
+
+04:32.040 --> 04:41.190
+And you can enable a TCP fast opening call by doing crucial dash dash TCP fast open if you want to and
+
+04:41.370 --> 04:43.110
+call will try to.
+
+04:43.230 --> 04:50.190
+When it tries to establish a connection to the server, it will send data in the syn effectively.
+
+04:50.580 --> 04:54.300
+So it goes without saying you will get TCP slow.
+
+04:54.300 --> 04:57.000
+Start with TCP fast open.
+
+04:57.430 --> 04:57.680
+Right.
+
+04:58.020 --> 05:04.830
+So this is a statement that I pasted that I said and Twitter at one point, actually, Daniel was the
+
+05:04.830 --> 05:09.150
+first one to say that the creator of Kernel, it's like I was, I was confused like a few years ago
+
+05:09.150 --> 05:12.030
+was like, okay was that a TCP fast opens lost hour?
+
+05:12.030 --> 05:14.700
+So he explained it to me and then I said so.
+
+05:15.230 --> 05:17.190
+So a slow start has nothing to do with fast open.
+
+05:17.550 --> 05:21.030
+He said, Yeah, you can get slow start even with DCB Fast Open.
+
+05:21.030 --> 05:23.900
+And I found that statement very contradicting.
+
+05:23.910 --> 05:29.610
+And I always tweeted from now that people get confused like over, Yeah, I believe now you understand
+
+05:29.610 --> 05:29.820
+this.
+
+05:30.090 --> 05:34.890
+Of course you can fast open that connection, but you get a get slow start because this has nothing
+
+05:34.890 --> 05:35.520
+to do with this.
+
+05:35.550 --> 05:35.820
+Right.
+
+05:36.060 --> 05:37.740
+So let's start is the congestion algorithm.
+
+05:38.370 --> 05:42.960
+You can take advantage of this feature to send early data, as we talked about.

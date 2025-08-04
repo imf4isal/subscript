@@ -1,0 +1,1915 @@
+WEBVTT
+
+00:00.120 --> 00:04.530
+DNS domain name system.
+
+00:05.190 --> 00:16.470
+This is one of the only protocol that is almost always exercised as we progress through our day working
+
+00:16.470 --> 00:17.730
+with computers.
+
+00:18.000 --> 00:22.470
+You know, every time you type in a URL.
+
+00:22.830 --> 00:34.650
+The first thing that we do is query the DNS, our DNS resolvers and find out what is the IP address
+
+00:35.790 --> 00:45.710
+that is matching that domain so that we can turn around and use TCP IP in order to establish TCP IP
+
+00:45.720 --> 00:48.390
+handshake to that IP address.
+
+00:48.390 --> 00:51.720
+Because the Internet protocol works with IP addresses.
+
+00:51.720 --> 00:58.670
+The internal protocol has their own addressing system, which is we talked about that entire section.
+
+00:58.710 --> 01:03.210
+The IP protocol, you know, has its own addressing.
+
+01:03.510 --> 01:10.200
+The problem with that, as you might have known, is nobody really remembers numbers and IP addresses.
+
+01:10.200 --> 01:13.530
+So this is one of the reasons why DNS is involved.
+
+01:14.100 --> 01:17.520
+How about we jump into it and discuss how DNS works?
+
+01:17.520 --> 01:18.240
+What is DNS?
+
+01:18.240 --> 01:19.530
+Why does it there?
+
+01:20.400 --> 01:21.630
+How does it work?
+
+01:21.630 --> 01:28.290
+And then go through an example actually, you know, get our hands dirty and query some DNS records.
+
+01:28.830 --> 01:29.850
+Let's jump into it.
+
+01:29.850 --> 01:31.500
+Why do we need DNS?
+
+01:32.010 --> 01:32.220
+Right.
+
+01:32.220 --> 01:35.310
+This is one reason that like, makes sense, right?
+
+01:35.310 --> 01:37.200
+People can't remember IP.
+
+01:37.200 --> 01:43.320
+These are numbers and people are very hard you know, they find very difficult to remember IP address
+
+01:43.320 --> 01:50.430
+like it's like imagine having to remember the IP addresses for every website that you have to remember.
+
+01:50.910 --> 01:56.280
+You might you might get lucky and remember, but IP addresses change all the time.
+
+01:56.280 --> 02:02.250
+And what happened if I want to do a load balancing and I and I have seven servers and I have seven IP
+
+02:02.250 --> 02:03.440
+addresses, do I use it?
+
+02:03.480 --> 02:08.370
+You expect users to remember all these seven IP addresses for each server, for each domain?
+
+02:08.430 --> 02:09.780
+It just doesn't make sense, right?
+
+02:09.780 --> 02:12.030
+So something had to be done.
+
+02:12.030 --> 02:21.000
+So people invented this concept of a domain, which is a string that he type in and it has a subdomain
+
+02:21.000 --> 02:23.340
+and the domain self and then a top level domain.
+
+02:23.340 --> 02:27.300
+So w w w dot Jose Nassau dot com.
+
+02:27.300 --> 02:35.100
+And it's very critical these three sections, the reason that these were broken into three sections
+
+02:35.190 --> 02:38.970
+is because it's a good idea to actually add it so I can explain it.
+
+02:38.970 --> 02:45.660
+So this is a subdomain that actual domain and then the top level domain more or less everything is like
+
+02:45.660 --> 02:45.990
+this.
+
+02:46.230 --> 02:53.340
+You can see another subdomain here which which gives you the same exact identical thing essentially.
+
+02:53.340 --> 03:00.810
+But these layers if well, they're very critical to the building of the DNS as well.
+
+03:00.810 --> 03:07.260
+So this is the top level domain dot com dot org, Darby's dot whatever, dot engineering.
+
+03:07.300 --> 03:10.590
+This is the actual domain and this is like subdomains.
+
+03:11.100 --> 03:17.700
+So people remember this easily so people can just type in here and also dot com boom, go to my website.
+
+03:17.700 --> 03:18.120
+Right.
+
+03:18.960 --> 03:28.590
+Also, the beauty of this is like it's just a text really that points to one IP or key B pointing to
+
+03:28.680 --> 03:30.030
+multiple IPS.
+
+03:30.060 --> 03:34.950
+Not only that, you can add more data to these queries.
+
+03:34.950 --> 03:42.360
+It's like, give me your mail IP address, give me your website, mail address, give me any information
+
+03:42.360 --> 03:47.820
+about yourself, like a text information, give me your service record.
+
+03:47.820 --> 03:50.340
+What port should I connect to you?
+
+03:50.340 --> 03:55.740
+So many valuable information can be retrieved from the DNS, not just the IP address, right?
+
+03:56.250 --> 04:01.290
+So this additional layer of abstraction is actually fantastic.
+
+04:01.680 --> 04:04.830
+You might say why this is so I remember.
+
+04:04.860 --> 04:08.660
+Not really because IP addresses you guys change, right?
+
+04:08.670 --> 04:09.630
+Can change.
+
+04:09.630 --> 04:15.450
+And if the IP address change, how can you expect that the user keeps track of all these IP addresses?
+
+04:15.450 --> 04:21.630
+So having a layer of abstraction like this where I hey, it's always going to be the same, but the
+
+04:21.630 --> 04:26.940
+IP that points to it can change and we're going to take care of that in the back backend to flip and
+
+04:26.940 --> 04:29.850
+swizzle these IP addresses to give you any IP address.
+
+04:30.090 --> 04:35.220
+The beauty of this is you can do something like the load balancing, right?
+
+04:35.700 --> 04:37.590
+So that if I.
+
+04:38.730 --> 04:40.150
+Aquarius and also Tor.com.
+
+04:40.160 --> 04:46.280
+I can give five IP addresses and it's up to me to round robin through all of these IP addresses.
+
+04:46.280 --> 04:48.200
+All of them point to my website.
+
+04:49.120 --> 04:50.450
+That's pretty cool, right?
+
+04:50.470 --> 04:53.110
+This way you can connect to the first one, right?
+
+04:53.110 --> 04:56.860
+And then have another client connection to the second one.
+
+04:56.860 --> 04:58.090
+A third one and the fourth one.
+
+04:58.090 --> 05:00.850
+This way you can balance between multiple servers.
+
+05:01.270 --> 05:02.020
+Pretty neat.
+
+05:02.020 --> 05:08.890
+This is what this concept of load balancing is really powerful when it comes to DNS and Netflix heavily
+
+05:08.890 --> 05:11.170
+relying on that, at least in their first architecture.
+
+05:11.170 --> 05:12.940
+When they first built Netflix, right.
+
+05:12.970 --> 05:19.900
+They rely on this concept of DNS to give you multiple IP addresses and client low client side load balancer.
+
+05:19.900 --> 05:21.190
+This is not server side.
+
+05:21.940 --> 05:25.540
+This is the client chooses what server to connect to.
+
+05:25.570 --> 05:26.950
+Pretty cool idea.
+
+05:27.790 --> 05:30.070
+Another concept is the IP addresses.
+
+05:30.070 --> 05:35.410
+As we said, it's always changes and if it changes then we don't really have to worry about it.
+
+05:35.410 --> 05:37.600
+We're connecting to the same server all the time.
+
+05:37.840 --> 05:42.310
+Another cool server concept is the geo DNS concept.
+
+05:43.090 --> 05:43.860
+Cloudflare.
+
+05:43.870 --> 05:46.390
+See any CDNs fastly.
+
+05:46.750 --> 05:47.680
+Cloudflare.
+
+05:48.190 --> 05:56.190
+If you choose to host your website on Fastly or Cloudflare, they live in the entire world.
+
+05:56.200 --> 06:00.670
+They have servers in India, they have servers in Australia, they have servers in the US, they have
+
+06:00.670 --> 06:03.250
+server in Bahrain, they have servers in Russia.
+
+06:03.280 --> 06:11.020
+So their content lives there, they will they will replicate your content everywhere.
+
+06:11.020 --> 06:16.180
+So now if you go to your website, let's say Hossein Nasr dot com.
+
+06:16.840 --> 06:19.210
+And you are a client from India.
+
+06:19.840 --> 06:30.040
+The DNS resolution in India will give you an IP address that is in India of Hussain also dot com.
+
+06:31.030 --> 06:36.670
+This way you are immediately connected to the closest server.
+
+06:36.700 --> 06:38.860
+You might say why care so close the server?
+
+06:38.880 --> 06:39.760
+What does that mean?
+
+06:39.790 --> 06:46.390
+Well, the distance really matters because it means lower latency, you know, because that means the
+
+06:46.390 --> 06:56.860
+establishment of the TCP IP handshake, the segment that says TCP, uh, you know, send syn ack ack
+
+06:56.860 --> 07:03.040
+and then the TLS and all these, you know, the latencies, every segment has to be acknowledged.
+
+07:03.250 --> 07:07.000
+And then we have to run through the congestion algorithm and all that stuff.
+
+07:07.540 --> 07:10.810
+This is way much better if my server is closer to me.
+
+07:11.440 --> 07:19.720
+It's way better if if the latency is 5 milliseconds compared to if my server is I am in India and my
+
+07:19.720 --> 07:26.170
+server is in California and the latency is 50 or 60 or 70 milliseconds, it adds up.
+
+07:26.560 --> 07:34.420
+So if I can be served an IP address that is next to me based on the DNS, that is genius, right?
+
+07:35.230 --> 07:37.630
+And that's that's part of the DNS.
+
+07:37.630 --> 07:39.580
+The DNS does that automatically.
+
+07:40.000 --> 07:47.950
+Cloudflare or whoever Europe is cloud the DNS recursive or resolver does that in a in a very intelligent
+
+07:47.950 --> 07:48.370
+manner.
+
+07:48.400 --> 07:54.400
+They know you obviously your IP address and as a result, they serve you the closest IP address.
+
+07:54.820 --> 07:59.410
+You know, they have IP addresses of that for that domain everywhere.
+
+07:59.410 --> 08:01.690
+But they serve you exactly what you want.
+
+08:02.440 --> 08:04.390
+Obviously, some work needs to be done there.
+
+08:05.230 --> 08:10.900
+I'm going to just have beautiful now because there are going to be a lot of.
+
+08:13.660 --> 08:14.680
+Graphics here.
+
+08:16.030 --> 08:16.690
+All right.
+
+08:17.260 --> 08:25.210
+So every time we introduced a new addressing system, you guys, we need a mapping.
+
+08:26.260 --> 08:28.220
+And that's a problem, kind of.
+
+08:28.880 --> 08:31.130
+We've seen it with AAP, right?
+
+08:31.130 --> 08:32.330
+Address resolution protocol.
+
+08:32.330 --> 08:37.750
+I talked about that at the beginning of the course where we have the MAC address.
+
+08:37.760 --> 08:39.230
+That's the first thing that was invented.
+
+08:39.230 --> 08:41.890
+We never thought that we're going to be doing routing.
+
+08:41.900 --> 08:44.690
+We always thought that everything was going to be close to each other.
+
+08:44.690 --> 08:46.310
+Every computer is next to each other.
+
+08:46.310 --> 08:57.200
+And we invented the Mac, which is the the media access control address, which is global.
+
+08:57.230 --> 08:58.250
+It's unique.
+
+08:58.250 --> 09:01.490
+No two MAC addresses can have the same Mac, right?
+
+09:02.130 --> 09:02.750
+No, no.
+
+09:02.990 --> 09:04.460
+Next can have the same Mac.
+
+09:04.460 --> 09:06.560
+Let's use let's always use that.
+
+09:06.590 --> 09:10.190
+The problem is that we can't because we need to root and Mac.
+
+09:10.190 --> 09:13.480
+Our Mac Macs are not suitable through networks.
+
+09:13.490 --> 09:15.050
+That's why we invented IP.
+
+09:15.050 --> 09:15.980
+But guess what?
+
+09:15.980 --> 09:17.300
+We still need the Mac.
+
+09:17.300 --> 09:23.120
+So if I have the IP and I don't have the Mac, I'm I'm screwed in a local network.
+
+09:23.120 --> 09:25.850
+So we need to do an address resolution protocol.
+
+09:25.880 --> 09:28.670
+Hey, I know your IP address, but I need your Mac.
+
+09:28.910 --> 09:33.400
+So we ask the network and it gives us the Mac and.
+
+09:33.470 --> 09:35.120
+And we talked about that in details.
+
+09:35.600 --> 09:38.510
+Now it's the identical problem.
+
+09:38.930 --> 09:45.680
+You have the name because every customer out there knows Facebook.com, but almost no one knows the
+
+09:45.680 --> 09:47.420
+actual IP address of Facebook.
+
+09:47.690 --> 09:48.170
+All right.
+
+09:48.350 --> 09:50.150
+So same problem.
+
+09:50.150 --> 09:51.200
+We have the name.
+
+09:51.200 --> 09:52.460
+You're going to need the IP.
+
+09:52.460 --> 09:53.930
+You need a mapping.
+
+09:53.930 --> 09:55.580
+DNS is the mapping.
+
+09:55.580 --> 10:01.880
+We use the DNS to map from the name to the IP and then we turn around if we are on the local network
+
+10:01.880 --> 10:03.260
+from the IP to the Mac.
+
+10:03.320 --> 10:03.980
+Right.
+
+10:03.980 --> 10:07.280
+Always goes back to the Mac at the local area, obviously.
+
+10:08.450 --> 10:10.190
+It is built on top of UDP.
+
+10:10.370 --> 10:11.540
+Really cool protocol.
+
+10:12.380 --> 10:15.010
+It shows up right from here.
+
+10:15.160 --> 10:21.080
+Now everything that we talk about is either built on top of UDP is either built on top of TCP.
+
+10:21.110 --> 10:21.710
+Right.
+
+10:21.710 --> 10:27.730
+And sometimes rarely it's directly built on top of IP, like voice over IP.
+
+10:27.740 --> 10:29.710
+It's built into directly on top of IP.
+
+10:29.720 --> 10:30.170
+Right.
+
+10:31.340 --> 10:32.230
+Or ICMP.
+
+10:32.240 --> 10:33.840
+It's built directly on top of IP.
+
+10:33.860 --> 10:34.190
+Right.
+
+10:35.000 --> 10:37.340
+So that's what I want.
+
+10:37.370 --> 10:43.130
+That's why this course is very important to me, because once you understand that everything is UDP
+
+10:43.130 --> 10:46.370
+or TCP, everything becomes so clear.
+
+10:46.370 --> 10:56.270
+It's like something that gets an understanding that started to break down and a huge progress can be
+
+10:56.270 --> 10:56.780
+made.
+
+10:56.810 --> 11:00.860
+Now it's on Port 53, so this is a reserved port for DNS.
+
+11:00.890 --> 11:03.710
+It's well known that Port 53 is DNS.
+
+11:03.740 --> 11:04.850
+Does it have to be?
+
+11:04.850 --> 11:05.560
+No.
+
+11:05.570 --> 11:12.470
+You can spin up a DNS server that listens to pretty much any port you want, but the fact that we have
+
+11:12.470 --> 11:17.190
+fifth port, that means we have to have like we are in layer four effectively, right.
+
+11:17.210 --> 11:23.510
+Which is the UDP protocol and it supports many records, you know, not just the IP, the A protocol
+
+11:23.510 --> 11:28.890
+is what gives you the IP, but the C name gives you an alias, a canonical name.
+
+11:28.910 --> 11:29.330
+Right.
+
+11:29.660 --> 11:36.230
+So my for example, in my courses, I always have an alias.
+
+11:36.230 --> 11:45.800
+So a network host NASSCOM points to nullify servers which then directs you to Udemy with with the coupon
+
+11:45.800 --> 11:47.240
+applied database.
+
+11:47.510 --> 11:50.750
+Then also the com is actually a C name.
+
+11:50.750 --> 11:51.200
+Right.
+
+11:51.200 --> 11:56.000
+So nothing if I connect to my authoritative server, we're going to talk about that.
+
+11:56.000 --> 12:02.540
+So when you go to network dot Hussain also dot com, the authoritative name server which is Google in
+
+12:02.540 --> 12:11.080
+this my case will get you back the alias another hostname that actually lives in a nutshell.
+
+12:11.090 --> 12:14.810
+If I forgot what it is, it was like something something dot net dot com.
+
+12:14.810 --> 12:21.830
+And there's one where my website hosted and on that website I have a direction that directs you back
+
+12:21.830 --> 12:24.500
+to Udemy so you can get the My Udemy courses.
+
+12:24.500 --> 12:30.530
+I have all of this configured with C names database dot hosain also dot com is a C name a network that
+
+12:30.530 --> 12:36.470
+has an answer to com python dot Thursday and also dot com and the same thing text m for the mail text
+
+12:36.470 --> 12:42.020
+for text information anything you can put literally anything here but it's I believe it's used for something
+
+12:42.020 --> 12:42.670
+else as well.
+
+12:42.680 --> 12:51.530
+So Google.com points to an IP address and then we can do our resolutions and we can connect to the server
+
+12:51.800 --> 12:52.910
+once we have the IP address.
+
+12:53.120 --> 12:56.390
+So here is how DNS works, you guys.
+
+12:56.390 --> 13:03.620
+So you're going to see it's not as simple as quitting a database and getting back a name, an IP address,
+
+13:04.310 --> 13:08.570
+because that's how we we would have built it, right, as a as engineers, right.
+
+13:08.570 --> 13:12.470
+Because yeah, this is a networking course, but all of us here are engineers.
+
+13:12.470 --> 13:16.940
+Like I'm a I'm a software engineer, so I build software and this is how we're going to build it.
+
+13:16.940 --> 13:17.430
+And.
+
+13:18.600 --> 13:19.540
+Query.
+
+13:19.560 --> 13:20.910
+Build an index.
+
+13:21.390 --> 13:24.420
+But can you imagine how big that will happen?
+
+13:24.420 --> 13:29.970
+Like is going to be a huge database, a huge table with so many records.
+
+13:29.970 --> 13:31.410
+So you get a partitioning.
+
+13:31.440 --> 13:34.080
+That's that's the technique we I talk about in my database course.
+
+13:34.080 --> 13:34.530
+Right.
+
+13:34.530 --> 13:41.580
+You're going to partition the database so that you have smaller and smaller data sets that you can search.
+
+13:41.580 --> 13:43.230
+And this is exactly how DNS work.
+
+13:43.260 --> 13:50.170
+It starts with the root that is will divide servers, right?
+
+13:50.370 --> 13:57.330
+And then it gives you the top level domain servers, which are the dot com servers, the dot org servers,
+
+13:57.330 --> 13:58.950
+that dot in generic servers.
+
+13:58.950 --> 14:02.970
+And each one of these, obviously, they are duplicated and replicated.
+
+14:03.120 --> 14:03.460
+Right?
+
+14:03.690 --> 14:10.860
+Each one of these top level domains have entries of the authoritative name servers as well, which those
+
+14:10.860 --> 14:16.290
+authoritarian servers have the individual IP addresses that you actually want.
+
+14:16.290 --> 14:24.060
+So the resolver is effectively asking many questions to get that final answer.
+
+14:24.060 --> 14:27.210
+So let's go through the layers here.
+
+14:27.450 --> 14:33.600
+The DNS resolver, which is what is configured when you connect to any network, it will give you a
+
+14:33.600 --> 14:35.400
+default DNS resolver.
+
+14:35.730 --> 14:41.820
+Usually this is your router, but you can override that 1111 is a popular resolver.
+
+14:41.820 --> 14:44.670
+Eight, eight, eight, eight is a popular resolver.
+
+14:44.670 --> 14:50.910
+Eight, eight, eight, eight is Google and 1111 is Cloudflare, a very popular resolvers.
+
+14:50.910 --> 14:53.160
+You know, they have caches everywhere.
+
+14:53.160 --> 14:53.670
+Right.
+
+14:54.630 --> 15:00.330
+And those resolvers, most of the time have the answers, but sometimes they don't.
+
+15:00.330 --> 15:06.270
+So if they don't, which is what we interested here, what do they do in order to get the IP address
+
+15:06.270 --> 15:07.680
+of the server that is requested?
+
+15:08.130 --> 15:12.630
+They go to the root server and the root server will give them not the answer.
+
+15:12.660 --> 15:18.000
+No, there was never will give them someone who will know the answer, which is the top level domain.
+
+15:18.150 --> 15:20.070
+And that's why you need the dot com.
+
+15:20.290 --> 15:20.640
+Right.
+
+15:20.640 --> 15:25.080
+If you give me this just Jose and also the root server will not know anything.
+
+15:25.230 --> 15:30.030
+It's like asking the root server give me the dot Jose Nassau top, top level domain.
+
+15:30.030 --> 15:32.150
+That's what you you're asking about, right?
+
+15:32.160 --> 15:32.880
+Effectively.
+
+15:33.180 --> 15:33.630
+All right.
+
+15:33.840 --> 15:41.280
+So so once we get the top level domain, then we ask the top level domain server of the dot com or the
+
+15:41.280 --> 15:45.600
+dot org or the dot engineering or the dot IO.
+
+15:46.140 --> 15:53.190
+Then get me the authoritative name server that might have the answer effectively.
+
+15:53.190 --> 15:56.610
+And this is your registrar.
+
+15:56.640 --> 16:00.420
+This is where you registered your domain effectively.
+
+16:00.420 --> 16:01.170
+You can.
+
+16:01.940 --> 16:08.570
+Spin up your own authoritative AMP server, and a lot of attackers actually do that and do very nasty
+
+16:08.570 --> 16:10.550
+things with this.
+
+16:11.180 --> 16:13.980
+If they if they spin up their own authoritarian server.
+
+16:14.000 --> 16:20.510
+Anyone who does a DNS asking for their domain, they will land.
+
+16:20.510 --> 16:21.670
+The client will land.
+
+16:21.680 --> 16:22.940
+It's almost like a honeypot.
+
+16:22.940 --> 16:29.630
+They will come to them, you know, and attackers do all sorts of nasty things to sneak in data and
+
+16:29.630 --> 16:30.230
+stuff like that.
+
+16:30.230 --> 16:32.050
+We talked about it in my YouTube channel.
+
+16:32.270 --> 16:35.360
+So many, so many attacks happen like that.
+
+16:35.690 --> 16:40.940
+So actually once you have the voting server gives you the IP address, then you connect to the actual
+
+16:40.940 --> 16:41.780
+server and connect.
+
+16:42.140 --> 16:42.560
+Let's see.
+
+16:42.560 --> 16:44.150
+Actually, let's see this in action.
+
+16:44.960 --> 16:46.220
+I want to go to Google.com.
+
+16:46.220 --> 16:48.110
+This is the actual IP address of Google dotcom.
+
+16:48.110 --> 16:49.250
+I do not know it.
+
+16:49.250 --> 16:51.770
+As a client I ask a question.
+
+16:51.770 --> 16:58.910
+What is the IP that is of google dot com the resolver, you know, what does that mean?
+
+16:58.910 --> 16:59.510
+Let's go back.
+
+17:00.140 --> 17:04.670
+Let's let's expand that the resolver here.
+
+17:04.670 --> 17:06.410
+How did I know my resolver first?
+
+17:06.410 --> 17:11.150
+When you connect to a network, you will know your DNS resolver immediately.
+
+17:11.150 --> 17:17.690
+There is a bit that tells you here is your DNS server, one primary or secondary, it will connect to
+
+17:17.690 --> 17:18.440
+the primary.
+
+17:18.440 --> 17:20.750
+And this is usually not a domain.
+
+17:20.750 --> 17:23.000
+This is actually a hardcoded IP.
+
+17:23.230 --> 17:24.140
+It has to be.
+
+17:24.260 --> 17:27.980
+If it's not an IP address, then you're going to get into a loop, right?
+
+17:28.340 --> 17:29.840
+It has to be an IP address.
+
+17:29.840 --> 17:33.410
+Like that's why most DNS resolvers are not actually hostnames.
+
+17:33.410 --> 17:35.120
+There has to be domains otherwise.
+
+17:35.150 --> 17:36.890
+Okay, how do I look you up?
+
+17:36.890 --> 17:37.370
+Right.
+
+17:37.370 --> 17:39.050
+What's your IP address?
+
+17:40.010 --> 17:46.760
+So now you get the resolver and then you send a UDP packet and we're not going to get into the actual
+
+17:46.760 --> 17:48.620
+details of how does it look like?
+
+17:48.620 --> 17:52.550
+We're going to show I'm going to show a diagram, but I'm not going to go into details because, again,
+
+17:52.550 --> 17:54.920
+this this deserves its own course, to be honest.
+
+17:54.920 --> 18:00.830
+The DNS is so much that is so much there and I can't possibly cover all that.
+
+18:01.100 --> 18:06.380
+So now send our UDP packet to the destination is the 53 port.
+
+18:06.410 --> 18:07.010
+Right.
+
+18:07.010 --> 18:10.010
+Obviously, and the destination is the IP address of the resolver.
+
+18:10.280 --> 18:12.230
+And then there is also a check.
+
+18:12.230 --> 18:14.840
+Do I have a cached entry?
+
+18:14.870 --> 18:19.430
+Did anyone asked for the IP address of Google before and I did all this work before?
+
+18:19.460 --> 18:20.870
+Nope, I did not.
+
+18:20.870 --> 18:22.070
+Let me do it.
+
+18:22.070 --> 18:22.760
+Please.
+
+18:22.760 --> 18:25.520
+So blocks the client is blocked.
+
+18:25.520 --> 18:28.100
+So this is a synchronous call.
+
+18:28.100 --> 18:29.720
+That is synchronous call.
+
+18:29.720 --> 18:34.100
+So if you're a frontend or backend engineer, you know what this means, right?
+
+18:34.220 --> 18:36.320
+It means you're blocked, you're waiting.
+
+18:37.220 --> 18:40.970
+The resolver now turns around and and checks.
+
+18:40.970 --> 18:41.630
+OC What do you want.
+
+18:41.660 --> 18:42.470
+Google.com.
+
+18:42.470 --> 18:46.730
+Okay, I need so that means I need the dot com drop top level domain.
+
+18:46.760 --> 18:52.850
+Who does know of any top level domain of a dot com there are.
+
+18:53.950 --> 18:54.400
+This.
+
+18:54.400 --> 18:56.410
+Now we're interested in just the dot com.
+
+18:56.440 --> 19:00.510
+There are thousands of servers that host the dot coms, right?
+
+19:01.210 --> 19:02.320
+Who knows?
+
+19:02.710 --> 19:04.030
+A router server might know.
+
+19:04.030 --> 19:07.860
+And these are well known hardcoded route servers.
+
+19:07.870 --> 19:09.490
+It's very well known.
+
+19:09.490 --> 19:10.990
+And if it is over, know them.
+
+19:10.990 --> 19:12.940
+You can connect to them today if you want.
+
+19:13.520 --> 19:13.980
+All right.
+
+19:15.520 --> 19:22.510
+So the resolver asks the question, Hey, root, one of the root servers that are managed, I believe
+
+19:22.510 --> 19:29.410
+there are 13 or 12 out there, 13 actual individual root.
+
+19:29.410 --> 19:33.550
+But they are replicated, you know, everywhere, obviously.
+
+19:34.420 --> 19:37.220
+What is the dot com server?
+
+19:37.240 --> 19:38.920
+That's the second question here.
+
+19:38.950 --> 19:40.330
+Give me a dot com server.
+
+19:40.750 --> 19:41.980
+Give me any dot com server.
+
+19:41.980 --> 19:47.350
+That means give me a top level domain that hosts dot com entries.
+
+19:48.160 --> 19:50.860
+And okay, here's one TLD one.
+
+19:51.880 --> 19:53.260
+This is a dot com server.
+
+19:53.920 --> 20:01.390
+So now number three, the resolver will turn it out and connect to the top level domain one, which
+
+20:01.390 --> 20:03.510
+is, again, these are all IP addresses.
+
+20:03.520 --> 20:05.110
+There's no hostnames here.
+
+20:05.650 --> 20:06.210
+All right.
+
+20:06.220 --> 20:08.560
+So now that always we're going to get into our loop, right?
+
+20:08.560 --> 20:13.000
+Because recursive recursive right now, we get that top level domain here.
+
+20:13.300 --> 20:16.090
+Go and ask another question.
+
+20:16.090 --> 20:17.830
+Hey, top level domain one.
+
+20:17.830 --> 20:20.980
+I know you are a dot com server, so you must know this question.
+
+20:21.160 --> 20:25.360
+Where is the authoritative name server of google dot com?
+
+20:27.060 --> 20:30.450
+See, I did not ask the IP address of google.
+
+20:30.600 --> 20:30.810
+Com.
+
+20:30.840 --> 20:34.370
+Give me someone who will know why.
+
+20:34.380 --> 20:41.430
+Because if you started putting the IP addresses of everything here, then imagine top level demands
+
+20:41.430 --> 20:42.420
+are replicated everywhere.
+
+20:42.420 --> 20:51.420
+So you're going to duplicate this IP address everywhere for every TLD, for every dot com server that
+
+20:51.420 --> 20:51.990
+exists.
+
+20:51.990 --> 20:54.250
+And that is a lot of work, right?
+
+20:54.270 --> 20:55.920
+So no, we don't do this.
+
+20:55.920 --> 21:04.680
+And instead we save one IP or maybe multiple IP address of something called the authoritative name servers.
+
+21:05.430 --> 21:08.220
+Servers that absolutely no.
+
+21:08.930 --> 21:14.870
+The answer for Google dot com and they are dedicated just for google.com.
+
+21:14.870 --> 21:21.290
+So now you get a sense authoritative name server one and this is the answer number five.
+
+21:22.040 --> 21:29.290
+And then you you connect to that server as no connection in UDP, you just send that request.
+
+21:29.300 --> 21:31.490
+What is the IP address of google.com?
+
+21:31.520 --> 21:36.080
+The IP address is levs right here in this server.
+
+21:36.080 --> 21:36.900
+So this.
+
+21:36.920 --> 21:41.330
+Now you minimize the search space again we are talking database here.
+
+21:41.430 --> 21:42.740
+I have spade now.
+
+21:42.740 --> 21:43.270
+Now.
+
+21:43.280 --> 21:50.780
+And instead of searching in a huge area, we minimize the search space to only one server in this particular
+
+21:50.780 --> 21:52.360
+case google.com.
+
+21:52.490 --> 21:56.420
+The authorities name server since it's only responsible for google dot com.
+
+21:57.050 --> 21:59.300
+Their database is so tiny.
+
+21:59.300 --> 21:59.990
+Right.
+
+22:00.840 --> 22:04.590
+Maybe it will be responsible for managing multiple domains, but how many?
+
+22:04.620 --> 22:05.130
+Right.
+
+22:05.490 --> 22:07.170
+It's not going to be that big.
+
+22:07.200 --> 22:08.690
+So Google does come.
+
+22:08.700 --> 22:09.320
+Oh, sure.
+
+22:09.330 --> 22:09.630
+Boop.
+
+22:09.960 --> 22:11.730
+Here's the IP address of google.com.
+
+22:12.510 --> 22:15.030
+So did you see seven trips?
+
+22:15.030 --> 22:15.660
+Right.
+
+22:15.690 --> 22:19.030
+This is called the question and UDP and DNS.
+
+22:19.050 --> 22:20.520
+Sorry, a question.
+
+22:20.520 --> 22:23.790
+And this is called an answer or a query or a response.
+
+22:23.790 --> 22:24.780
+You might say hosain.
+
+22:25.650 --> 22:27.600
+UDP is stateless.
+
+22:27.630 --> 22:31.410
+How do I know that this response belongs to this request?
+
+22:32.010 --> 22:33.750
+That's a fantastic question.
+
+22:34.020 --> 22:41.970
+There is a header in the DNS in the UDP packet in the data section, the DNS add something to a query
+
+22:41.970 --> 22:43.530
+ID or the transaction ID.
+
+22:43.620 --> 22:48.990
+So you're going to generate a transaction ID and this transaction will be it will be replicated.
+
+22:49.020 --> 22:51.630
+It will be used through all over this.
+
+22:52.050 --> 22:58.020
+So if you ask a query and you give a query ID, this server will probably with the query ID that you
+
+22:58.020 --> 22:59.080
+just reply.
+
+22:59.100 --> 23:05.750
+So that means if the resolver is asking many questions in parallel, it knows which response belong
+
+23:05.760 --> 23:07.260
+to which request.
+
+23:07.310 --> 23:07.560
+Right.
+
+23:07.560 --> 23:09.750
+This is how you do mapping effectively.
+
+23:09.960 --> 23:16.590
+And now finally, number eight, we gives you the client and then number nine, establish a TCP connection
+
+23:16.590 --> 23:20.760
+handshake with Google.com, that particular IP address.
+
+23:22.380 --> 23:24.480
+That is a lot of work for Dennis.
+
+23:24.480 --> 23:24.830
+That's why.
+
+23:24.930 --> 23:31.260
+Dennis in at least Norges, if you noticed, it's done asynchronously.
+
+23:32.030 --> 23:38.360
+Because of all this, there is cost to do this and you do do this all the time.
+
+23:38.360 --> 23:44.330
+If you do an Axios request, if you do a fetch request by default, you're going to do a DNS.
+
+23:44.360 --> 23:46.520
+The underlining libraries.
+
+23:46.520 --> 23:48.260
+Does the DNS do that?
+
+23:48.590 --> 23:50.530
+The DNS for you?
+
+23:50.540 --> 23:51.230
+Right.
+
+23:51.710 --> 23:55.600
+And as a result, this can be expensive.
+
+23:55.610 --> 23:59.450
+So Node.js is specifically used something called Lib.
+
+23:59.720 --> 24:08.360
+You've got the library to do asynchronous calls for all the DNS queries because of what we're seeing
+
+24:08.360 --> 24:10.910
+right here, because that could be blocking.
+
+24:10.910 --> 24:11.330
+Right.
+
+24:11.780 --> 24:14.960
+And we don't want to be blocked in this particular case.
+
+24:15.800 --> 24:17.810
+Here's how the DNS packet looks like.
+
+24:17.810 --> 24:20.210
+Again, we're familiar with this part.
+
+24:20.210 --> 24:21.680
+That's the IP, right?
+
+24:21.680 --> 24:25.850
+And I took this from the use nex paper here.
+
+24:26.390 --> 24:29.750
+Here's our references and this is also the RFC of DNS.
+
+24:29.750 --> 24:36.170
+If you want to know more about this, this IP, we talked in details about all of that stuff, fragmentation
+
+24:36.170 --> 24:39.350
+or the enemy of DNS, by the way, IP fragmentation.
+
+24:39.350 --> 24:40.360
+We talked about that.
+
+24:40.370 --> 24:40.570
+Right.
+
+24:40.640 --> 24:46.280
+And we're going to talk about it in the in the next section, actually talk about IP fragmentations
+
+24:46.280 --> 24:47.420
+and how it's nasty.
+
+24:47.420 --> 24:53.060
+Actually, this is the UDP header destination port 53, source port, whatever is going to be random
+
+24:53.180 --> 25:00.470
+and checksum and the length and this is actually the data portion of the UDP and that's the DNS header.
+
+25:00.470 --> 25:06.620
+That transaction idea that we talked about have to be copied with every request and response.
+
+25:06.620 --> 25:12.320
+The operation codes, there are flags which tells you this is authoritative, this is not this.
+
+25:12.320 --> 25:22.400
+This is the number of questions, number of answers, you know, the number of answers, the number
+
+25:22.400 --> 25:30.470
+of name servers, the number of additional responses, because this is not the entire header, this
+
+25:30.470 --> 25:31.220
+is just the header.
+
+25:31.220 --> 25:39.380
+There is a data portion that is very large for the DNS and this is what can get variable can get really,
+
+25:39.380 --> 25:47.960
+really large the DNS effectively the size of the DNS because this is because you can ask multiple questions.
+
+25:48.290 --> 25:48.860
+Right.
+
+25:48.860 --> 25:53.570
+And and you can get multiple answers as we talked about.
+
+25:53.570 --> 25:53.710
+Right.
+
+25:53.720 --> 25:55.310
+You can have multiple IP addresses.
+
+25:56.690 --> 25:58.940
+And this specifies like what do you want exactly?
+
+25:58.940 --> 26:02.210
+You want the A record, you want the C name, blah, blah, blah.
+
+26:03.320 --> 26:05.710
+Here are some notes about Dennis.
+
+26:06.100 --> 26:07.480
+Why do we have so many layers?
+
+26:07.480 --> 26:08.740
+We talked about that kind of thing.
+
+26:08.920 --> 26:11.590
+Why do we have a top level demand and then authoritative?
+
+26:11.620 --> 26:13.560
+Because this is so expensive.
+
+26:13.570 --> 26:15.880
+This is a brilliant distributed design.
+
+26:16.150 --> 26:18.310
+It's a decentralized in a way.
+
+26:18.580 --> 26:20.680
+You can argue about the decentralization.
+
+26:20.680 --> 26:24.900
+We can show myself now and you can see my hand faces here.
+
+26:24.910 --> 26:26.200
+Yeah, yeah, yeah.
+
+26:26.200 --> 26:26.770
+You can see me.
+
+26:27.280 --> 26:27.790
+Yeah.
+
+26:27.790 --> 26:35.350
+So you can argue about the decentralization of DNS because we've seen Microsoft, Google, Facebook
+
+26:35.350 --> 26:41.830
+actually going down during the pandemic back in 2020 because of DNS.
+
+26:41.860 --> 26:47.110
+If you say this is decentralized, then this kind of it's like how if it's decentralized, then how
+
+26:47.110 --> 26:47.800
+is it going down?
+
+26:47.890 --> 26:48.770
+It's decentralized.
+
+26:48.790 --> 26:53.620
+Well, it is decentralized when it comes to the route, when it comes to the top level domain.
+
+26:53.620 --> 26:59.590
+But it's completely centralized in the authoritative name server because at the end of the day, the
+
+26:59.590 --> 27:01.530
+authoritative name server has the answer.
+
+27:01.540 --> 27:07.120
+If the authoritative name servers are down, which what happened to Microsoft back in the days to two
+
+27:07.120 --> 27:14.020
+years ago, if those are down, then you can't get a DNS answer because only those only Microsoft knows
+
+27:14.020 --> 27:19.030
+the answer eventually because they host the authoritative name server in their data center.
+
+27:19.270 --> 27:20.440
+Those are down.
+
+27:20.740 --> 27:22.630
+Everything shut down, basically.
+
+27:22.630 --> 27:30.370
+So you can argue about DNS being centralized, decentralized, actually not really true unless you decentralize
+
+27:30.370 --> 27:31.900
+your authoritative name servers.
+
+27:32.500 --> 27:38.200
+So we talked about so many layers because of we want it to be decentralized as much as possible and
+
+27:38.200 --> 27:40.250
+we want it to be distributed.
+
+27:40.270 --> 27:47.980
+We want to partition the the namespace so that we don't really get slow queries.
+
+27:48.730 --> 27:51.310
+If you talk my database, of course I talk about this in details.
+
+27:51.310 --> 27:58.150
+You know, if you want to work with a billion row table, the best way to work with a billion row table
+
+27:58.150 --> 28:00.580
+is to avoid working with a billion row table.
+
+28:00.850 --> 28:03.820
+That is the advice for every database engineering.
+
+28:03.820 --> 28:06.150
+You know, avoid working with billion rows.
+
+28:06.160 --> 28:11.790
+If you want to search for one record in a billion rows, avoid work searching 1 billion rows.
+
+28:11.800 --> 28:14.210
+That's how indexing work.
+
+28:14.230 --> 28:17.500
+That's why we have a partitioning.
+
+28:17.500 --> 28:19.000
+That's why we do sharding.
+
+28:19.360 --> 28:25.180
+That's why we break things down as much as possible into smaller and smaller and smaller and more data
+
+28:25.180 --> 28:25.540
+files.
+
+28:25.540 --> 28:28.900
+That's why we have file systems of your file groups.
+
+28:29.860 --> 28:34.300
+They are falling out of favors, but still you can still do a lot of other stuff.
+
+28:34.330 --> 28:38.200
+DNS is not encrypted by default.
+
+28:39.130 --> 28:41.530
+UDP you send it to UDP request.
+
+28:41.530 --> 28:43.240
+The DNS is plaintext.
+
+28:43.270 --> 28:44.260
+Everybody can see it.
+
+28:44.260 --> 28:45.580
+Everybody can change it.
+
+28:45.580 --> 28:46.060
+Right.
+
+28:48.060 --> 28:49.350
+As a result.
+
+28:51.350 --> 28:52.490
+Not everybody can change that.
+
+28:52.490 --> 28:54.450
+I can't take that back.
+
+28:54.470 --> 28:58.550
+I think that back your ISP.
+
+28:59.460 --> 29:02.050
+But is a router, right.
+
+29:02.070 --> 29:04.620
+So all IP packets go through your ISP.
+
+29:04.650 --> 29:05.430
+We talked about that.
+
+29:05.430 --> 29:05.880
+Right.
+
+29:06.360 --> 29:13.350
+And because IP packets carry UDP packets and because UDP carried DNS and because the NSA is not encrypted,
+
+29:13.380 --> 29:18.840
+your ISP sees every single domain you visit.
+
+29:19.290 --> 29:27.000
+They do not see the content of the website you fetch because most websites are encrypted with GBS,
+
+29:27.000 --> 29:32.600
+but they absolutely see the UDP uncorrupted DNS.
+
+29:33.110 --> 29:37.620
+And if you go to port 53 especially so they know everything.
+
+29:37.620 --> 29:41.070
+So they can log, they can block you if they want.
+
+29:42.190 --> 29:43.210
+Very easily.
+
+29:45.170 --> 29:51.740
+People start to solve this problem with Dotti and Deutsch and other older technology like DNS SEQ.
+
+29:52.100 --> 30:02.000
+So DNS over TLS and DNS over http s and I'm flipping back and forth which one is best?
+
+30:02.030 --> 30:09.440
+You know, DNS over GBS means we're going to use port four, four, three and we're going to send DNS
+
+30:09.440 --> 30:11.610
+queries as normal HTTP requests.
+
+30:11.630 --> 30:16.610
+This means network engineers and firewall admins.
+
+30:16.610 --> 30:20.900
+They cannot no longer differentiate between DNS queries.
+
+30:20.900 --> 30:21.310
+Right?
+
+30:23.070 --> 30:29.300
+Anymore because we always used to look for Port 53 to know 53 them is Dennis.
+
+30:29.310 --> 30:32.340
+You cannot do that anymore if you interrupted with Dodge.
+
+30:32.970 --> 30:39.600
+That's why a lot of people favor especially network engineers are pushing hard on dot specific port
+
+30:39.600 --> 30:50.250
+just for encrypted DNS over directly over TLS right so that means I believe that would be either D TLS,
+
+30:50.250 --> 30:55.500
+which is the datagram TLS right or TCP.
+
+30:55.740 --> 31:02.100
+So that means still going to be UDP, but it's going to be encrypted, but there will be assigned port
+
+31:02.370 --> 31:05.160
+specific port just for that.
+
+31:05.340 --> 31:09.990
+So there is a lot of talk here and there is no time to explain all of that stuff, to be honest.
+
+31:09.990 --> 31:13.440
+But it's very it is still a research topic.
+
+31:13.470 --> 31:15.210
+People are still researching this.
+
+31:15.210 --> 31:17.280
+This is not implemented fully.
+
+31:18.090 --> 31:20.030
+Firefox, I believe, has implemented it.
+
+31:20.030 --> 31:21.510
+Then they took it out.
+
+31:22.290 --> 31:23.850
+So many servers are supported.
+
+31:23.850 --> 31:25.760
+Cloudflare started to support the edge.
+
+31:26.280 --> 31:31.350
+But yeah, it's it's like I would say maybe 20% implemented in the web right now.
+
+31:31.980 --> 31:34.010
+And you can if you want to, you can enable them.
+
+31:34.260 --> 31:38.790
+There are many, many, many attacks against DNS and this is the entire course.
+
+31:38.790 --> 31:40.500
+Just talk about DNS, to be honest.
+
+31:40.500 --> 31:47.700
+So that is DNS hijacking, you know, which is basically injecting yourself as a.
+
+31:49.490 --> 31:52.550
+As a fake authoritative name server.
+
+31:52.930 --> 31:53.450
+Right.
+
+31:54.230 --> 31:55.070
+As a result.
+
+31:56.210 --> 32:05.990
+And and in this case, if you injected yourself as a fake top level domain or as a fake name server,
+
+32:05.990 --> 32:16.970
+you can get you can start getting requests effectively and responds with fake responses to malicious
+
+32:16.970 --> 32:17.420
+servers.
+
+32:17.420 --> 32:17.780
+Right.
+
+32:18.290 --> 32:25.790
+And this is one of the worst DNS cache poisoning where an attacker will just because they're using the
+
+32:25.790 --> 32:28.250
+transaction ID, the query ID.
+
+32:29.540 --> 32:31.520
+You can see that idea, right?
+
+32:32.420 --> 32:35.300
+You can you can immediately see that query idea.
+
+32:35.570 --> 32:39.880
+So you can guess you can response with the query ID because you know it.
+
+32:39.890 --> 32:40.550
+Right?
+
+32:42.060 --> 32:47.940
+Uh, so in this particular case, if the resolver is talking to the top level domain or the the authoritative
+
+32:48.120 --> 32:57.570
+server, you can inject and start just spamming UDP package with destination port that the server had
+
+32:57.720 --> 32:58.650
+and.
+
+33:01.800 --> 33:03.140
+Transaction ID.
+
+33:03.180 --> 33:10.890
+Random transaction IDs and then a fixed IP address that is basically your attack, your attackers malicious
+
+33:10.890 --> 33:11.810
+hosted server.
+
+33:11.820 --> 33:17.730
+So if you got a hit, so if you got the port, right, right.
+
+33:17.730 --> 33:19.260
+Again, you must say port is 53.
+
+33:19.260 --> 33:22.740
+No, in the word the source port is random.
+
+33:22.740 --> 33:28.200
+Remember, guys, the client becomes a resolver and they will generate a random port, which you don't
+
+33:28.200 --> 33:29.250
+know necessarily.
+
+33:29.250 --> 33:29.670
+Right.
+
+33:29.820 --> 33:37.380
+So in this case, if you start responding with transaction IDs and you manage to beat the server, then
+
+33:37.380 --> 33:40.950
+you can poison the cache of the resolver.
+
+33:41.250 --> 33:42.630
+Very nasty attack.
+
+33:42.630 --> 33:44.970
+Very hard to do, though, so.
+
+33:46.330 --> 33:51.670
+How about we go into an example, you guys, let's actually use GNSS lookup, which is a very powerful
+
+33:51.670 --> 33:51.880
+tool.
+
+33:51.880 --> 33:54.840
+There's another tool called Digg that allows you to do this.
+
+33:54.910 --> 33:56.950
+Let's just let's just work with this stuff.
+
+33:57.340 --> 33:58.270
+Let's jump into it.
+
+33:59.500 --> 34:00.820
+So how about we get started?
+
+34:00.850 --> 34:06.490
+So in this lookup stands for name server lookup and it's available on all all machines, all operating
+
+34:06.490 --> 34:06.930
+systems.
+
+34:06.940 --> 34:09.640
+If I'm not mistaken, I'm using a mac, so you should have that as well.
+
+34:09.640 --> 34:13.960
+If you're using Linux or Windows, it's right there and it takes two parameters.
+
+34:14.230 --> 34:20.530
+First, it takes actually three takes a bunch of options and take it takes the domain that you want
+
+34:20.530 --> 34:22.660
+to look up the IP address of.
+
+34:22.660 --> 34:23.200
+Right.
+
+34:23.200 --> 34:25.360
+So you ask, hey, what is the IP address?
+
+34:25.360 --> 34:29.740
+Was it not going to give you that IP address back?
+
+34:29.890 --> 34:31.930
+That's that's what it does.
+
+34:32.010 --> 34:32.230
+Right.
+
+34:32.530 --> 34:40.190
+But also takes another third parameter, which is which server do you want to query?
+
+34:40.210 --> 34:42.310
+Very powerful and very beautiful.
+
+34:43.690 --> 34:46.390
+Third parameter here we're going to use in a minute.
+
+34:46.510 --> 34:53.740
+So if I do nice lookup was and also lookup these are the four IP addresses that are returned all the
+
+34:53.740 --> 34:57.700
+A records that are returned from my DNS query.
+
+34:57.700 --> 35:04.120
+And if you notice this was the server, the DNS server that was used, this is my router, my router
+
+35:04.120 --> 35:08.830
+is a DNS server and I used Cloudflare configure Cloudflare for that.
+
+35:08.830 --> 35:14.950
+So my, my router is a resolver in this case and all my DNS queries goes to my router first.
+
+35:14.950 --> 35:19.060
+So these are the answers I got, I got for IP address because I'm running on top of Google.
+
+35:19.110 --> 35:20.470
+My website is running on top of Google.
+
+35:20.470 --> 35:22.870
+So they're doing good load balancing there.
+
+35:24.360 --> 35:28.800
+But you know, it's not only that, you know.
+
+35:30.200 --> 35:35.180
+This is not the only thing you can ask from the server.
+
+35:35.300 --> 35:41.330
+You can ask for all sorts of domains, like you can ask for options and say, Hey, I want the text
+
+35:41.330 --> 35:42.080
+records.
+
+35:42.380 --> 35:47.840
+These are notes, if you will, you know, that that are stored in the records itself.
+
+35:48.590 --> 35:50.140
+If I do say so dot com.
+
+35:50.270 --> 35:52.170
+You can see that these are the notes that are stored.
+
+35:52.190 --> 35:53.480
+I didn't I didn't do that.
+
+35:53.480 --> 35:56.600
+This is Google did that for me.
+
+35:56.600 --> 35:59.870
+You know, they stored some sort of a key, the verification.
+
+35:59.870 --> 36:03.140
+And this is a proof on how what is that?
+
+36:03.140 --> 36:04.670
+This is actually my site.
+
+36:06.110 --> 36:08.900
+You can ask for all sorts of other records as well.
+
+36:09.050 --> 36:12.110
+Like a few as ask a that's the default, right?
+
+36:12.170 --> 36:12.940
+That's what you get.
+
+36:12.950 --> 36:15.170
+So these are some of the records that you can return.
+
+36:15.350 --> 36:17.090
+But, you know, what is this?
+
+36:18.250 --> 36:19.750
+None an authoritative answer.
+
+36:20.260 --> 36:27.100
+This means that this IP address was returned from a cached resolver.
+
+36:27.640 --> 36:36.100
+As I explained in my previous video, that means this is not really the actual name server answer.
+
+36:36.100 --> 36:38.110
+So that's why it's called non authoritative.
+
+36:39.160 --> 36:41.410
+Well, what if I don't trust this answer?
+
+36:41.780 --> 36:41.980
+No.
+
+36:42.370 --> 36:44.110
+I don't want to really be secure.
+
+36:44.590 --> 36:46.480
+Well, you can do this.
+
+36:46.480 --> 36:55.480
+And let's look up dash type equal ness and you can ask when you do the query, you can ask for the name
+
+36:55.480 --> 36:58.540
+servers for the authoritative name servers to be returned.
+
+36:59.380 --> 37:06.340
+And these are my authoritative name server DNS for I have like five D and authoritative name server
+
+37:06.340 --> 37:09.070
+I, my server is running on top.
+
+37:09.070 --> 37:13.840
+My registrar is Enum, which went down a few months back.
+
+37:13.840 --> 37:15.880
+So now here's what it comes power for.
+
+37:16.090 --> 37:22.420
+Let's copy one of those puppis and I can now do a nice lookup.
+
+37:22.590 --> 37:24.280
+I do also dot com.
+
+37:25.220 --> 37:28.130
+But then I add another parameter.
+
+37:28.130 --> 37:33.440
+That third parameter is which resolver you want to query.
+
+37:33.560 --> 37:36.330
+And in this case, I want to query this particular one.
+
+37:36.350 --> 37:39.770
+You can put any DNS server here and I will answer you.
+
+37:39.800 --> 37:45.230
+But because this is now the authoritative, you see that I don't get that text anymore that says, Hey,
+
+37:45.230 --> 37:46.650
+this is not authoritative.
+
+37:46.670 --> 37:53.180
+And you see that my cursor, my local router or cursor was bypassed.
+
+37:53.390 --> 37:56.930
+I have bypassed everything and went directly to the source.
+
+37:57.020 --> 38:00.320
+So that is as authoritative as it can get.
+
+38:01.280 --> 38:03.230
+Very powerful stuff.
+
+38:03.260 --> 38:07.640
+I can also do Husain also dot com.
+
+38:08.740 --> 38:13.030
+And I can ask a query from any particular resolver.
+
+38:13.360 --> 38:14.540
+I can ask Google.
+
+38:14.570 --> 38:15.690
+Eight, eight, eight, eight.
+
+38:16.270 --> 38:17.700
+Give me an answer for that.
+
+38:17.710 --> 38:25.300
+So this way that query, the UDP packet will go to eight, eight, eight, eight.
+
+38:25.330 --> 38:28.030
+In order to answer that query.
+
+38:28.210 --> 38:29.920
+So you get that back the answer.
+
+38:29.950 --> 38:32.350
+Obviously it is not authoritative.
+
+38:32.380 --> 38:33.850
+That's why you get that message.
+
+38:34.090 --> 38:40.600
+In the future, we going to talk about, you know, a more detailed tool that's called DIC Domain Information
+
+38:40.600 --> 38:47.530
+Group or does almost the same job with more details, you know, just queries.
+
+38:47.920 --> 38:51.490
+Any records and show you pretty much everything if you want.
+
+38:51.700 --> 38:56.260
+So this is the same record, same query against using deg.
+
+38:56.560 --> 39:03.370
+You know so we can do dig saying also dot com and I ask for I don't know text record.
+
+39:04.450 --> 39:07.180
+So you can get the text records this way.
+
+39:07.510 --> 39:13.510
+You can ask for Amex records, mail documents, the mail, the email servers.
+
+39:14.260 --> 39:18.310
+You can ask for SVC any service request.
+
+39:18.820 --> 39:22.600
+There isn't any, but there is an also a it's the root service.
+
+39:22.660 --> 39:25.550
+Very useful tools for DNS querying.
+
+39:25.570 --> 39:26.800
+I'm going to see you in the next one.
+
+39:26.830 --> 39:27.790
+You guys say awesome.
+
+39:27.820 --> 39:28.270
+Goodbye.

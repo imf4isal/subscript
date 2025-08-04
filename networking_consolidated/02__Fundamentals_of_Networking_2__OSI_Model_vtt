@@ -1,0 +1,2545 @@
+WEBVTT
+
+00:00.030 --> 00:06.720
+In this lecture, I'll talk about the Orci model, the open systems inter connection model.
+
+00:07.530 --> 00:12.990
+And I still remember 20 years ago when I was in university and.
+
+00:14.080 --> 00:20.530
+My instructor tried to explain the LCI model and I really, truly didn't understand anything.
+
+00:21.610 --> 00:29.470
+And I really didn't think it was important because because I was excited about, you know, writing
+
+00:29.470 --> 00:32.110
+C code and C++ code.
+
+00:32.860 --> 00:34.360
+I wanted to build an interface.
+
+00:34.360 --> 00:36.430
+I want to build a visual basic application.
+
+00:36.430 --> 00:41.920
+And, you know, I was I was interested in that stuff and I really didn't understand the value of what
+
+00:41.920 --> 00:43.540
+they were explaining, right?
+
+00:44.290 --> 00:50.620
+AD And so I end up memorizing everything and I was just like passing the exam, but I didn't get anything.
+
+00:50.650 --> 00:55.060
+Unfortunately, although the doctor the doctor was really good, you know, unfortunately.
+
+00:55.180 --> 00:57.820
+So I really regret that.
+
+00:57.820 --> 01:00.400
+But so what I wanted to do is just learn from that experience.
+
+01:00.400 --> 01:07.000
+Always a model is really critical to understand any engineer or any software engineer.
+
+01:07.210 --> 01:15.460
+If you ever want to interact with networking, you really need to understand those AI model, you know,
+
+01:15.640 --> 01:17.770
+and don't.
+
+01:19.240 --> 01:26.140
+Don't think like you have to understand everything in it, but just understand this seven layers effectively.
+
+01:26.230 --> 01:31.570
+And we're going to talk about also about the simplified Orci model because it does have some criticism,
+
+01:31.570 --> 01:32.620
+you know, when it comes to that.
+
+01:32.920 --> 01:41.920
+But just the Orci mind these seven layers and where does your application live that is what really matter.
+
+01:42.280 --> 01:43.810
+Where does your application live?
+
+01:43.840 --> 01:45.220
+You might say, I don't care.
+
+01:45.430 --> 01:48.880
+Why would I care where my app live?
+
+01:49.120 --> 01:50.290
+No, you should.
+
+01:50.500 --> 01:58.270
+Because if your app is a bridge between two other apps, we really need to understand.
+
+01:58.270 --> 01:59.350
+What are you looking at?
+
+01:59.620 --> 02:00.850
+What do you see?
+
+02:01.300 --> 02:03.130
+Are you looking at Mac addresses?
+
+02:03.130 --> 02:04.910
+Are you looking at IP packets already?
+
+02:04.930 --> 02:09.040
+Looking at segments, are looking at ports, are looking at the DCP options?
+
+02:09.460 --> 02:15.220
+Or are you looking at the consider of a connection, the TCB connection itself or audio decoding or
+
+02:15.220 --> 02:26.110
+encoding the audio serializing this allows in Jason or you decrypting my stuff to look at it and every
+
+02:26.110 --> 02:31.810
+single layer has a meaning and every application out there, a CD and a reverse proxy, a load balancer,
+
+02:31.810 --> 02:36.940
+a reverse proxy, an API gateway has to live in one or more of these layers.
+
+02:37.270 --> 02:38.710
+And this is what I wanted to talk about.
+
+02:39.220 --> 02:42.220
+Let's jump into the slides and nail this.
+
+02:42.880 --> 02:44.890
+I promise this is going to be fun.
+
+02:44.950 --> 02:45.190
+All right.
+
+02:45.190 --> 02:48.460
+So these slides a little bit later, so I'm going to disappear in a minute.
+
+02:48.460 --> 02:50.260
+But I used the awful day.
+
+02:50.280 --> 02:51.160
+I'll be here.
+
+02:51.160 --> 02:51.670
+I'll be here.
+
+02:51.670 --> 02:57.820
+I'm just going to explain that concepts behind the scenes and I'll show up at the end to summarize this
+
+02:58.210 --> 02:58.720
+stuff.
+
+02:59.050 --> 02:59.320
+All right.
+
+02:59.470 --> 03:09.640
+Those I model the open systems interconnection model, you know, open systems open has to be open because
+
+03:09.880 --> 03:12.880
+we really need an open communication.
+
+03:12.880 --> 03:16.600
+We really need to understand and make a standard out of this thing.
+
+03:16.720 --> 03:19.180
+So Orci model, let's get started.
+
+03:20.710 --> 03:22.420
+Why do we need a communication model?
+
+03:22.810 --> 03:30.460
+I always, as you know, I always start with a Y because to me, I don't like to understand something
+
+03:30.460 --> 03:33.610
+that I don't know why it exists personally, at least you know.
+
+03:34.000 --> 03:37.360
+So the goal here is to build agnostic application.
+
+03:37.390 --> 03:44.260
+So, you know, imagine this if you really don't have a standard, then we want to build a networking
+
+03:44.260 --> 03:45.010
+applications.
+
+03:45.280 --> 03:50.920
+Then we cannot do this because my server have no idea how to talk to your client.
+
+03:51.160 --> 03:52.600
+Like, how are you?
+
+03:53.410 --> 03:59.110
+You know, how do you how are you transposing the beds into digital to analog and analog back to digital?
+
+03:59.110 --> 04:02.440
+How, how, how am I supposed to look at this bits?
+
+04:02.440 --> 04:04.600
+You know, there must be a standard.
+
+04:04.780 --> 04:10.540
+It doesn't have to be a stunner, have to be a protocol to understand how to chop up these beds, to
+
+04:10.540 --> 04:12.370
+make sense of it as the application level.
+
+04:12.670 --> 04:17.470
+Without a standard, your application must have knowledge of the underlining network medium.
+
+04:17.470 --> 04:18.400
+That's even worse.
+
+04:19.720 --> 04:20.620
+Imagine this.
+
+04:20.770 --> 04:27.550
+Just imagine if you have to author a different version of your apps so that it works on Wi-Fi.
+
+04:28.210 --> 04:30.160
+You need a different version to work on within it.
+
+04:30.490 --> 04:35.720
+You need everybody to work on LTE and you need a different order version to work in fiber.
+
+04:36.160 --> 04:37.510
+That will be a disaster.
+
+04:37.690 --> 04:39.850
+Yes, we take it for granted today.
+
+04:40.090 --> 04:42.010
+We take it definitely for granted.
+
+04:42.370 --> 04:43.630
+Let me show up for a second.
+
+04:43.780 --> 04:45.520
+We really take this thing for granted.
+
+04:45.970 --> 04:51.040
+You are building a Node.js application today and you're sending a request or just listening.
+
+04:51.280 --> 04:57.820
+And it doesn't matter where this application runs, it runs on any CPU, you know, because someone
+
+04:57.820 --> 04:58.870
+smart built it.
+
+04:58.870 --> 05:00.430
+So it compiles on all CPUs.
+
+05:00.820 --> 05:07.450
+And when you send a request, it doesn't matter if before sending it through the satellite or sending
+
+05:07.450 --> 05:15.850
+it through radio Wi-Fi or sending it through Ethernet electric signals or sending it through the LTE
+
+05:15.850 --> 05:18.550
+radio waves, or they get it through fiber light.
+
+05:19.240 --> 05:21.040
+It doesn't matter why?
+
+05:21.040 --> 05:29.500
+Because we built a standard and that standard is used globally.
+
+05:29.950 --> 05:31.510
+Effectively, yeah.
+
+05:34.130 --> 05:37.220
+And the whole ward was the difference in my ward and global.
+
+05:37.250 --> 05:41.720
+Global is this means that the earth or just goes to space.
+
+05:41.990 --> 05:43.400
+I believe it goes the space.
+
+05:43.400 --> 05:45.260
+It's a global open system.
+
+05:45.260 --> 05:46.820
+Communication is everywhere.
+
+05:47.180 --> 05:53.330
+Just understanding of that is really powerful because imagine you have to build a different application
+
+05:53.330 --> 05:56.900
+to work on the light because it's all different mediums, right?
+
+05:57.320 --> 06:00.500
+So like, how would you expect the application to be the same?
+
+06:01.040 --> 06:02.490
+You have to have a standard.
+
+06:02.510 --> 06:09.620
+Otherwise the application was, Oh, I'm talking to this fiber, this is how I need to convert my bits
+
+06:09.620 --> 06:11.120
+to light signal.
+
+06:11.360 --> 06:12.650
+Or This is radio wave.
+
+06:12.650 --> 06:14.310
+I have to do this to do radio.
+
+06:14.720 --> 06:18.440
+But I just wanted to explain this because this is really taken for granted.
+
+06:18.560 --> 06:22.310
+But people, smart people, build this so that we don't have to worry about it.
+
+06:22.850 --> 06:23.600
+Back to this slides.
+
+06:25.950 --> 06:27.510
+Network equipment management.
+
+06:27.870 --> 06:30.000
+Without a standard model, you know?
+
+06:31.550 --> 06:35.270
+Without a standard model, upgrading network equipment becomes very difficult.
+
+06:35.720 --> 06:36.620
+You know, now.
+
+06:37.550 --> 06:43.310
+If every equipment has a different standard, then you cannot move on.
+
+06:43.640 --> 06:48.890
+You know, you you you will have different models and different things that communicate with each other.
+
+06:49.610 --> 06:51.740
+First of all, they won't be able to communicate with each other.
+
+06:51.950 --> 06:55.010
+This router won't be able to talk to this author because there is no standard.
+
+06:55.010 --> 06:55.250
+Right.
+
+06:55.700 --> 06:57.470
+And the beauty of this here is.
+
+06:58.560 --> 07:05.130
+Regardless of the underlining medium, you can upgrade the actual network because it is completely decoupled
+
+07:05.490 --> 07:08.190
+from the actual medium itself.
+
+07:08.200 --> 07:14.280
+So there is there is nothing that we can really what would you have to worry about?
+
+07:14.430 --> 07:20.850
+The underlining medium, you can just upgrade the equipment normally and whatever you bring in, we'll
+
+07:20.850 --> 07:26.970
+just support it, you know, as long as we know how to talk to it, you know, it's decoupled for innovation.
+
+07:26.970 --> 07:28.440
+You know, that's what we talked about in a minute.
+
+07:28.440 --> 07:33.000
+Innovation can be done in each layer separately without affecting the rest of the module.
+
+07:33.480 --> 07:33.800
+Yeah.
+
+07:33.810 --> 07:36.840
+And that's that's very, very critical as well.
+
+07:37.260 --> 07:39.060
+And we're going to talk about the layers in a minute.
+
+07:39.060 --> 07:49.800
+But each layer is built this way because each layer you can innovate and improve each layer alone.
+
+07:49.920 --> 07:53.280
+You know, this is a little bit vague now, but it's going to be clear in a minute.
+
+07:53.460 --> 07:56.460
+You know, you can improve the physical layer because that's the medium.
+
+07:56.460 --> 07:57.510
+You know, that's the radio.
+
+07:58.530 --> 08:02.400
+You can if someone invented something faster than fiber, I don't think you can.
+
+08:02.670 --> 08:03.960
+There's nothing faster than light.
+
+08:03.960 --> 08:05.040
+But you get my point.
+
+08:05.040 --> 08:06.540
+Yeah, it's like more efficient.
+
+08:06.900 --> 08:11.220
+Then we'll just build the interface for, then we'll go support it, you know?
+
+08:12.120 --> 08:12.450
+Right.
+
+08:12.450 --> 08:14.250
+And layer two has nothing to do with.
+
+08:14.250 --> 08:18.450
+It's just a layer two will pass into bits and the convergence will happen in the physical layer, you
+
+08:18.450 --> 08:23.220
+know, layer three, which is the I believe it cares about this stuff.
+
+08:23.220 --> 08:30.300
+If you want to add more content or more headers, it can be added of a layer layer too, you know,
+
+08:30.840 --> 08:33.420
+although this will break other stuff at the end of the day.
+
+08:33.420 --> 08:35.310
+But that's another topic.
+
+08:35.460 --> 08:42.840
+You know, just you cannot just increase the header because there is something called the protocol ossification,
+
+08:42.840 --> 08:48.720
+which is all these protocols, all these routers in the middle actually understand how to read things
+
+08:48.720 --> 08:49.410
+in a way.
+
+08:49.590 --> 08:52.140
+And if the sink change, they freak out.
+
+08:52.470 --> 08:53.460
+We'll talk about this in a bit.
+
+08:53.460 --> 08:55.860
+Actually, I'll have to remember to add a lecture.
+
+08:55.860 --> 08:57.030
+Just talk about a protocol.
+
+08:57.030 --> 08:58.710
+Ossification, a very critical concept.
+
+08:59.670 --> 09:00.540
+What is those?
+
+09:00.540 --> 09:03.600
+I model seven layers each.
+
+09:03.600 --> 09:11.670
+Describe a specific network component right layer seven the application that's what you even that can
+
+09:11.670 --> 09:17.070
+induce even they don't and they don't really interact with they are seven directly.
+
+09:17.070 --> 09:18.960
+It's usually above the application.
+
+09:19.650 --> 09:28.170
+When you look at layer seven two, a network engineer, that's just data coming in, you know, but
+
+09:28.170 --> 09:33.180
+to a back, an engineer there are they are using different libraries are listening.
+
+09:33.180 --> 09:38.850
+They're sending packages in the packets, they're using maybe a jar PC, you know, protocol or certain
+
+09:38.850 --> 09:45.960
+protocol that sits on top of FDB to which, which, which, which creates more and more packets, you
+
+09:45.960 --> 09:46.110
+know.
+
+09:46.410 --> 09:52.830
+But that's the application and that's really what, what really critical here the application is, is
+
+09:52.830 --> 09:57.690
+really huge here and everyone is looking just at that layer differently.
+
+09:57.990 --> 10:05.160
+But to us, anything above, you know, effectively the the SDP is the application, you know, or a
+
+10:05.160 --> 10:06.300
+FTP or GRB.
+
+10:06.300 --> 10:11.940
+See anything, you add this layer, this is the actual application layer six, the presentation layer
+
+10:11.940 --> 10:13.290
+encode serialization.
+
+10:13.290 --> 10:21.630
+Ever send a Jason right through fetch or Axios that's the JSON need to be serialized from this JSON
+
+10:21.630 --> 10:22.050
+object.
+
+10:22.050 --> 10:27.870
+If your JavaScript or Python, if you're if you're like a bunch of arrays or that data structure down
+
+10:27.870 --> 10:31.260
+to a string and this is happening on layer six.
+
+10:32.160 --> 10:35.970
+While you shouldn't care about this, this is already happening for you.
+
+10:36.180 --> 10:39.240
+So it's little bit a step down from will application.
+
+10:39.240 --> 10:45.060
+Your application sends a whole object, but the conversion of the encoding happens there to serialization.
+
+10:45.360 --> 10:51.930
+Oh, this is a UTF eight whatever lets encoded so that under leave layer does the job.
+
+10:52.680 --> 10:58.050
+That's why talking about this stuff is like you might say, wait a minute, say who cares, right?
+
+10:58.560 --> 10:58.900
+Right.
+
+10:58.950 --> 11:00.300
+You might say, who cares?
+
+11:00.300 --> 11:02.850
+Like about encoding and serialization.
+
+11:02.850 --> 11:06.150
+This is happening in my application and that's what people are frustrated about.
+
+11:06.150 --> 11:13.470
+The was model people is like really you really need to break this that fine of a level of a detail I
+
+11:13.470 --> 11:19.890
+don't care you know sometimes this is one of the and that presentation layer and also the session layer
+
+11:20.070 --> 11:24.180
+at some cases you know, that's why it this TCP IP model kind of simplifies this.
+
+11:24.570 --> 11:27.690
+But I still prefer the all time model just in if.
+
+11:27.690 --> 11:28.060
+Why?
+
+11:28.350 --> 11:30.750
+Because we're used to it, you know, back to the slides.
+
+11:33.420 --> 11:33.630
+So.
+
+11:33.630 --> 11:33.960
+Yeah.
+
+11:35.170 --> 11:36.490
+So that's the presentation layer.
+
+11:37.270 --> 11:39.550
+Then we have the session layer.
+
+11:39.790 --> 11:46.180
+You know, the session layer is where TLC happen, you know, where connection establishing a moment
+
+11:46.300 --> 11:52.630
+where state effectively sets place, you know, where you store a state in the client, you know, where
+
+11:52.630 --> 11:53.560
+you state, state.
+
+11:53.560 --> 11:54.850
+It's not a state in the server.
+
+11:54.940 --> 11:58.450
+That's why some protocols called stateful, you know, there's state less.
+
+11:58.600 --> 12:02.770
+DTP doesn't have a session layer because it's a it's a stateless protocol.
+
+12:02.800 --> 12:06.100
+You know, while TCP, it is a state for protocol.
+
+12:06.280 --> 12:12.160
+You store a state on the server and a state on the client and you manage a session effectively.
+
+12:12.340 --> 12:20.470
+And if this session is destroyed effectively, either you can restart that connection or invalidate.
+
+12:20.470 --> 12:22.780
+So the session layer effectively checks that.
+
+12:22.930 --> 12:28.270
+Again, a lot of people says, hey, really, really you want.
+
+12:29.810 --> 12:31.820
+It's like really session layer, really.
+
+12:31.820 --> 12:33.920
+You need a whole layer just to talk about session.
+
+12:34.220 --> 12:35.980
+Believe me, this session is actually this.
+
+12:35.990 --> 12:37.970
+This layer is actually important.
+
+12:38.450 --> 12:46.700
+A lot of proxies like Linker D, I believe, actually built logic only at the session layer, only at
+
+12:46.700 --> 12:48.380
+the connection establishment.
+
+12:48.380 --> 12:50.120
+They would do certain logic.
+
+12:50.120 --> 12:58.190
+So their application is a layer five app, you know, because they capture a connection and save it
+
+12:58.190 --> 12:59.900
+or do pooling about it, you know.
+
+13:00.350 --> 13:02.000
+So that is a layer five app.
+
+13:02.000 --> 13:02.600
+That's what it means.
+
+13:02.600 --> 13:04.460
+Like your application is layer seven.
+
+13:04.550 --> 13:06.230
+Well, this is a layer seven proxy.
+
+13:06.260 --> 13:07.640
+This is a layer for a proxy.
+
+13:08.030 --> 13:09.110
+They talk about this in a minute.
+
+13:11.390 --> 13:11.840
+All right.
+
+13:12.680 --> 13:15.590
+Transport one of the most important one.
+
+13:16.580 --> 13:20.660
+Let's be honest, layer four and layer seven has a back engineer.
+
+13:21.260 --> 13:25.310
+That is the only two things that you're going to worry about most of the time.
+
+13:26.060 --> 13:33.020
+Hey, maybe if you go and a little bit of DevOps, see, you're going to care about layer three and
+
+13:33.020 --> 13:33.710
+layer two.
+
+13:34.190 --> 13:39.650
+When you build like BRP sessions and work with Keep Alive and stuff like that, we're going to worry
+
+13:39.650 --> 13:42.650
+about this, but we live here, baby.
+
+13:42.650 --> 13:44.420
+We live in layer four and layer seven.
+
+13:44.420 --> 13:50.150
+Most of the time we build layer four, we configure doesn't necessarily be building, but we configure
+
+13:50.150 --> 13:52.220
+our application to be a layer four app.
+
+13:52.700 --> 13:53.120
+Why?
+
+13:53.120 --> 13:53.690
+What does that mean?
+
+13:53.930 --> 13:55.580
+It means we are aware of the transport.
+
+13:55.730 --> 13:57.410
+It means we're aware of the packets.
+
+13:57.770 --> 13:58.130
+Right.
+
+13:58.670 --> 14:02.960
+They're not go because they they're called segments when it's called DCP and Data Control Corner.
+
+14:02.960 --> 14:04.040
+DB All right.
+
+14:04.190 --> 14:06.830
+Let's be very specific about these naming in a minute.
+
+14:06.830 --> 14:10.410
+You're going to across the course, you're going to you're going to worry about this, understanding
+
+14:10.430 --> 14:11.720
+it very clearly.
+
+14:11.720 --> 14:14.060
+But this is what it is are effectively TCP UDP.
+
+14:14.060 --> 14:14.330
+Right.
+
+14:15.110 --> 14:17.120
+Very, very important concept.
+
+14:17.360 --> 14:18.440
+The protocols live here.
+
+14:18.710 --> 14:23.990
+These are the only two protocols, let's be honest, that are and there aren't any other protocols when
+
+14:23.990 --> 14:24.890
+it comes to transport.
+
+14:25.220 --> 14:28.510
+Well, you can call count quick as part of it.
+
+14:28.510 --> 14:30.970
+There's a very new quick protocol.
+
+14:31.010 --> 14:32.120
+The roughly new.
+
+14:32.120 --> 14:33.680
+But it's it's a transfer protocol.
+
+14:34.640 --> 14:35.900
+But that's pretty much it.
+
+14:35.930 --> 14:39.050
+You know, these are the three protocol and everything is built on top of them.
+
+14:39.390 --> 14:47.210
+To be built on top of TCP is to be to DCP is to be three quick quick is built on UDP, you know, so
+
+14:47.210 --> 14:50.160
+everything is built on either imagery on DCP or to be there.
+
+14:51.200 --> 14:56.900
+Anything else you can be fancy and build application directly on the IP, which is layer three, the
+
+14:56.900 --> 15:01.640
+IP protocol, the internet protocol here, we don't have a transport concept.
+
+15:02.060 --> 15:06.380
+You know, I don't care about the if the packet reaches or not, I'll try my best.
+
+15:06.590 --> 15:09.800
+I'll tell you if it's bad, but hey, it's up to you.
+
+15:09.830 --> 15:12.710
+It's a network protocol, you know.
+
+15:13.490 --> 15:17.120
+It's a packet that destined to an IP.
+
+15:17.480 --> 15:22.820
+Here we have visibility to ports, you know, port 80, port 80, 80.
+
+15:22.970 --> 15:25.280
+Here we don't know what ports are.
+
+15:26.000 --> 15:29.270
+We only know addresses, IP addresses, you know.
+
+15:29.570 --> 15:34.700
+So every layer has kind of a beautiful concept introduced with it, you know.
+
+15:34.700 --> 15:41.720
+So the IP have the concept of the routing and the IP addresses, which we're going to explain in the
+
+15:41.720 --> 15:42.410
+whole section.
+
+15:42.740 --> 15:44.330
+So stay tuned.
+
+15:44.390 --> 15:45.770
+Beautiful stuff coming.
+
+15:45.890 --> 15:47.150
+Beautiful stuff coming.
+
+15:48.770 --> 15:51.950
+So layer two, another important concept here.
+
+15:52.190 --> 15:53.870
+Layer two is the data link layer.
+
+15:54.080 --> 15:56.660
+And we're dealing here with the physical medium.
+
+15:56.660 --> 16:02.000
+At the end of the day, physical network addresses, you know, hey, this Wi-Fi has this Mac address.
+
+16:02.000 --> 16:04.130
+I want to send a frame to it.
+
+16:04.520 --> 16:06.950
+So we're sending a frame in layer two.
+
+16:07.310 --> 16:11.510
+And we have we know about we don't know about IP addresses at this layer, nothing.
+
+16:11.780 --> 16:13.460
+We only know about MAC addresses.
+
+16:13.700 --> 16:14.630
+We only know about.
+
+16:15.630 --> 16:15.980
+That's my.
+
+16:16.770 --> 16:23.040
+And the protocol that we use like Ethernet, Wi-Fi 802 or whatever it's called, you know, frames we
+
+16:23.040 --> 16:24.510
+send frames a layer two.
+
+16:25.080 --> 16:31.440
+I'm going to repeat this million times during the course, we send frames in layer two, we send packets
+
+16:31.440 --> 16:39.060
+in layer three and we send segment and TCP layer four and we set daylight grams when it comes to UDP,
+
+16:39.240 --> 16:41.190
+you know, also called segments.
+
+16:41.190 --> 16:44.160
+And for both, you can see with me if this is not correct.
+
+16:45.140 --> 16:45.600
+All right.
+
+16:46.560 --> 16:48.090
+But yeah, don't don't worry about it.
+
+16:48.090 --> 16:52.410
+The terminology of the physical layer, this is the bare metal.
+
+16:52.830 --> 17:01.260
+What is what is once you take the frame, how does it transport to the other medium?
+
+17:02.830 --> 17:08.510
+Electric signal when it comes to Ethernet is if fiber and light light waves, you know.
+
+17:08.920 --> 17:12.830
+Is it radiowaves, you know, wi fi or LTE?
+
+17:13.480 --> 17:15.670
+All this stuff, the physical and it is.
+
+17:15.820 --> 17:20.320
+When it comes to this is just radio waves at the end of the day or light or electricity.
+
+17:20.710 --> 17:27.610
+But eventually someone need to to convert that electric signal back to a layer two frame.
+
+17:28.450 --> 17:36.130
+Well, first, it's converted into a bunch of digital 101010 and then converts it back to frame, which
+
+17:36.130 --> 17:41.860
+then the frame convert to IP, which then the IP, we take the pieces of the data and we understand
+
+17:41.860 --> 17:45.730
+that DCP segment and then we understand that, Oh, do we have a session here?
+
+17:45.730 --> 17:47.050
+We need a state in this case.
+
+17:47.440 --> 17:55.840
+And do I need to decode, serialize and deliver to the application so you can serve your beautiful HDTV
+
+17:56.020 --> 17:57.160
+request, for example?
+
+17:59.000 --> 18:00.530
+Here's an example, actually.
+
+18:01.430 --> 18:08.720
+From from the point of view of a sender, we're sending a postal request and I specifically to the post
+
+18:08.720 --> 18:16.160
+because I need to send body and we cannot send body with get request right so we have to do a post.
+
+18:16.640 --> 18:22.910
+So sending a post request to an TPS web page here to be aware of this means that it's encrypted.
+
+18:22.910 --> 18:31.130
+So there's tools here, but we'll come to that the application post request with the JSON data to actually
+
+18:31.160 --> 18:31.760
+be a server.
+
+18:31.790 --> 18:34.340
+That's the that's what that application does.
+
+18:34.580 --> 18:42.530
+So it you use Axios or you use Fetch or you use your Python request library and we send our post request
+
+18:42.740 --> 18:46.220
+with this blob of Jason and said, Hey, send it.
+
+18:47.250 --> 18:53.780
+The presentation here takes your JSON object, which is just the object here and serialize it to flat
+
+18:53.780 --> 18:54.500
+bytes things.
+
+18:55.130 --> 18:59.180
+Right, because you're going to send an object doesn't mean anything, right?
+
+18:59.240 --> 19:02.420
+The object is meaningful in your language only.
+
+19:02.900 --> 19:03.830
+Yeah, it does.
+
+19:03.830 --> 19:06.680
+It doesn't mean anything when it comes to it's a string.
+
+19:06.680 --> 19:08.180
+You need to convert it to bytes.
+
+19:08.630 --> 19:08.960
+Right.
+
+19:09.260 --> 19:12.590
+And shove this bytes as a bunch of data here.
+
+19:12.920 --> 19:16.460
+So now we have this JSON and we have the protocol, we have other stuff as well.
+
+19:16.460 --> 19:18.470
+Information the session here.
+
+19:19.250 --> 19:21.140
+Do I need to establish a DC connection?
+
+19:21.140 --> 19:22.460
+Do I need to establish deals?
+
+19:22.460 --> 19:23.390
+Yes and yes.
+
+19:23.390 --> 19:24.140
+Yes and yes.
+
+19:24.440 --> 19:27.170
+We establish that ECB connection because we need to communicate.
+
+19:27.170 --> 19:28.940
+We're going to explain all this beautiful stuff.
+
+19:29.150 --> 19:34.190
+We're going to explain how this large DCP connection, what is DLLs really mean here in a minute.
+
+19:34.370 --> 19:34.640
+Right.
+
+19:34.880 --> 19:40.220
+So the encryption that happens, so we have this is what happened in session where you need to start
+
+19:40.220 --> 19:45.680
+a state transport, send the Syn request target port four, four, three.
+
+19:45.680 --> 19:49.300
+So that's the actual first thing that we send, right?
+
+19:49.610 --> 19:55.880
+This is a direct command from session layer because to establish a connection you need to send the send
+
+19:56.060 --> 19:57.310
+ciac ack.
+
+19:57.320 --> 19:57.590
+Right.
+
+19:57.590 --> 19:58.340
+We're going to talk about this.
+
+19:58.340 --> 20:01.400
+Don't worry if it's confusing, but but don't say that.
+
+20:01.400 --> 20:03.620
+It, it send just the send request.
+
+20:03.740 --> 20:04.790
+We're paused here.
+
+20:04.790 --> 20:10.520
+The JSON doesn't go away, doesn't go to the other party because we don't have a connection yet.
+
+20:10.790 --> 20:16.460
+So you establish a connection, you receive a connection request, then you authenticate and then you
+
+20:16.460 --> 20:17.300
+send the data here.
+
+20:17.900 --> 20:22.550
+But let's just say I'm just sending the send request for a minute here.
+
+20:23.510 --> 20:26.000
+This then is sent to port four, four, three.
+
+20:26.000 --> 20:26.270
+Why?
+
+20:26.270 --> 20:28.490
+Because the transport understand what ports are.
+
+20:28.820 --> 20:29.120
+Why?
+
+20:29.120 --> 20:29.840
+Four, four, three.
+
+20:30.020 --> 20:32.120
+Well, you said PDBs and that's the default port.
+
+20:32.120 --> 20:37.640
+Four, four, four, three, we understand four, four, three as the port for this and then network
+
+20:38.420 --> 20:45.710
+the network layer which is we we shove that send request which is the segment down to an IP packet and
+
+20:45.710 --> 20:47.600
+add the source and destination IP.
+
+20:47.900 --> 20:52.070
+So if you need the IP address, you need to do a DNS to get the IP address.
+
+20:52.070 --> 20:54.860
+And once you get the IP address, we shove it into this packet.
+
+20:55.150 --> 20:58.970
+Well, don't worry, we're going to have a beautiful diagram to explain all that stuff.
+
+20:59.210 --> 21:05.270
+But data link goes each packet goes into a single frame and as the source and destination mechanism.
+
+21:05.270 --> 21:07.730
+So we need to figure out the Mac as well.
+
+21:08.030 --> 21:09.770
+That's ARP going to go on it.
+
+21:10.580 --> 21:15.830
+Each frame becomes a string of bits and the physical layer just 10101010.
+
+21:16.100 --> 21:24.230
+These one zeros are converted into this radio signal or electricity now or light and then that's it.
+
+21:24.800 --> 21:26.180
+And take this with a grain of salt.
+
+21:26.540 --> 21:32.030
+Whatever we explain here doesn't have to be clear cut and dry, as they say.
+
+21:32.030 --> 21:34.910
+You know, some layers can inherit from each other.
+
+21:34.910 --> 21:37.820
+I'm doing stuff at the end of the human build.
+
+21:37.820 --> 21:42.890
+This, you know, nothing is just whole layer for layer five.
+
+21:42.890 --> 21:44.660
+You can argue about all any of that stuff.
+
+21:46.100 --> 21:47.510
+Receiver What does the receiver do?
+
+21:47.900 --> 21:51.080
+The receiver will receive the physical layer first, right?
+
+21:51.170 --> 21:55.250
+So we received a bunch of radio or electrical light, right?
+
+21:55.820 --> 22:00.470
+Because your server might be on fiber, but your network, you can have send that from Wi-Fi.
+
+22:00.770 --> 22:02.060
+See the beauty guys.
+
+22:02.270 --> 22:03.530
+Do you see the beauty of this?
+
+22:03.980 --> 22:06.500
+I can send your data from Wi-Fi.
+
+22:06.860 --> 22:07.280
+Right?
+
+22:07.610 --> 22:09.350
+And then you receive it through fiber.
+
+22:10.490 --> 22:14.810
+You might say, duh, but I absolutely appreciate this.
+
+22:17.140 --> 22:23.080
+So now the physical layer at the receiver side converters, the digital bits and then the data link.
+
+22:23.080 --> 22:28.420
+Okay, all the bits from layer one are assembled and the frames, the frames from layer two are simple
+
+22:28.420 --> 22:29.350
+to enable a packet.
+
+22:29.620 --> 22:30.790
+Oh now IP packet.
+
+22:30.790 --> 22:33.580
+I know that the destination IP is this for me.
+
+22:33.850 --> 22:34.810
+Yes, it is.
+
+22:34.810 --> 22:35.230
+Right.
+
+22:35.530 --> 22:38.230
+And every letter, by the way, asked the same question as well.
+
+22:38.230 --> 22:40.960
+I'm going to come to that like is this packet for me.
+
+22:41.680 --> 22:46.330
+So the transport, the IP packets from layer three on a symbol into TCP segments, you know.
+
+22:47.260 --> 22:47.560
+All right.
+
+22:47.740 --> 22:53.050
+And then this is what congestion controls, the flow control then through your transmission and it is
+
+22:53.050 --> 22:55.360
+this the the thick was this the rice packet?
+
+22:55.360 --> 22:56.830
+Is this the old packet?
+
+22:56.830 --> 22:59.860
+Is this a new and going to order all that stuff?
+
+23:00.460 --> 23:05.590
+If it's a segment that is a sin, we don't need to go any further into more layers as we are still processing
+
+23:05.590 --> 23:06.520
+the connection request.
+
+23:06.730 --> 23:08.680
+Here's the beauty, right?
+
+23:08.890 --> 23:11.980
+Since it's the connection request, we don't really go down.
+
+23:12.220 --> 23:14.530
+There's no point to go down to the session layer.
+
+23:14.530 --> 23:18.340
+Well, we have to go to the session layer here to establish that connection.
+
+23:18.610 --> 23:23.980
+And once we have the connection, we're going to have our Jason back in this next request and then we're
+
+23:23.980 --> 23:26.680
+going to go all the way to that connection here.
+
+23:26.770 --> 23:28.660
+And then we're going to go to the DC area.
+
+23:28.660 --> 23:35.470
+We're going to do the presentation layer DC rules that fly by string Jason back to the Jason object
+
+23:35.710 --> 23:37.150
+for the app to consume.
+
+23:37.420 --> 23:43.840
+And this serialization here could be completely different from the serialization that happened on the
+
+23:44.140 --> 23:53.080
+client because you can just, you can serialize from JavaScript but serialized into Python or you can
+
+23:53.200 --> 23:59.530
+serialize from C-sharp and disk realize into go, you know, it doesn't matter.
+
+23:59.860 --> 24:01.410
+And that's where your logic is.
+
+24:01.420 --> 24:05.770
+That's why a lot of people say really the presentation application layer is just the application, to
+
+24:05.770 --> 24:10.000
+be honest, like this is the application, my application is doing this logic at the end of the day,
+
+24:10.510 --> 24:11.590
+and you can argue with that.
+
+24:11.590 --> 24:14.020
+Of course, again, take it with a grain of salt.
+
+24:14.440 --> 24:21.250
+The application understand that JSON post requests and it says, hey, your express JSON or Apache request
+
+24:21.310 --> 24:26.530
+at the end of the received the event and it will trigger that event which says, Hey, someone just
+
+24:26.530 --> 24:27.700
+sent you a post request.
+
+24:27.760 --> 24:28.750
+What do you want to do with it?
+
+24:28.750 --> 24:31.290
+That function that will get called it will be triggered.
+
+24:31.300 --> 24:32.800
+Say, Hey, someone just sent your request.
+
+24:33.130 --> 24:39.060
+You can consume the request, go to the database, do something and then get back synchronously in the
+
+24:39.310 --> 24:41.920
+response back to the client.
+
+24:42.430 --> 24:45.250
+All right, finally some diagrams.
+
+24:45.820 --> 24:47.650
+So this diagram took me a while to build.
+
+24:47.650 --> 24:48.760
+Let's see if you guys like it.
+
+24:49.600 --> 24:50.980
+So the first thing client.
+
+24:51.280 --> 24:58.360
+So the client and server notice the arrow were going down or going up them is the client is the sender
+
+24:58.360 --> 25:00.850
+in this case and the server is the receiver.
+
+25:01.270 --> 25:03.760
+Does it mean that the server doesn't send data?
+
+25:03.760 --> 25:06.010
+It also can absolutely send data.
+
+25:06.730 --> 25:09.760
+So the application layer goes to the presentation.
+
+25:09.760 --> 25:13.930
+We talk about it serialization, decoding, encoding.
+
+25:13.930 --> 25:20.380
+All this shows such an layer establishing a connection, whether this deals or or the handshake itself,
+
+25:20.380 --> 25:28.150
+the TCP handshake establishes the concept of a connection, a stateful thing, then transport actually
+
+25:28.150 --> 25:34.990
+working with a TCP flow control in the ports and all that jazz, you know, the actual segments go down
+
+25:34.990 --> 25:36.610
+network, right?
+
+25:36.970 --> 25:39.940
+The IP packets itself go down data length.
+
+25:39.940 --> 25:40.570
+This is yellow.
+
+25:40.570 --> 25:41.020
+This orange.
+
+25:41.020 --> 25:41.860
+I don't know if it's clear.
+
+25:41.860 --> 25:42.700
+Hopefully it's clear.
+
+25:43.630 --> 25:43.930
+Hopefully.
+
+25:43.930 --> 25:48.940
+I don't regret the choice of these colors, you know, the physical layer, which is the actual medium.
+
+25:49.150 --> 25:51.130
+And then we send it and I chose the waves.
+
+25:51.370 --> 25:57.130
+In this case, the server receives that we received the first and from the physical medium because that's
+
+25:57.130 --> 26:02.410
+how you receive things, you know, the lowest layer your network card receives this signal and then
+
+26:02.410 --> 26:06.430
+convert it to the data link and then convert it back to the IP address.
+
+26:06.520 --> 26:13.000
+No IP packets all the way transport and then session, you know, go to the presentation and go all
+
+26:13.000 --> 26:14.800
+the replica so you just dirt.
+
+26:15.520 --> 26:16.330
+You see them all right.
+
+26:17.920 --> 26:19.450
+And then go all the way up.
+
+26:19.840 --> 26:20.470
+It's like this.
+
+26:20.650 --> 26:21.370
+It's you.
+
+26:22.620 --> 26:22.860
+Now.
+
+26:22.860 --> 26:23.690
+Let's go, dirt.
+
+26:24.480 --> 26:29.070
+The question is, do I have to always go through all these layers?
+
+26:29.280 --> 26:30.210
+Absolutely not.
+
+26:30.630 --> 26:31.620
+I'll give you an example.
+
+26:32.370 --> 26:35.160
+If you if you send a TCP.
+
+26:36.780 --> 26:37.530
+No, let's go.
+
+26:38.340 --> 26:39.990
+I'm sending initiative request.
+
+26:39.990 --> 26:41.880
+But I need to establish a new connection.
+
+26:42.420 --> 26:44.180
+Well, the application sends the request.
+
+26:44.190 --> 26:48.840
+You know, the presentation does the Jason thing, the session pauses the presentation.
+
+26:48.840 --> 26:51.060
+They say, wait a minute, session.
+
+26:51.690 --> 26:52.940
+I don't have a session here.
+
+26:52.950 --> 26:53.790
+What are you talking about?
+
+26:53.940 --> 26:54.930
+Let me create a session.
+
+26:54.930 --> 26:55.500
+Wait for me.
+
+26:56.040 --> 26:56.640
+Wait a minute.
+
+26:56.640 --> 26:58.410
+Just let me create a session real quick.
+
+26:58.890 --> 27:02.220
+So we go send the cynical two, two, two, two, two, two.
+
+27:02.220 --> 27:05.520
+To that we send that send request to create a connection.
+
+27:05.910 --> 27:07.170
+Goes all the way here.
+
+27:07.170 --> 27:08.530
+You seeing this point there?
+
+27:08.650 --> 27:09.950
+This is important to see the point.
+
+27:09.960 --> 27:11.310
+Otherwise the whole thing is pointless.
+
+27:11.850 --> 27:14.280
+You see, go out and reach the session.
+
+27:14.280 --> 27:14.730
+Okay.
+
+27:14.730 --> 27:15.360
+I agree.
+
+27:15.510 --> 27:16.530
+I'm going to create a connection.
+
+27:17.070 --> 27:17.850
+We don't go up.
+
+27:18.210 --> 27:18.750
+We don't.
+
+27:19.350 --> 27:20.070
+There's no point.
+
+27:20.070 --> 27:21.150
+There's no application yet.
+
+27:22.070 --> 27:27.750
+This is just a request to send a request to send a connection here to establish a connection.
+
+27:28.020 --> 27:29.250
+And then we establish this.
+
+27:29.250 --> 27:29.490
+Okay.
+
+27:29.520 --> 27:33.020
+Snack, bomb, bomb, bomb, bomb, bomb, bomb, bomb, bomb, bomb, bomb, bomb, bomb, bomb.
+
+27:33.060 --> 27:34.260
+Go back is sent.
+
+27:34.710 --> 27:35.040
+Okay.
+
+27:35.190 --> 27:35.490
+Okay.
+
+27:35.610 --> 27:43.890
+If you were a snack and let me finally do NEC two, two, two to go back and then boom, stop here session.
+
+27:44.100 --> 27:46.200
+Now we have a full connection.
+
+27:46.860 --> 27:53.910
+Now the session will say, okay, now that we sent the EC, you may unlock and go further.
+
+27:54.390 --> 27:55.350
+All right, you have it now.
+
+27:55.350 --> 27:56.580
+A session continue.
+
+27:56.730 --> 27:57.630
+Remember the pause.
+
+27:57.630 --> 27:59.910
+JSON request is now resumed.
+
+28:00.660 --> 28:03.390
+Go to the transport layer or element, put it in a segment.
+
+28:03.390 --> 28:09.570
+This is you put your bytes strong JSON into the transport layer, shove it into an IP packet, determine
+
+28:09.570 --> 28:15.030
+the IP, address the destination shovel and do the data link, determine the MAC address.
+
+28:15.150 --> 28:20.430
+Obviously we already determined all that stuff in the handshake, but I'm just explaining here again
+
+28:20.670 --> 28:21.600
+and then send that.
+
+28:21.600 --> 28:27.960
+Then send the physical layer, draw all the data, transport, transport all the way, go to transport
+
+28:27.960 --> 28:28.230
+layer.
+
+28:28.230 --> 28:28.920
+You have a session.
+
+28:28.920 --> 28:29.640
+Yes, you do.
+
+28:29.910 --> 28:30.690
+Presentation layer.
+
+28:30.690 --> 28:31.290
+What do I do?
+
+28:31.290 --> 28:32.640
+I have the beautiful JSON.
+
+28:32.790 --> 28:35.880
+I have all this data and this could be a single.
+
+28:36.790 --> 28:40.420
+Packet or a segment, if you will, or multiples.
+
+28:40.660 --> 28:47.770
+So this will do the assemblage will assemble all the packets that necessary and then deliver one huge
+
+28:48.220 --> 28:54.940
+string to the presentation layer which will decode it or this realize it, go back to application and
+
+28:55.330 --> 28:59.530
+all of a sudden you just triggered that lesson.
+
+28:59.890 --> 29:06.600
+Uh, you know what the reason was called the post writer, if you will, if you're using express j j
+
+29:06.700 --> 29:10.570
+as here, just that now it's trigger.
+
+29:10.570 --> 29:12.100
+So look at the work.
+
+29:13.130 --> 29:17.240
+That is happening, guys, and that is the purpose of this course.
+
+29:17.600 --> 29:20.060
+Understand what is happening.
+
+29:20.360 --> 29:23.400
+And there is beauty of of understanding.
+
+29:24.290 --> 29:26.840
+I don't know what that means, but you get the point.
+
+29:27.830 --> 29:28.130
+All right.
+
+29:28.250 --> 29:29.690
+So this is a segment.
+
+29:30.230 --> 29:30.950
+This is the package.
+
+29:31.460 --> 29:34.790
+And there's a phrase I'm going to repeat that million times on daily.
+
+29:35.030 --> 29:38.990
+This is a hammered frame packet segment that is critical to understand.
+
+29:39.380 --> 29:41.630
+This is another view that I like to do.
+
+29:41.630 --> 29:42.320
+I personally do.
+
+29:42.340 --> 29:45.060
+I never seen anyone do something like this before.
+
+29:45.590 --> 29:47.950
+I just this is how I understand it.
+
+29:48.470 --> 29:52.260
+It not necessarily this hour looks like in the wire.
+
+29:52.280 --> 29:56.540
+You know, if you well or this is how I will look, I look at this.
+
+29:56.720 --> 29:58.670
+This is the Russian matryoshka.
+
+29:58.730 --> 30:01.490
+If you are aware of this, this doll's inside a doll.
+
+30:01.700 --> 30:04.970
+This is exactly what I as I'm all you application.
+
+30:05.180 --> 30:10.610
+You go to the presentation layer, go to the session layer, and the content here goes into a TCP segment.
+
+30:10.610 --> 30:15.770
+You add a destination port and a source port left and right, but not necessarily left and right.
+
+30:15.970 --> 30:17.720
+It's just literally at the end.
+
+30:18.170 --> 30:20.810
+But I like it to do it this way because I understand it better.
+
+30:21.500 --> 30:28.340
+And then this this green segment shoves into an IP packet and that IP packet.
+
+30:28.430 --> 30:34.820
+Now we have to add the destination IP address and the source IP address and then the whole IP packet
+
+30:34.820 --> 30:39.950
+gets shoved in into a frame and boy, it benefits and off frame.
+
+30:40.130 --> 30:44.000
+And we're going to talk about the frame size, of course, called an empty you maximum transmission
+
+30:44.000 --> 30:44.230
+unit.
+
+30:44.240 --> 30:52.460
+You cannot put an IP ad IP packet into multiple frames unless you fragment, which is something we're
+
+30:52.460 --> 30:53.570
+going to talk about in the future.
+
+30:54.110 --> 30:58.070
+Destination Mac and the source Mac, you pour that and then the whole thing becomes registered with
+
+30:58.070 --> 31:01.700
+thread blob of radio signals and we're going to do the same thing.
+
+31:02.120 --> 31:02.450
+Hey.
+
+31:03.540 --> 31:06.510
+Get the bets right from the physical layer.
+
+31:07.390 --> 31:13.360
+Understand where the frames start, where the frame ends, because that's what the physical layer does.
+
+31:14.200 --> 31:15.650
+And actually, they are to death.
+
+31:15.650 --> 31:16.960
+Healing does that for you.
+
+31:17.320 --> 31:20.980
+And now, hey, we have the Mac address here.
+
+31:21.520 --> 31:22.090
+We had the source.
+
+31:22.090 --> 31:25.550
+Mac, take the data portion of this frame.
+
+31:26.230 --> 31:28.690
+That becomes the IP packet.
+
+31:28.870 --> 31:30.640
+Hey, there's the destination IP.
+
+31:30.700 --> 31:31.570
+This is also IP.
+
+31:32.140 --> 31:33.280
+Here, you don't see this.
+
+31:33.280 --> 31:37.120
+This is shove the heat down into that frame, right?
+
+31:37.360 --> 31:38.410
+You have to unpack it.
+
+31:38.740 --> 31:41.830
+That unpacking takes a finite amount of time.
+
+31:42.220 --> 31:47.860
+If you nanoseconds, if you will, you know, just understand this nanosecond time that is critical.
+
+31:48.280 --> 31:49.510
+So move up.
+
+31:49.960 --> 31:51.220
+Take that IP packet.
+
+31:51.580 --> 31:52.060
+What do we do?
+
+31:52.060 --> 31:52.660
+The IP packet.
+
+31:53.020 --> 31:54.480
+Hey, destination IP is a for me.
+
+31:54.490 --> 31:54.880
+Yes.
+
+31:55.120 --> 31:55.900
+Take that segment.
+
+31:56.560 --> 31:57.040
+What do we lose?
+
+31:57.040 --> 31:57.490
+A segment?
+
+32:00.780 --> 32:05.550
+And back at there is a segment destination port surfboard, which application this is destined to.
+
+32:06.030 --> 32:07.710
+There are thousands of port here.
+
+32:08.130 --> 32:09.600
+Oh, you want this port?
+
+32:09.630 --> 32:09.960
+Okay.
+
+32:10.590 --> 32:16.770
+Let me deliver that segment to that application, to that process.
+
+32:17.730 --> 32:20.570
+Because based on the port, you going to deliver this way, right.
+
+32:20.940 --> 32:22.860
+And this is something we're also going to explain.
+
+32:22.950 --> 32:26.130
+Now, each port is technically one process is one port.
+
+32:26.580 --> 32:30.300
+This can change, obviously, but this is just a general rule of thumb.
+
+32:31.650 --> 32:33.840
+And then we understand, do I have a connection?
+
+32:33.870 --> 32:34.500
+Yes, we do.
+
+32:35.190 --> 32:36.000
+Do I need to do anything?
+
+32:36.000 --> 32:36.960
+The presentation layer?
+
+32:36.990 --> 32:37.380
+Nope.
+
+32:37.650 --> 32:38.520
+Do I have to do anything?
+
+32:38.520 --> 32:41.970
+I application here and we deliver the app effectively.
+
+32:42.540 --> 32:44.850
+Here's another slide that is very important to understand.
+
+32:45.990 --> 32:49.290
+You want to say that the client is not directly connected to the server, right?
+
+32:49.560 --> 32:50.160
+This is the client.
+
+32:50.190 --> 32:50.880
+This is over.
+
+32:51.190 --> 32:52.650
+There are switches in the middle.
+
+32:52.900 --> 32:53.970
+Those are outers.
+
+32:54.120 --> 32:55.320
+They're not proxies.
+
+32:55.320 --> 32:56.540
+The A ends.
+
+32:56.790 --> 32:58.080
+That is reverse proxies.
+
+32:58.410 --> 32:59.820
+You know those load balancers?
+
+33:00.450 --> 33:03.360
+What are those suckers doing in the middle?
+
+33:03.960 --> 33:08.370
+They look they peek the content.
+
+33:09.270 --> 33:13.920
+And when they peek at the content, they take a finite amount of time because they make decisions based
+
+33:13.920 --> 33:14.490
+on this.
+
+33:15.330 --> 33:15.900
+Of the data.
+
+33:16.500 --> 33:16.770
+All right.
+
+33:16.770 --> 33:22.230
+So let's go through an example where a client want to talk to a server, but it goes to a square generator.
+
+33:22.410 --> 33:22.680
+Right.
+
+33:23.370 --> 33:25.510
+So the client will send information as usual.
+
+33:25.530 --> 33:30.150
+You know, the client was in information as usual to go through the application presentation session,
+
+33:30.150 --> 33:32.580
+transport network data and their physical.
+
+33:32.610 --> 33:33.710
+And then we'll send.
+
+33:33.750 --> 33:34.050
+Right.
+
+33:34.350 --> 33:40.110
+The first thing you might hit in your organization, maybe switch the switch connects different substance
+
+33:40.110 --> 33:40.650
+together.
+
+33:40.650 --> 33:42.810
+You know, hey, this is the network.
+
+33:42.810 --> 33:45.420
+This is a subnet where this is happening the way I want to connect them together.
+
+33:45.720 --> 33:52.210
+And I don't want data to be sent unnecessarily to a different network.
+
+33:52.290 --> 33:54.270
+You know, that's the power of the switch.
+
+33:54.270 --> 34:01.230
+You know, it understands where to send the data based on the frame itself, based on the Mac address.
+
+34:01.260 --> 34:01.770
+That's the trick.
+
+34:01.770 --> 34:05.280
+It does like, oh, this computer's connected to this port, you know.
+
+34:05.550 --> 34:08.000
+So the Mac address of that is this.
+
+34:08.000 --> 34:13.620
+So it goes to this board, you know, so it doesn't necessarily unlike a hub, for example, where just
+
+34:13.800 --> 34:21.300
+literally the hub broadcasts that the data to every single port, which is a lot that is a lot of bandwidth
+
+34:21.300 --> 34:21.980
+wastage there.
+
+34:21.990 --> 34:24.600
+But the switch to do its job.
+
+34:24.930 --> 34:30.060
+It needs to look at the Mac addresses because that's how it does its lookup.
+
+34:30.960 --> 34:34.050
+So it only be to take the physical layer.
+
+34:34.440 --> 34:35.910
+Convert that to data link.
+
+34:36.000 --> 34:37.080
+Look at the frames.
+
+34:37.980 --> 34:40.650
+Look at the destination Mac address.
+
+34:41.040 --> 34:42.450
+And then that's it.
+
+34:43.110 --> 34:46.320
+It doesn't need the IP addresses mod, so it's more to most.
+
+34:46.320 --> 34:47.490
+The switches don't.
+
+34:47.760 --> 34:48.900
+But some do.
+
+34:49.680 --> 34:50.880
+But most switches.
+
+34:51.060 --> 34:52.140
+Just look at layer two.
+
+34:52.440 --> 34:53.280
+That's it.
+
+34:53.520 --> 34:55.830
+And then once it does, it is like, Oh, I'm done.
+
+34:56.800 --> 34:59.980
+And then sends that data to their next sports.
+
+34:59.980 --> 35:00.280
+Right.
+
+35:00.310 --> 35:05.650
+So it does it does re transmit the data, if you think about it here.
+
+35:06.160 --> 35:08.490
+Well, now let's go through our router.
+
+35:08.680 --> 35:10.180
+The router will do the same thing.
+
+35:10.480 --> 35:12.040
+The router will need the physical layer.
+
+35:12.040 --> 35:13.960
+Obviously, we'll go to the data link.
+
+35:13.960 --> 35:18.040
+It will sometimes act like a switch if you're sending to the same subnet.
+
+35:18.580 --> 35:27.280
+But the most important thing, routers need to run out and routers need the IP addresses and order out.
+
+35:27.760 --> 35:30.370
+So it needs to go up to layer three.
+
+35:31.440 --> 35:32.330
+To root.
+
+35:32.610 --> 35:33.480
+That's why it's out.
+
+35:33.480 --> 35:39.420
+There is a layer three device while the switch is a layer two device.
+
+35:39.840 --> 35:42.480
+Very critical concept to understand.
+
+35:42.690 --> 35:48.210
+So you go up two and then go down and then rather goes all the way to layer three and then go down.
+
+35:48.720 --> 35:53.340
+And then until you reach the application, you might go to multiple routers and we go up to layer three
+
+35:53.340 --> 35:58.860
+and go down up to the area and go down underneath the application where we go all the way to application
+
+35:58.860 --> 35:59.640
+if necessary.
+
+35:59.640 --> 36:04.050
+Again, because sometimes you're establishing your connection or you want only to go to the layer session,
+
+36:04.470 --> 36:10.020
+the session layer, or sometimes the, the packet is invalid and we'll it will fail right here today.
+
+36:10.020 --> 36:10.920
+You don't have a connection.
+
+36:10.920 --> 36:12.810
+Why you me sending me data with a connection?
+
+36:13.140 --> 36:16.020
+You know, that's the TCP idea effectively.
+
+36:16.060 --> 36:21.480
+So that's why UDP doesn't really have a concept of a session layer if you think about it might be wrong
+
+36:21.480 --> 36:24.660
+there, but if you think about it, there's no state and UDP.
+
+36:24.660 --> 36:25.770
+UDP is stateless.
+
+36:25.890 --> 36:27.720
+You just send data and there's that.
+
+36:28.350 --> 36:29.280
+There is no state.
+
+36:29.970 --> 36:32.850
+But that's that's a very critical concept as well.
+
+36:34.350 --> 36:37.560
+My favorite let's add a firewall.
+
+36:37.590 --> 36:39.240
+Let's add a layer for proxy.
+
+36:39.390 --> 36:42.420
+Let's add a seed in content manager content delivery network.
+
+36:42.750 --> 36:45.510
+So a firewall, guys, what does a firewall do?
+
+36:47.260 --> 36:56.770
+FARA blocks certain applications from sending data or blocks and blocks 13 unwanted packets to come
+
+36:56.770 --> 36:58.210
+through your network.
+
+36:59.360 --> 37:02.060
+And in order to do that, it needs to look at the IP address.
+
+37:04.080 --> 37:05.850
+It needs to look at the ports.
+
+37:06.660 --> 37:14.310
+That's why the at least the ports, some firewalls are are they go all the way and look at the application.
+
+37:14.850 --> 37:17.280
+These are the firewalls that look up the here.
+
+37:18.090 --> 37:19.950
+They're effectively called transparent firewall.
+
+37:20.430 --> 37:25.710
+Transparent by all the transparent proxies really are transparent like your ISP.
+
+37:26.460 --> 37:29.460
+Everything up to here is available to everyone.
+
+37:29.460 --> 37:31.470
+Everyone can read your ports.
+
+37:31.890 --> 37:34.440
+Everyone can read your IP addresses.
+
+37:35.070 --> 37:35.910
+That is why.
+
+37:36.950 --> 37:37.910
+It's public.
+
+37:38.060 --> 37:38.630
+It's not.
+
+37:38.660 --> 37:39.950
+It's never encrypted.
+
+37:39.980 --> 37:40.640
+Never.
+
+37:40.760 --> 37:41.990
+The network openness.
+
+37:41.990 --> 37:42.380
+You need.
+
+37:42.650 --> 37:46.770
+You need the IP address in order to travel data and the ports.
+
+37:46.790 --> 37:48.170
+You need them public as well.
+
+37:48.500 --> 37:48.710
+All right.
+
+37:48.710 --> 37:49.820
+So these are public.
+
+37:50.150 --> 37:52.700
+That's why anyone looking at this, they are called transparent.
+
+37:52.730 --> 37:54.770
+Transparent firewall, transparent proxies.
+
+37:54.770 --> 37:58.430
+If you ever heard about this, these are proxies that doesn't really change anything.
+
+37:58.440 --> 37:59.510
+It's almost like a transplant.
+
+37:59.510 --> 38:00.200
+They go through it.
+
+38:00.950 --> 38:05.670
+And that's why your ISP can technically block you from going to any website they want.
+
+38:05.690 --> 38:06.830
+They don't want you to go there.
+
+38:07.190 --> 38:11.840
+A lot of our government uses transparent proxies.
+
+38:12.110 --> 38:16.010
+You know, they don't go all the way to the application because if you go to the application, you need
+
+38:16.010 --> 38:16.730
+to decrypt.
+
+38:16.970 --> 38:18.830
+You need to stop the session and decrypt it.
+
+38:19.370 --> 38:19.670
+Right.
+
+38:19.910 --> 38:24.440
+And to do that, you need to serve the certificate of the server, which you don't have.
+
+38:24.530 --> 38:24.800
+Right.
+
+38:25.010 --> 38:31.550
+Unless you're Kazakhstan, which literally forces a certificate into every computer and they're citizens,
+
+38:31.550 --> 38:35.510
+you know, to the certificate authority for trusting it.
+
+38:35.960 --> 38:41.450
+But most of the world, they're not like that, you know, so they are always in transparent.
+
+38:41.460 --> 38:45.710
+The only thing you can do is just block the IP address that you're going to.
+
+38:45.720 --> 38:46.640
+You can do that.
+
+38:47.330 --> 38:48.890
+All you have to do is just stop.
+
+38:48.890 --> 38:52.610
+Don't send the data right, because it goes through you.
+
+38:52.610 --> 38:54.530
+And if something goes through, you can stop it.
+
+38:55.010 --> 39:00.290
+So the firewall stops that layer for proxy if you want to do the load balancing based on a port.
+
+39:00.710 --> 39:07.340
+Hey, if you're going to a port at 80, I want you to rewrite the packet and send it to to this address
+
+39:07.340 --> 39:09.690
+instead or send it to this address instead.
+
+39:09.710 --> 39:09.980
+Right.
+
+39:10.130 --> 39:15.260
+So you can rewrite the packet right here, change it effectively, and then send it somewhere else.
+
+39:16.100 --> 39:19.230
+Actually, if you think about it, your ISP can do that too.
+
+39:19.550 --> 39:19.880
+Right.
+
+39:19.920 --> 39:22.790
+Can't get to can send you somewhere else if you want.
+
+39:22.820 --> 39:30.530
+If they want to know anyone, I say your ISP because your ISP is where your first packets go to.
+
+39:31.110 --> 39:31.310
+Right.
+
+39:31.310 --> 39:32.930
+That's why a lot of people use VPNs.
+
+39:33.620 --> 39:37.100
+VPNs effectively.
+
+39:37.130 --> 39:40.770
+I didn't add it here, but VPN is actually a layer three protocol if you think about it.
+
+39:41.330 --> 39:45.590
+It takes the IP packets and put them in another IP packets.
+
+39:45.620 --> 39:50.480
+That's that's a simpler, simpler solution for the IP for the VPNs.
+
+39:50.480 --> 39:55.100
+Most Vivian's not doesn't do this, but one solution is to put an IP in an IP.
+
+39:55.370 --> 40:01.220
+So I don't care what the content of this IP packet is, it could be an issue request could be a geographic
+
+40:01.250 --> 40:02.510
+database because I don't care.
+
+40:02.510 --> 40:03.290
+It's an IP.
+
+40:04.010 --> 40:08.330
+And that's why AWS, I, I'm one of the really critical, you know, take that and just shove it there
+
+40:08.330 --> 40:09.440
+and then send it, you know.
+
+40:10.130 --> 40:14.060
+So the VPN is actually a layer three protocol, if you think about it.
+
+40:14.210 --> 40:17.900
+Some people actually live in the layer two as well.
+
+40:18.170 --> 40:18.470
+No.
+
+40:20.120 --> 40:20.290
+So.
+
+40:20.300 --> 40:20.450
+Yeah.
+
+40:22.530 --> 40:26.430
+Go all the way here as a firewall or a proxy.
+
+40:27.030 --> 40:32.190
+But then if you have a load balancer, like a layer seven load balancer, you know.
+
+40:33.260 --> 40:35.330
+A few built one as a back injury.
+
+40:35.330 --> 40:42.640
+And, you know, like in generics where you want to cache data or you want to balance based on certain
+
+40:43.030 --> 40:50.140
+paths, like if I go to slash whatever, slash pictures, right?
+
+40:51.290 --> 40:55.470
+Go to this server if you go to slash images.
+
+40:55.490 --> 40:56.510
+Pictures are the same thing.
+
+40:56.810 --> 40:58.820
+Images, slash, whatever.
+
+40:58.820 --> 40:59.280
+Blob.
+
+40:59.300 --> 41:02.030
+Go to this set of servers if you want to do that.
+
+41:02.600 --> 41:07.880
+The slash, that path is actually an application concept which is encrypted most of the time.
+
+41:08.210 --> 41:09.860
+To look at it, you have to decrypt it.
+
+41:10.100 --> 41:17.300
+So the Layer seven proxies or content delivery networks or Layer seven, they play at this layer.
+
+41:17.600 --> 41:25.130
+That means they decrypt everything you send, look at it, cache it, and then send it.
+
+41:25.130 --> 41:26.630
+So they go all the way there.
+
+41:26.990 --> 41:31.010
+So they are way slower than the routing or file wise.
+
+41:31.010 --> 41:31.430
+Lower.
+
+41:31.760 --> 41:37.400
+You go and go all the way up and then re transmit everything back down.
+
+41:37.670 --> 41:44.600
+So you effectively know you need a completely different session between this, those two copies, right?
+
+41:44.600 --> 41:49.180
+Because this session, this is one session and this is one session.
+
+41:49.190 --> 41:53.960
+This is the final endpoint to you as a client.
+
+41:54.020 --> 41:55.550
+You're connecting to this.
+
+41:55.550 --> 41:57.800
+You know, that's why this is called also a reverse proxy.
+
+41:57.800 --> 42:03.920
+You know, where this is your final destination, but your true final destination is actually this back
+
+42:03.920 --> 42:06.110
+in server, which you don't know anything about.
+
+42:06.410 --> 42:08.870
+That's how Google work and any other application.
+
+42:09.200 --> 42:13.340
+When you go to Google, you really don't touch the front end server.
+
+42:13.340 --> 42:14.690
+You're just going there.
+
+42:14.960 --> 42:20.870
+But the Google server might turn around and send requests to another server on the back end that you
+
+42:20.870 --> 42:24.170
+have no idea of, as I call a reverse proxy.
+
+42:24.440 --> 42:30.440
+While a proxy goes through, you know, you're sending a request, but you know, the final destination,
+
+42:30.440 --> 42:38.180
+you know, you know this is your final destination, but the proxy makes that request on your behalf,
+
+42:38.450 --> 42:38.660
+right?
+
+42:38.660 --> 42:39.320
+Does that make sense?
+
+42:40.900 --> 42:41.140
+All right.
+
+42:41.140 --> 42:43.840
+So what are the shortcomings of this Orci model?
+
+42:44.290 --> 42:47.850
+What is and what has too many layers which can be hard to comprehend?
+
+42:47.860 --> 42:55.150
+And definitely that was my belief and opinions back maybe three years ago.
+
+42:55.600 --> 43:01.830
+And I changed my mind ever since then, you know, I really thought I really session and presentation.
+
+43:01.900 --> 43:04.120
+I think this this shouldn't really treat as one.
+
+43:04.390 --> 43:10.060
+But now the more I understand, the more I build back in application, the more I start to read and
+
+43:10.060 --> 43:10.870
+understand.
+
+43:11.320 --> 43:18.410
+We really need that low level, you know, breaking down sometimes, you know, not all the time, but
+
+43:18.430 --> 43:20.130
+is really hard to argue about which they are.
+
+43:20.140 --> 43:20.860
+That's what it's like.
+
+43:21.130 --> 43:25.420
+People still argues like all presentation or should only really describes or presentation layer should
+
+43:25.450 --> 43:26.230
+really decode.
+
+43:27.160 --> 43:27.910
+Okay.
+
+43:28.120 --> 43:28.990
+And then do they.
+
+43:30.270 --> 43:33.190
+It's all people, you know, speculating of anything.
+
+43:33.330 --> 43:34.890
+So it's it's really not funny.
+
+43:35.190 --> 43:38.370
+You know, just everybody has an opinion.
+
+43:38.370 --> 43:40.120
+It becomes an opinion at the end of the day.
+
+43:40.160 --> 43:40.390
+Right.
+
+43:40.590 --> 43:44.310
+Because there is no if you look at the computer, there is no they are fi.
+
+43:44.340 --> 43:49.020
+You know, it just is not something you will read as something we talk about or our.
+
+43:49.170 --> 43:53.370
+So us engineers can talk through things, you know, so similar.
+
+43:53.370 --> 43:55.050
+It is definitely simpler to deal with.
+
+43:55.050 --> 43:58.140
+They are five, six and seven as just one level, which is the application.
+
+43:58.140 --> 44:01.350
+And that's what the the Cppib model does exactly that.
+
+44:02.010 --> 44:03.360
+It's much simpler.
+
+44:03.660 --> 44:05.100
+It's just the application layer.
+
+44:05.100 --> 44:07.590
+Hey, five, six, seven is the application.
+
+44:07.590 --> 44:13.890
+I don't care don't, don't complicate things which I, I have mixed feeling about this.
+
+44:13.890 --> 44:14.730
+It's up to you.
+
+44:14.730 --> 44:15.000
+Really.
+
+44:15.000 --> 44:15.720
+What do you think?
+
+44:15.750 --> 44:16.070
+But.
+
+44:17.250 --> 44:18.870
+Applications on application, right?
+
+44:19.110 --> 44:25.590
+Some people say, hey, don't done don't do that now just hey, one layer application.
+
+44:25.590 --> 44:26.190
+I don't care.
+
+44:26.490 --> 44:33.480
+But yeah, avoid numbering the CPI B layer, it's not layer five you know, or layer four, layer three
+
+44:33.720 --> 44:38.520
+you can with therefore layer three, it's the same language, you know, because they are four nearly
+
+44:38.520 --> 44:41.820
+identical to the OSA model.
+
+44:41.910 --> 44:47.610
+But layer five is if you say they are five, you have to specify or this is the TCP IP, all that means
+
+44:47.610 --> 44:52.260
+this is the application while layer five and and also is actually the session layer you know so the
+
+44:52.260 --> 44:58.470
+can become real cumbersome to talk through layer two same thing data link and physical layer is really
+
+44:58.650 --> 45:01.230
+something never talked about as far as I know.
+
+45:01.830 --> 45:02.190
+Right.
+
+45:02.580 --> 45:06.990
+So I don't even see this layer in the TCP IP model.
+
+45:07.260 --> 45:14.310
+So it's literally the TCP IP, which is DCP and IP and the data link, right, which is the MAC addresses
+
+45:14.310 --> 45:15.090
+and all that jazz.
+
+45:15.690 --> 45:16.050
+All right.
+
+45:16.200 --> 45:19.320
+How about we summarize this beautiful all say model?
+
+45:19.320 --> 45:25.800
+I believe one of the most important thing specifically when you write an applications, you know, it's
+
+45:25.800 --> 45:31.260
+really good to understand where your application sits, if it is if it's a network based application,
+
+45:31.260 --> 45:38.130
+if it if you if if data passes through your application, it's good to know where your application is
+
+45:38.520 --> 45:40.170
+so that you can talk through a SU.
+
+45:40.170 --> 45:47.280
+You can know what you can optimize, what do you have access to and what can you improve?
+
+45:47.310 --> 45:47.670
+Right.
+
+45:47.670 --> 45:48.420
+It's very critical.
+
+45:48.420 --> 45:48.610
+Right.
+
+45:48.810 --> 45:50.370
+So we talked about the OCI model.
+
+45:50.370 --> 45:55.320
+We talked about the we we showed examples, many examples where firewalls, we added proxies.
+
+45:55.320 --> 46:00.600
+We had a reverse proxy read the content delivery network CDOs like fastly stuff like that.
+
+46:00.750 --> 46:05.490
+They all every ETN is a layer seven reverse proxy.
+
+46:06.000 --> 46:13.440
+That's what they are just you know, that's a glorified naming see content delivery network because
+
+46:14.040 --> 46:21.780
+it stores the content by definition it has to access it has it need access to your content, right.
+
+46:22.620 --> 46:22.920
+Right.
+
+46:23.220 --> 46:25.950
+So again, take it with a grain of salt.
+
+46:25.950 --> 46:30.420
+You know, each device doesn't have to map to all the seven layers.
+
+46:30.420 --> 46:32.250
+You know, it's really blurred.
+
+46:32.250 --> 46:33.900
+The line is blurred sometimes.
+
+46:33.900 --> 46:37.290
+You know, the TCP IP is definitely a simpler model.
+
+46:37.290 --> 46:42.870
+My personally, I prefer the the finer grain quality of things, the breaking things down.
+
+46:42.930 --> 46:50.400
+Now while we don't talk about session five as layer six is the really the layer that I almost never
+
+46:50.550 --> 46:52.710
+hear anything anyone talk about, right?
+
+46:52.920 --> 46:59.160
+But layer five I've seen use cases where someone, hey, I'm actually a layer five.
+
+46:59.370 --> 47:01.080
+We're playing a layer five here.
+
+47:01.080 --> 47:03.230
+Linker This is a clear example.
+
+47:03.930 --> 47:05.890
+One envoy, I believe another one, right.
+
+47:06.000 --> 47:07.380
+Hey, we managed sessions.
+
+47:07.380 --> 47:09.450
+We managed connections ourselves, you know.
+
+47:09.450 --> 47:14.910
+So you're playing it, you're playing a session layer, you're playing at the connection, you're playing
+
+47:14.910 --> 47:17.990
+at that just that you don't you don't really care about anything else.
+
+47:18.140 --> 47:20.550
+You're building a proxy at the end of the day, link up.
+
+47:20.550 --> 47:22.500
+There's a proxy, by the way, if you didn't know that.
+
+47:23.040 --> 47:23.610
+But yeah, guys.
+
+47:24.710 --> 47:26.300
+Hope you enjoy this lecture.
+
+47:26.750 --> 47:28.430
+How we jump into the next one.

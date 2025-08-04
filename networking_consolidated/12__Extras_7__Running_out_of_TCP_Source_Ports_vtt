@@ -1,0 +1,925 @@
+WEBVTT
+
+00:00.000 --> 00:08.370
+You know, guys, I always believed that bugs are what makes our experience as software engineers.
+
+00:08.370 --> 00:10.710
+It is the encounter.
+
+00:10.710 --> 00:19.410
+And finally the, you know, getting over the hump of bugs and fixing the bug or addressing it because
+
+00:19.410 --> 00:25.410
+you don't always fix bugs, you just work around it sometimes and fix it and automatically it got fixed
+
+00:25.410 --> 00:26.400
+by itself.
+
+00:26.520 --> 00:33.870
+Because bugs sometimes are exposed because other things, it has no related with the thing that the
+
+00:33.900 --> 00:35.340
+bug is exposed to.
+
+00:35.400 --> 00:38.910
+You know, if you if you if you code it for a long time, you will know what I'm saying.
+
+00:38.910 --> 00:45.840
+But essentially in this video, I want to talk about a very interesting bug that I never ran into before
+
+00:45.870 --> 00:52.230
+that I ran in the past few months, actually, and I thought it'd make a very good podcast.
+
+00:52.230 --> 01:00.260
+And to give you an idea what really happens when you run out of this randomly assigned ephemeral source
+
+01:00.260 --> 01:03.050
+ports in your TCP connections.
+
+01:03.560 --> 01:06.260
+Because I never run out of those there.
+
+01:06.260 --> 01:12.800
+Yeah, there are 65,000 ish, but man, you can run onto it.
+
+01:12.830 --> 01:18.230
+If you wrote inefficient code, which in that particular case I did.
+
+01:18.650 --> 01:19.910
+Let's jump into it.
+
+01:20.240 --> 01:24.680
+Welcome to the backend engineering show with your host, Hussein Nasser.
+
+01:24.680 --> 01:31.370
+And to explain this bug, I wanted to kind of visualize the simple system.
+
+01:31.400 --> 01:36.170
+You know, I simplified it just for the sake of this video, but essentially it's a it's a web server
+
+01:36.170 --> 01:42.770
+and there is a message broker, and there's other pieces of the, of the system that is irrelevant here.
+
+01:42.770 --> 01:45.410
+But these are the two pieces that are critical here.
+
+01:45.410 --> 01:53.180
+So the web server that accepts connection from clients directly, this is the public, uh, web server
+
+01:53.180 --> 01:54.470
+that accepts connections.
+
+01:54.740 --> 02:01.570
+So clients, browsers, calls, anything that connects to the web server and the web server submits
+
+02:01.600 --> 02:07.270
+jobs, submits messages, all sorts of things to the message queue.
+
+02:07.270 --> 02:14.470
+And there's there's these will get processed by further downstream services, you know.
+
+02:14.500 --> 02:20.170
+Or will it will be there for certain metadata information.
+
+02:20.200 --> 02:20.770
+Okay.
+
+02:20.770 --> 02:22.180
+So here's what happened.
+
+02:22.180 --> 02:29.890
+What what happened is after a few commits, something got committed to the repo.
+
+02:30.430 --> 02:35.980
+And what we noticed is the the system works fine.
+
+02:35.980 --> 02:42.400
+Requests are being processed very nicely, very fast with no problem at all.
+
+02:42.430 --> 02:45.490
+You make a request to the web server, you get a response.
+
+02:45.490 --> 02:46.480
+Very nice.
+
+02:46.480 --> 02:55.900
+But after a few thousand requests and there is no particular number right after a few thousand requests.
+
+02:57.460 --> 03:00.340
+The web server will stop responding altogether.
+
+03:01.420 --> 03:02.620
+It was just a nope.
+
+03:02.710 --> 03:03.790
+I'm done.
+
+03:03.940 --> 03:08.320
+What will happen is the client will give up, so you'll give a client timeout.
+
+03:08.320 --> 03:15.100
+And if you have a proxy which made the problem a little bit worse is the proxy will timeout and we'll
+
+03:15.100 --> 03:22.090
+get a proxy timeout thinking that, oh there is some things happening on the server that is timing out.
+
+03:22.090 --> 03:25.390
+So which kind of diluted the problem a little bit.
+
+03:25.390 --> 03:31.810
+So essentially what's happened is if you talk to the web server directly and make a request after that
+
+03:31.810 --> 03:39.400
+threshold few thousand requests, your request will just keep processing forever.
+
+03:39.400 --> 03:46.210
+Sometimes you'll get a response after like three few minutes, but then after that they'll just die.
+
+03:47.560 --> 03:49.300
+And and you will try it again.
+
+03:49.330 --> 03:50.380
+It will work.
+
+03:50.500 --> 03:52.990
+After that it will just go down again.
+
+03:52.990 --> 03:56.920
+So what was So that's the behavior of the book.
+
+03:56.950 --> 04:04.600
+I, I usually like not to go directly to the because if I go to the repo, I see the comments, I see,
+
+04:04.600 --> 04:07.450
+I can I can tell what went wrong.
+
+04:07.480 --> 04:10.840
+But that's to me that's the last thing I do.
+
+04:10.870 --> 04:13.180
+Because first I need to investigate the problem.
+
+04:13.180 --> 04:16.600
+And I have a whole course of how to troubleshoot backend application.
+
+04:16.810 --> 04:17.260
+Check it out.
+
+04:17.290 --> 04:18.400
+Go to performance.
+
+04:18.580 --> 04:24.940
+Hossein nasr.com uh to learn more about it without even if you even if you don't have the source code,
+
+04:24.940 --> 04:35.050
+you can you can technically learn about a system by just, you know, do a black box testing, as they
+
+04:35.050 --> 04:41.260
+say from the just looking at what is the behavior of this as a box and how is it communicating to each
+
+04:41.290 --> 04:41.740
+other.
+
+04:41.740 --> 04:47.110
+So so what I did is I went to the web server, okay.
+
+04:47.140 --> 04:52.030
+The web server in this particular case was a different machine than the message broker.
+
+04:52.060 --> 04:55.830
+So I went to the web server and it just says all right netstat.
+
+04:56.730 --> 04:58.470
+Give me all your connections.
+
+04:59.190 --> 05:07.050
+And I noticed a flood of connections which is unusual.
+
+05:07.050 --> 05:14.310
+You shouldn't have this many connections outgoing from the web server to the message broker.
+
+05:15.390 --> 05:17.430
+You need one right.
+
+05:17.460 --> 05:30.090
+And the message broker I used in this particular case we used is uh supports uh multiplexing, i.e.
+
+05:30.120 --> 05:33.330
+you can send multiple requests concurrently on the same connection.
+
+05:33.360 --> 05:33.870
+Right.
+
+05:35.700 --> 05:42.840
+So in this particular case, which means that you can use one connection for pretty much every request,
+
+05:42.870 --> 05:43.050
+right.
+
+05:43.080 --> 05:44.490
+You can you can go crazy.
+
+05:44.490 --> 05:45.930
+You don't need another connection.
+
+05:45.930 --> 05:51.060
+So you should see one, maybe two in case of an overloaded system.
+
+05:51.090 --> 05:51.630
+Right.
+
+05:52.080 --> 05:56.160
+But we've been seeing 10,000.
+
+05:56.190 --> 05:58.590
+20,000, right.
+
+05:59.100 --> 06:01.230
+And that didn't look right.
+
+06:01.590 --> 06:05.580
+And if the system goes down, it goes to up to 20,000 connections.
+
+06:05.610 --> 06:07.230
+And so that's the alarm.
+
+06:07.230 --> 06:10.260
+But but why would that be the problem?
+
+06:10.260 --> 06:11.370
+That's the second question.
+
+06:11.400 --> 06:11.790
+All right.
+
+06:12.090 --> 06:13.290
+You have a lot of connections.
+
+06:13.290 --> 06:14.070
+So what.
+
+06:14.820 --> 06:16.440
+So we know the problem.
+
+06:16.440 --> 06:17.130
+And I looked at that.
+
+06:17.280 --> 06:20.880
+And I know that even the install that caused it.
+
+06:20.880 --> 06:25.440
+But now why is the question always this curiosity in mind.
+
+06:25.470 --> 06:30.990
+It's like a little bit annoying when when people works with me it's like oh no, no, no, we know what
+
+06:30.990 --> 06:31.380
+the problem is.
+
+06:31.380 --> 06:32.340
+Just just revert it.
+
+06:32.340 --> 06:37.170
+No, no, no, I want to understand, you know, it's just that's that's just, uh, that's just my
+
+06:37.170 --> 06:37.800
+nature.
+
+06:38.370 --> 06:38.490
+Yeah.
+
+06:38.490 --> 06:41.490
+It could be annoying sometimes because it slows down the process.
+
+06:41.520 --> 06:44.790
+Because once, once you understand.
+
+06:45.390 --> 06:46.440
+But but then.
+
+06:46.440 --> 06:46.650
+So.
+
+06:46.680 --> 06:47.310
+All right.
+
+06:48.150 --> 06:57.030
+So what we are making a lot of connections that should not stop the web server from responding, right?
+
+06:57.810 --> 06:59.550
+So here's what happened.
+
+06:59.910 --> 07:07.620
+We essentially, long story short, we ran out of the ephemeral ports in that machine.
+
+07:07.860 --> 07:08.880
+So what does that mean?
+
+07:08.910 --> 07:12.450
+So this requires a little bit of understanding of how TCP works.
+
+07:12.480 --> 07:20.130
+You see, when you can establish a connection between a client and a server, the you are essentially
+
+07:20.130 --> 07:25.050
+connecting to a well-known IP address and a well-known port.
+
+07:25.170 --> 07:33.480
+That is often, if you're secure, like an Https 443 and the IP address is also fixed.
+
+07:33.510 --> 07:37.200
+And after you do a DNS, you get you get a load of IP addresses.
+
+07:37.200 --> 07:41.160
+If you have, you know, uh, redundancy.
+
+07:41.160 --> 07:43.380
+But then eventually you only pick one.
+
+07:43.380 --> 07:45.030
+So then you pick that and you connect.
+
+07:45.030 --> 07:45.750
+So you know the port.
+
+07:45.750 --> 07:49.490
+So you know the source, uh, the destination IP.
+
+07:49.520 --> 07:50.750
+The destination port.
+
+07:50.750 --> 07:54.140
+But you know the source port.
+
+07:54.260 --> 07:54.590
+Sorry.
+
+07:54.620 --> 07:55.760
+The source IP.
+
+07:55.760 --> 07:57.500
+That's your IP address.
+
+07:57.500 --> 08:00.740
+And let's ignore Nat for for simplicity here.
+
+08:00.740 --> 08:05.150
+So the source IP is known but the only one variant is the source port.
+
+08:05.150 --> 08:15.680
+And this is the kernel's job to assign a random source port so that it completes the four tuples the
+
+08:15.680 --> 08:16.760
+four entries.
+
+08:17.690 --> 08:19.400
+I always get confused with the word tuple.
+
+08:19.640 --> 08:19.940
+Okay.
+
+08:19.940 --> 08:21.260
+So these four entries.
+
+08:21.260 --> 08:23.930
+So that the fourth thing port.
+
+08:23.930 --> 08:29.600
+So it will assign random from I think it's the even the terminal port has a range right.
+
+08:29.630 --> 08:35.750
+Let me look it up actually so I can give you that uh ephemeral port range.
+
+08:35.780 --> 08:46.550
+So yeah, I'm seeing here from 32,768 up until 60,999, because we're talking about, uh, IPv4 here.
+
+08:47.360 --> 08:49.550
+The port is 32 bit.
+
+08:49.820 --> 08:50.270
+Right.
+
+08:50.300 --> 08:52.010
+So that's 65,000.
+
+08:52.010 --> 08:57.890
+So you have a range of 30,000 which kind of lines up with whatever I'm seeing when it gets to the 20,000,
+
+08:57.920 --> 09:02.690
+25,000 where we start seeing the problem.
+
+09:02.690 --> 09:09.620
+So eventually in this particular case the web server IP address is known fixed.
+
+09:09.650 --> 09:12.350
+The destination IP address is known.
+
+09:12.350 --> 09:14.090
+That's the message queue right?
+
+09:14.120 --> 09:14.840
+IP address.
+
+09:14.870 --> 09:16.520
+The destination port is known.
+
+09:16.520 --> 09:22.010
+That's the port of the listener on the message queue.
+
+09:22.040 --> 09:22.340
+Right.
+
+09:22.370 --> 09:25.430
+And the source port is basically ephemeral that is generated.
+
+09:25.430 --> 09:33.470
+So you get only what based on these knowing that these two are fixed right.
+
+09:34.040 --> 09:37.850
+The source IP is fixed, the destination IP is fixed, the destination port is fixed.
+
+09:37.880 --> 09:42.950
+You get only, you get only 20,000 ish 25,000 ports.
+
+09:42.950 --> 09:47.000
+That means you get 25,000 Connection from here to here.
+
+09:47.030 --> 09:49.160
+You might say it's it's low.
+
+09:51.080 --> 09:53.480
+It's not low number.
+
+09:53.510 --> 09:55.460
+It's enough for what you need.
+
+09:55.790 --> 10:02.840
+Because remember this is while fixing the the host to the client.
+
+10:02.840 --> 10:06.500
+In this case the web server is the client and the destination.
+
+10:06.500 --> 10:08.030
+The back end is the message queue.
+
+10:08.030 --> 10:08.390
+Right.
+
+10:08.420 --> 10:09.860
+And these are fixed.
+
+10:10.160 --> 10:18.890
+So what is happening is eventually we discovered that every request incorrectly, every request from
+
+10:18.890 --> 10:21.770
+the client, which also has a connection by the way.
+
+10:21.770 --> 10:24.260
+But this is this is not a problem.
+
+10:24.290 --> 10:24.980
+Right.
+
+10:25.220 --> 10:28.760
+The client to the web server is not a problem.
+
+10:28.790 --> 10:29.870
+You might say why?
+
+10:29.870 --> 10:32.630
+Well, the destination is known the web server.
+
+10:32.660 --> 10:34.790
+The destination IP is known.
+
+10:34.820 --> 10:38.570
+The destination port is known, the web server port 80 or 443.
+
+10:38.570 --> 10:40.700
+But the clients change.
+
+10:40.700 --> 10:44.750
+You don't have one client establishing 100,000 connections.
+
+10:44.750 --> 10:49.040
+Know you have 100,000 clients establishing a connection each.
+
+10:49.040 --> 10:51.980
+So that's you can go crazy with that number, right?
+
+10:52.010 --> 10:56.990
+So the IP address, the IP address change in this particular case, the source port.
+
+10:57.020 --> 10:59.780
+Of course for each source IP address you get all these.
+
+10:59.810 --> 11:04.910
+Again the 20,000 or 30,000 whatever source IP address.
+
+11:04.940 --> 11:05.180
+Right.
+
+11:05.210 --> 11:09.200
+And these ranges by the way, if you look up at this table I'll put it on the screen.
+
+11:09.380 --> 11:10.760
+Uh it's filled.
+
+11:10.760 --> 11:12.590
+It's different for windows.
+
+11:12.590 --> 11:20.150
+Different for Linux, different for other, you know, other uh kernels.
+
+11:20.150 --> 11:24.200
+So what was happening?
+
+11:24.200 --> 11:28.220
+The problem is clients were connecting, clients were sending requests.
+
+11:28.220 --> 11:36.020
+And then for every request, the web server was supposed to look up a backend connection and establish
+
+11:36.830 --> 11:42.590
+this connection to the back end, which is the message queue if is not established, if there is an
+
+11:42.610 --> 11:47.530
+existing connection, write whatever you want to write to the message queue.
+
+11:47.560 --> 11:48.190
+Write.
+
+11:48.940 --> 11:50.830
+Sometimes you need the message queue.
+
+11:50.860 --> 11:52.750
+Sometimes some requests don't need it at all.
+
+11:52.780 --> 11:53.230
+Right?
+
+11:53.260 --> 11:54.880
+It's this problem.
+
+11:54.880 --> 11:57.190
+The bug was in the web server.
+
+11:57.550 --> 12:05.440
+And specifically this logic that connects to this message queue incorrectly.
+
+12:05.470 --> 12:13.300
+We were for every request, we're creating a new connection regardless every request.
+
+12:13.300 --> 12:14.530
+Create new connection.
+
+12:14.530 --> 12:18.610
+Send a request, create a connection, send for every request.
+
+12:18.640 --> 12:20.140
+We were creating a new connection.
+
+12:20.140 --> 12:24.940
+So we were leaving all these connections just idle, right?
+
+12:25.540 --> 12:30.580
+So you might say, okay, idles where there is a timeout in the TCP, so they eventually die and that's
+
+12:30.580 --> 12:31.600
+what will happen, right?
+
+12:31.630 --> 12:34.240
+They will eventually these connections will die.
+
+12:34.540 --> 12:39.730
+But what makes things worse is there was custom client logic I mean client.
+
+12:39.760 --> 12:48.130
+Here is the web server that essentially kept intentionally kept the connections alive by using something
+
+12:48.130 --> 12:48.880
+like WebSockets.
+
+12:48.910 --> 12:49.900
+It's not really a WebSocket.
+
+12:49.930 --> 12:50.290
+It's good.
+
+12:50.560 --> 12:52.000
+Have you heard of ping pong?
+
+12:52.210 --> 12:54.370
+Uh, protocol and WebSocket.
+
+12:54.400 --> 13:03.850
+It's a it's a it's an application layer seven uh, keep alive mechanism, not the TCP keep alive.
+
+13:03.970 --> 13:04.840
+Higher than that.
+
+13:04.840 --> 13:06.640
+Not the kernel keeping the connection alive.
+
+13:06.640 --> 13:10.690
+It's the application sending essentially nothing.
+
+13:10.720 --> 13:11.320
+Right.
+
+13:11.320 --> 13:13.450
+Just just to tell the client.
+
+13:13.480 --> 13:14.260
+Hey, I'm still using it.
+
+13:14.260 --> 13:14.740
+I'm still here.
+
+13:14.740 --> 13:15.190
+I'm still here.
+
+13:15.190 --> 13:15.580
+I'm still here.
+
+13:15.700 --> 13:16.960
+So it's just chatter.
+
+13:16.960 --> 13:17.440
+Essentially.
+
+13:17.500 --> 13:18.670
+Just ping pong.
+
+13:18.700 --> 13:19.660
+Ping pong.
+
+13:19.690 --> 13:20.170
+Right.
+
+13:20.320 --> 13:22.690
+So that kept the problems.
+
+13:22.690 --> 13:24.970
+Well because we're now maintaining all this.
+
+13:24.970 --> 13:30.190
+So that added a little bit of an overhead to maintain all these connections that we don't really need
+
+13:30.190 --> 13:30.640
+to.
+
+13:30.670 --> 13:37.450
+Second we were keeping those connections and they take in resources.
+
+13:37.450 --> 13:43.810
+And eventually once we reach that threshold ephemeral port, new requests.
+
+13:43.810 --> 13:47.950
+What will happen is our new request.
+
+13:48.340 --> 13:49.120
+Remember this.
+
+13:49.120 --> 13:54.730
+These are got to be careful with that synchronous request.
+
+13:56.020 --> 13:56.770
+Now the client.
+
+13:56.770 --> 13:57.520
+I don't care about the client.
+
+13:57.550 --> 13:59.050
+The client is asynchronous.
+
+13:59.080 --> 14:07.090
+The web server received this request is synchronous, i.e. it is blocking the request.
+
+14:07.090 --> 14:13.960
+It's making the request the back end request to the message queue, while the request blocked until
+
+14:13.960 --> 14:16.300
+it received a response from the message queue.
+
+14:16.330 --> 14:19.480
+It will unblock the request and it will send the response right.
+
+14:19.510 --> 14:23.320
+It's stuck at this stage where there's air.
+
+14:23.350 --> 14:23.980
+All right.
+
+14:23.980 --> 14:28.780
+I cannot respond to this guy until I get something from my message queue.
+
+14:28.810 --> 14:29.830
+But guess what?
+
+14:29.890 --> 14:33.280
+We were stuck in essentially the kernel.
+
+14:33.280 --> 14:35.560
+We couldn't even create a connection.
+
+14:35.650 --> 14:45.240
+So the web server got berserk, and eventually other apps started to break because other apps needs
+
+14:45.240 --> 14:49.260
+to connect to the to that machine for some reason or another.
+
+14:49.260 --> 14:54.060
+And that also broke something that consumed some of the ephemeral ports.
+
+14:54.060 --> 14:56.670
+And it becomes very interesting.
+
+14:56.700 --> 14:57.180
+Right.
+
+14:57.720 --> 15:02.430
+So yeah, you don't have much, to be honest, to run out of that ephemeral port.
+
+15:02.430 --> 15:06.660
+So after I, we identified that problem, we saw that, okay, fair enough.
+
+15:06.690 --> 15:08.100
+Here's the bug we're in.
+
+15:08.100 --> 15:12.360
+Instead of actually looking out for existing connections, we're always creating a new one.
+
+15:12.600 --> 15:14.010
+Uh, we fixed that.
+
+15:14.190 --> 15:15.150
+All is good.
+
+15:15.180 --> 15:16.440
+Happy, happy, happy.
+
+15:16.470 --> 15:18.750
+We have back to one beautiful connection.
+
+15:18.750 --> 15:21.870
+So one resource can give you so much.
+
+15:21.870 --> 15:25.350
+You can go so far with one connection.
+
+15:25.350 --> 15:28.080
+So beautiful indeed.
+
+15:28.080 --> 15:29.520
+Very, very beautiful.
+
+15:29.520 --> 15:33.120
+So I then started looking up like, is this really a problem people run into?
+
+15:33.150 --> 15:36.840
+Because it seems like an easy thing to run into and fair enough.
+
+15:37.080 --> 15:41.700
+Cloudflare has a nice blog about it and running out of ephemeral ports.
+
+15:41.730 --> 15:45.900
+Things can get really wrong, you know, if that started to happen.
+
+15:45.900 --> 15:52.290
+And I think the the, the biggest problem that you're going to start having is.
+
+15:54.480 --> 15:57.330
+If you are, if you're not on the same machine.
+
+15:57.570 --> 15:58.410
+No.
+
+16:00.870 --> 16:11.220
+If you are on the same machine, you're going to see it even worse, because what was happening is the
+
+16:11.220 --> 16:16.860
+the source IP to the let's say you're connected to localhost.
+
+16:17.190 --> 16:19.350
+Let's ignore IPv6 for for a second.
+
+16:19.380 --> 16:20.580
+Say only IPv4.
+
+16:20.610 --> 16:21.060
+Right.
+
+16:21.090 --> 16:26.550
+So 127001 you're connecting to port 80 locally.
+
+16:26.610 --> 16:27.330
+Right.
+
+16:27.330 --> 16:31.890
+And then the source port is also on 12770001.
+
+16:31.920 --> 16:32.130
+Right.
+
+16:32.160 --> 16:33.390
+So you're connecting locally.
+
+16:33.390 --> 16:36.210
+You have a loopback connections for one reason or another.
+
+16:36.240 --> 16:37.680
+You're using the tcp IP.
+
+16:37.770 --> 16:40.500
+I always say try to shift away from that.
+
+16:40.530 --> 16:41.850
+You can't always do that.
+
+16:41.850 --> 16:44.970
+Like you can use IPV IPC for that.
+
+16:44.970 --> 16:50.910
+But sometimes you can't do that, especially if you want to use side proxies right where you where you
+
+16:50.910 --> 16:51.330
+want to.
+
+16:51.360 --> 16:53.880
+Containers having the same loopback.
+
+16:53.880 --> 16:59.040
+And they want to connect to each other to enable essentially sidecar proxying to work.
+
+16:59.040 --> 16:59.490
+Right.
+
+16:59.520 --> 17:03.270
+You need to this capability TCP IP to do that.
+
+17:03.570 --> 17:16.050
+So then um, you can essentially also run off your ephemeral loopback ports as long as the fixed the
+
+17:16.050 --> 17:20.760
+source, the destination port, the destination IP is fixed.
+
+17:20.760 --> 17:21.390
+You.
+
+17:21.420 --> 17:23.040
+And of course the source IP is fixed.
+
+17:23.070 --> 17:26.850
+You have this 20,000 limit 30,000 limit whatever the kernel allows it.
+
+17:26.850 --> 17:27.390
+Right.
+
+17:27.600 --> 17:35.270
+But then but then what if I connect to another port completely different 121 like Wright, 22 is or
+
+17:35.270 --> 17:38.210
+2121 is FTP 22, right?
+
+17:38.210 --> 17:39.470
+I want to connect to that.
+
+17:39.710 --> 17:45.020
+You can technically reuse those ephemeral ports because those are different.
+
+17:45.050 --> 17:54.410
+Now it's a different tuple, but some kernels don't even allow that because it's sometimes break applications.
+
+17:54.440 --> 18:02.120
+Because the uniqueness of source ports, they are treated as just unique by itself, not they.
+
+18:02.150 --> 18:04.100
+Some applications don't take the portable.
+
+18:04.100 --> 18:10.310
+They take the two tuples, which is of course not a good idea, but it sometimes break applications.
+
+18:10.310 --> 18:16.790
+So even some kernels just don't allow you to reuse ports, even across destination ports, if that makes
+
+18:16.790 --> 18:17.180
+sense.
+
+18:17.180 --> 18:20.090
+Which makes the problem, uh, even more interesting.
+
+18:20.090 --> 18:23.930
+So I'll reference that blog for you guys to to read.
+
+18:23.930 --> 18:26.060
+But yeah, that's what I want to talk about today.
+
+18:26.060 --> 18:31.310
+So yeah, I thought, I thought this was an interesting, uh, bug that I'll share with you guys.
+
+18:31.520 --> 18:32.390
+See you in the next one.
+
+18:32.420 --> 18:32.750
+Goodbye.

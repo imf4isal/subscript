@@ -1,0 +1,3550 @@
+WEBVTT
+
+00:00.080 --> 00:06.560
+This video is a crash course about network routing from zero.
+
+00:06.960 --> 00:16.640
+So routing is a very critical concept in networking, but unfortunately it's not very well explained
+
+00:16.640 --> 00:23.360
+because there are so many layers underneath routing that we need to understand in order to understand
+
+00:23.360 --> 00:24.920
+the concept of routing.
+
+00:25.040 --> 00:30.240
+Basically how routing coming from the internet, you know, how does it happen?
+
+00:30.280 --> 00:35.800
+How what what does it mean if I send an HTTP request from one machine to another machine, how does
+
+00:35.800 --> 00:37.640
+it make it all the way to the end?
+
+00:38.080 --> 00:47.560
+Uh, unfortunately, we either can have very high level understanding about, you know, there is some
+
+00:47.560 --> 00:48.800
+magic going on.
+
+00:48.840 --> 00:51.760
+So I send a packet and it makes it all the way there.
+
+00:52.040 --> 00:59.880
+Or we have very low level understanding to one machine, a single machine to another machine Communication,
+
+00:59.880 --> 01:02.080
+but we're missing so much in between.
+
+01:02.080 --> 01:06.560
+And my goal from this video is to fill up this gap as much as possible.
+
+01:07.160 --> 01:08.280
+So how about we try?
+
+01:08.320 --> 01:11.720
+All right, let's get started.
+
+01:12.000 --> 01:19.080
+So routing explained and I put a screenshot of this famous thing that's called the routing table, which
+
+01:19.080 --> 01:22.480
+will be the last thing we explain in this video.
+
+01:23.240 --> 01:32.280
+But to get there we need to understand so so much stuff beginning from the concept of data links.
+
+01:32.520 --> 01:33.840
+What is a data link?
+
+01:34.040 --> 01:38.240
+See forget about anything you know about networking and see.
+
+01:38.560 --> 01:45.480
+Just take one simple scenario where you have two machines directly linked to each other, or multiple
+
+01:45.480 --> 01:47.440
+machines directly linked to each other.
+
+01:47.480 --> 01:48.760
+I have here a switch.
+
+01:48.800 --> 01:49.920
+Think of it as a hub.
+
+01:49.960 --> 01:53.720
+Think of it as just a bunch of cables, you know, wired together.
+
+01:54.200 --> 01:59.320
+You just spliced literally the the Ethernet cable and just you literally link them together.
+
+01:59.320 --> 02:00.440
+And these are linked together.
+
+02:00.440 --> 02:05.640
+Forget about routers, forget about switches, forget about all these concepts and say, how can I just
+
+02:05.640 --> 02:06.920
+send a message?
+
+02:07.080 --> 02:13.120
+And we're going to define what a message is between a to see how can I build something like that.
+
+02:13.440 --> 02:13.960
+Right.
+
+02:14.000 --> 02:15.720
+How can I build something like that.
+
+02:15.720 --> 02:21.480
+So this is the original original original requirement networking.
+
+02:21.840 --> 02:27.560
+And I'm not going to bore you about the history, but I want you to put yourself as the designer of
+
+02:27.560 --> 02:29.800
+this thing that, hey, I want to build a network.
+
+02:29.800 --> 02:33.240
+I want to two computers to connect to each other and communicate.
+
+02:33.840 --> 02:35.120
+So what they built is that.
+
+02:35.240 --> 02:38.880
+All right, let's have each machine have a unique address.
+
+02:38.880 --> 02:41.680
+And we're going to call this the media access control.
+
+02:42.320 --> 02:47.280
+And this address is the way we communicate between machines.
+
+02:47.920 --> 02:48.880
+Problem solved.
+
+02:48.920 --> 02:49.400
+Right.
+
+02:49.440 --> 02:50.840
+We have a unique address.
+
+02:50.840 --> 02:57.190
+And using this unique address I will know the source and I'll know the destination and I'll just send
+
+02:57.190 --> 02:57.550
+it.
+
+02:57.590 --> 03:04.910
+If the machine happened to have the the address, it will accept the message, right?
+
+03:04.950 --> 03:08.350
+If it will not, it will just drop it as simple as it is.
+
+03:08.390 --> 03:08.750
+Right.
+
+03:08.790 --> 03:10.190
+And this is what we have today.
+
+03:10.190 --> 03:10.750
+We have it.
+
+03:10.750 --> 03:13.310
+And this is how things work today.
+
+03:13.350 --> 03:19.830
+At the very low level, what we call the link, the data link.
+
+03:20.270 --> 03:25.510
+So each device has what we call a link address or a mac address.
+
+03:26.630 --> 03:30.670
+And we built this and it works perfectly okay.
+
+03:31.070 --> 03:35.630
+So devices that are directly reachable if you have a device.
+
+03:35.990 --> 03:45.910
+And if I send something here and I say hey send this to A and set this to B and I am A, that message
+
+03:45.910 --> 03:48.990
+will go here and it will be replicated.
+
+03:48.990 --> 03:51.630
+Because how do we send things on the wire.
+
+03:51.670 --> 03:59.510
+Really it's either electric pulses you know if it's Ethernet or radio, if it's Wi-Fi or light, if
+
+03:59.510 --> 04:00.110
+it's fiber.
+
+04:00.150 --> 04:00.790
+Right.
+
+04:00.830 --> 04:08.070
+Eventually we serialize, if you will, these bytes that we understand into signals.
+
+04:08.070 --> 04:12.110
+That is the physical layer one, right, if you will.
+
+04:12.430 --> 04:21.110
+So we send this and eventually assuming the very simple representation where I'm sending it to be right,
+
+04:22.510 --> 04:24.390
+this machine will get it.
+
+04:24.390 --> 04:26.190
+And also this machine will get it.
+
+04:26.190 --> 04:33.870
+But we have logic at the server if you will, that says, hey, if you received this message or let's
+
+04:33.870 --> 04:37.870
+call it a frame, we're going to introduce new terminologies and abstractions.
+
+04:37.950 --> 04:45.230
+If you receive it and it's not destined to you, you don't have this Mac address, then just drop it.
+
+04:45.230 --> 04:47.390
+And that is the logic we have today.
+
+04:47.670 --> 04:53.830
+So this message will this machine will get it, but it will drop it because it's not be right, but
+
+04:53.830 --> 04:58.350
+this will accept it and it will just bubble it up to the higher level.
+
+04:58.390 --> 05:05.190
+Whoever requested this message, be it a process or a thread or something higher up, and we call these
+
+05:05.190 --> 05:06.590
+layer two frames.
+
+05:06.630 --> 05:10.190
+Layer one is the physical layer light electric radio.
+
+05:10.470 --> 05:14.270
+And then layer two is this logical link layer right.
+
+05:14.310 --> 05:18.230
+So data links a very very important things to understand.
+
+05:18.270 --> 05:22.710
+Okay so this is silly right.
+
+05:23.390 --> 05:24.430
+This is silly.
+
+05:24.430 --> 05:24.910
+Why.
+
+05:25.550 --> 05:33.070
+The reason this is silly is because well what if I have ten machines connected to each other using this
+
+05:33.470 --> 05:34.270
+this thing.
+
+05:34.310 --> 05:34.790
+Right.
+
+05:35.070 --> 05:37.910
+This wire hub device.
+
+05:37.910 --> 05:41.470
+I can just send stuff all together, right?
+
+05:41.470 --> 05:50.070
+I cannot just be sending things, sending a frame to everyone just to.
+
+05:50.430 --> 05:51.830
+For them to discard it.
+
+05:52.070 --> 05:54.110
+So we need some intelligence, right?
+
+05:54.150 --> 05:55.630
+This used to be a called a hub.
+
+05:55.870 --> 05:58.190
+Hub is a dumb device that just.
+
+05:58.830 --> 06:02.350
+Just sends most of the stuff and it doesn't have any intelligence.
+
+06:02.630 --> 06:04.950
+Switch, on the other hand, says.
+
+06:05.030 --> 06:10.030
+Has some level of intelligence based on the port that you're connected to.
+
+06:10.270 --> 06:13.910
+So what happens here is now we we introduce some level of intelligence.
+
+06:13.910 --> 06:14.230
+Right.
+
+06:14.270 --> 06:15.790
+Let's forget about IP addresses here.
+
+06:15.790 --> 06:19.350
+I'm not gonna I'm not talking about IP addresses or any of this stuff right here.
+
+06:19.390 --> 06:20.870
+Just direct link.
+
+06:21.710 --> 06:29.430
+So what happened here is this machine C and this machine B and this machine A they all connected to
+
+06:29.470 --> 06:31.950
+the switch on a given port.
+
+06:31.990 --> 06:32.470
+Right.
+
+06:32.510 --> 06:37.630
+I know my drawing is not perfect here, but there is a port here that you plugged in this.
+
+06:37.630 --> 06:39.790
+And there's a port here that you plugged in here.
+
+06:39.910 --> 06:42.630
+And this was another port that you plugged in here.
+
+06:42.870 --> 06:45.670
+So the switch knows that port one.
+
+06:46.430 --> 06:47.870
+There's someone connected to me.
+
+06:47.870 --> 06:50.460
+Port two, there is someone connected to me.
+
+06:50.460 --> 06:52.060
+There is a port three.
+
+06:52.060 --> 06:53.420
+There is someone connected to me.
+
+06:53.660 --> 06:59.420
+So what I will do is the moment the machine connects to something, it will advertise its presence as.
+
+06:59.420 --> 07:01.500
+Hey, it's me.
+
+07:02.420 --> 07:03.620
+Hey, this is me.
+
+07:03.980 --> 07:04.660
+I'm a.
+
+07:04.700 --> 07:06.860
+So the switch will record this fact that.
+
+07:06.860 --> 07:13.180
+Okay, P1 is actually a and P2 port two is B and port three is C.
+
+07:13.620 --> 07:22.460
+That is such a beautiful uh, if you will, if you took my database course, you'll understand that
+
+07:22.460 --> 07:27.220
+it's always about elimination when it comes to working with large amount of data.
+
+07:27.220 --> 07:31.700
+And in networking is not a different thing because you have large amount of machines.
+
+07:31.700 --> 07:35.060
+And I want to eliminate scanning as much as possible.
+
+07:35.100 --> 07:35.580
+Right.
+
+07:35.700 --> 07:39.220
+So what we do for performance, we remember.
+
+07:39.220 --> 07:44.020
+So now if I, if A sends something to B right.
+
+07:44.060 --> 07:53.820
+The switch gets it and says well this is going to be I know where B is, so I'm only going to send this.
+
+07:53.860 --> 07:58.700
+And by send I literally replicate the electric pulse to only this port.
+
+07:58.700 --> 08:04.100
+I don't need to do anything to port 3 or 4 or 5 or 6 or 7 or 8.
+
+08:05.060 --> 08:07.500
+And that's the beauty of this, right?
+
+08:07.900 --> 08:12.620
+So I just send this across the network and it just receives it.
+
+08:12.740 --> 08:16.220
+So that's the first optimization with data links.
+
+08:16.540 --> 08:17.660
+Keep this in mind.
+
+08:17.980 --> 08:23.900
+This is going to happen all across this presentation right.
+
+08:24.020 --> 08:28.980
+So the switch of course receives it and the switch knows where.
+
+08:29.020 --> 08:33.460
+Be at it's port two and it will forward the frame to P2.
+
+08:34.780 --> 08:36.900
+But here's where things break you guys.
+
+08:37.300 --> 08:38.940
+Things break.
+
+08:40.340 --> 08:41.260
+What do you have?
+
+08:41.300 --> 08:43.540
+Let's assume we have thousands of machines.
+
+08:43.540 --> 08:45.860
+And I just created this example.
+
+08:45.900 --> 08:46.340
+Right.
+
+08:46.620 --> 08:50.300
+You have these thousands of machines, thousands and thousands and thousands of machines that are connected
+
+08:50.300 --> 08:50.900
+to each other.
+
+08:50.940 --> 08:51.340
+Right?
+
+08:53.020 --> 08:56.820
+Links does not scale at that level.
+
+08:57.100 --> 08:57.540
+Why?
+
+08:57.900 --> 09:02.540
+And the reason is because the concept of Mac address is the problem.
+
+09:02.820 --> 09:05.100
+You see, Mac addresses are random.
+
+09:05.100 --> 09:08.740
+So the problem with Mac addresses are they are random and they're random.
+
+09:08.740 --> 09:11.580
+There is no logic when it comes to them.
+
+09:11.580 --> 09:17.220
+So how do I find how does A talks to z?
+
+09:17.980 --> 09:20.660
+Assuming z z z is another Mac address?
+
+09:20.660 --> 09:21.660
+How does that work?
+
+09:21.820 --> 09:23.580
+Well, we're going to do the same thing.
+
+09:23.620 --> 09:28.780
+Z will talk to this switch and it will it will present its knowledge.
+
+09:28.780 --> 09:31.620
+But that switch doesn't know about this right.
+
+09:31.660 --> 09:37.300
+So it needs to somehow that knowledge was not propagated all the way.
+
+09:37.620 --> 09:43.220
+So how does that how does this guy know that Z is over here?
+
+09:43.780 --> 09:47.340
+There is either you can propagate the knowledge of that.
+
+09:47.620 --> 09:47.980
+Zee.
+
+09:48.220 --> 09:55.340
+Zee is actually on switch seven all the way on that network, which can be very expensive.
+
+09:55.580 --> 10:01.300
+Otherwise you just scan, say, hey, I want to send to oh well where is this?
+
+10:01.340 --> 10:01.940
+Oh I don't know.
+
+10:01.940 --> 10:02.740
+Just send it.
+
+10:02.740 --> 10:03.100
+Right.
+
+10:03.140 --> 10:04.300
+The switch doesn't know.
+
+10:04.300 --> 10:12.140
+This switch doesn't have that entry because z z z is never on these direct links.
+
+10:12.180 --> 10:12.620
+Right.
+
+10:13.500 --> 10:15.500
+So it will just say all right I don't know.
+
+10:15.500 --> 10:18.700
+So I'll send it here I'll send it here I'll send it here.
+
+10:18.980 --> 10:19.340
+Right.
+
+10:19.380 --> 10:22.140
+It will just send it to everybody because it doesn't know.
+
+10:22.140 --> 10:23.620
+And this machine will get it.
+
+10:23.620 --> 10:26.340
+And then it will send it to this, and it will send it to this.
+
+10:26.340 --> 10:30.860
+And maybe at this particular point, we'll never make it at all.
+
+10:31.140 --> 10:34.300
+These machines have to be programmed to forward the frames.
+
+10:34.300 --> 10:38.140
+And you can see that this immediately dies.
+
+10:38.300 --> 10:43.740
+This concept of links, when it works with a lot of machines, it immediately because we have to scan
+
+10:43.890 --> 10:48.330
+the entire network to find the one we're looking for.
+
+10:48.570 --> 10:56.530
+Okay, so what we did is we built a new addressing system and meet the internet protocol.
+
+10:56.530 --> 11:04.970
+I like to think of an of of an IP address is very similar to an index in databases because it, it has
+
+11:04.970 --> 11:12.410
+this concept of a network and it's that has the concept of a host, it has a host and a network.
+
+11:13.290 --> 11:17.970
+And the network part is the, the key for the elimination.
+
+11:19.010 --> 11:20.130
+So that I know that.
+
+11:20.130 --> 11:21.930
+Oh, which network you are in.
+
+11:21.970 --> 11:22.530
+All right.
+
+11:22.570 --> 11:29.490
+If you're in this network then you can skip all other thousands and thousands of network because you
+
+11:29.530 --> 11:30.770
+are in this network.
+
+11:31.050 --> 11:31.410
+Right.
+
+11:31.690 --> 11:39.050
+While the Mac address we don't have, we are just one big global network when it comes to Mac.
+
+11:39.050 --> 11:42.450
+And then we're scanning all of this Network.
+
+11:43.130 --> 11:46.130
+And that's the problem with the Mac address.
+
+11:46.650 --> 11:51.890
+So we brought the internet protocol and we're going to talk only about IPv4.
+
+11:51.930 --> 11:58.970
+IPv6 is literally more bytes, but we have four bytes to work with when it comes to the IP address.
+
+11:58.970 --> 12:01.410
+We have the network and we have the host.
+
+12:02.810 --> 12:07.130
+The host identifies the actual machine and the network identifies the network.
+
+12:07.450 --> 12:14.610
+So an example here is I have out of the four bytes which is 32 bits, I want 24 bits for the network
+
+12:14.650 --> 12:16.050
+and eight bit for the host.
+
+12:16.050 --> 12:17.610
+And here's the trick here.
+
+12:18.770 --> 12:20.090
+We always go back to the link.
+
+12:20.090 --> 12:21.930
+We still need the link addresses.
+
+12:21.930 --> 12:23.130
+We still need the Mac address.
+
+12:23.130 --> 12:24.890
+We cannot do anything without those.
+
+12:24.890 --> 12:32.810
+What we do is all hosts within the same network must use link addresses.
+
+12:34.010 --> 12:39.010
+All the hosts that are within the same network, you have to communicate with the link address.
+
+12:39.010 --> 12:46.650
+And that's the trick here if you are in this in my network, if I have two devices within the same network,
+
+12:46.930 --> 12:51.330
+then you can directly talk to them and directly means this.
+
+12:51.690 --> 12:53.170
+This is what directly mean.
+
+12:53.210 --> 12:57.650
+You mean go use the Mac address to communicate?
+
+12:57.650 --> 12:59.450
+Well, we have our first problem now.
+
+12:59.970 --> 13:06.290
+Well I have now the IP address and I want to talk to this machine, but I don't have the Mac.
+
+13:07.170 --> 13:07.650
+Right.
+
+13:08.490 --> 13:10.650
+I don't have the address the link address.
+
+13:10.890 --> 13:13.810
+So we need some sort of a translation layer going on.
+
+13:14.650 --> 13:18.050
+You will find this pattern everywhere in software engineering.
+
+13:18.890 --> 13:24.250
+I know the domain name, the DNS, but I don't know the IP.
+
+13:24.250 --> 13:26.570
+So we translate DNS to an IP.
+
+13:27.010 --> 13:29.170
+I know the IP but I don't know the Mac.
+
+13:29.690 --> 13:32.890
+So we translate the IP to a mac right.
+
+13:33.970 --> 13:41.690
+And there might be other higher level translations you'll find you're always translating from one name
+
+13:41.690 --> 13:43.450
+system to another name system.
+
+13:43.730 --> 13:44.810
+It's always like that.
+
+13:45.450 --> 13:50.970
+Okay, so how do I check if an IP is in my network?
+
+13:50.970 --> 13:52.570
+Because we asked this question before.
+
+13:52.610 --> 13:52.810
+Right.
+
+13:52.810 --> 13:53.050
+Okay.
+
+13:53.050 --> 13:55.330
+I have one IP and this is another IP.
+
+13:55.370 --> 13:58.050
+How do I know if this IP is in my network.
+
+13:58.410 --> 14:04.970
+Well we need what we call the subnet mask or the network mask.
+
+14:05.210 --> 14:11.650
+This tells us that hey this is the mask you need to apply, which is nothing but a bitwise operation
+
+14:11.930 --> 14:13.970
+that you apply to an IP address.
+
+14:13.970 --> 14:22.530
+And it will tell you it will just be basically zero out the host part, and it will give you the actual
+
+14:22.530 --> 14:23.210
+network.
+
+14:23.730 --> 14:32.530
+An example is 192168.1.4, is in the network of 192.168.1. slash 24.
+
+14:32.570 --> 14:40.850
+Slash 24 means the first 24 bit is the network or you can use this format.
+
+14:40.890 --> 14:45.410
+2552255225520 which is 11111111.
+
+14:45.450 --> 14:49.210
+And the last byte really is all zeros.
+
+14:49.370 --> 14:52.850
+So what you do is just you and them together and you get this.
+
+14:53.530 --> 14:57.050
+So question is this and this.
+
+14:58.410 --> 15:05.210
+Uh, if you do ten 006 and 255255255, you get this network.
+
+15:05.210 --> 15:06.970
+This is not the same network.
+
+15:07.250 --> 15:07.490
+Right.
+
+15:07.530 --> 15:14.410
+So you can do this check quickly on any IP address to find out if they are in your network or not.
+
+15:15.010 --> 15:19.490
+But you need the subnet mask which tells you exactly how to find it.
+
+15:19.530 --> 15:21.490
+How do you know what your network is?
+
+15:21.530 --> 15:22.330
+Essentially right?
+
+15:22.370 --> 15:23.250
+That's the trick.
+
+15:24.090 --> 15:26.370
+Okay, so here's an example.
+
+15:26.450 --> 15:29.330
+We have ten 002 ten 006.
+
+15:29.330 --> 15:32.530
+And we have still I'm not introducing a router yet.
+
+15:32.770 --> 15:36.160
+We'll talk to that ten 006.
+
+15:36.200 --> 15:37.120
+Ten 002.
+
+15:37.320 --> 15:38.600
+This and this.
+
+15:38.760 --> 15:44.840
+So knowing these network, these are in the same network because I know that this is slash 24.
+
+15:44.880 --> 15:45.600
+Slash 24.
+
+15:45.600 --> 15:47.440
+So I can talk to to them.
+
+15:48.000 --> 15:51.080
+But these guys they are not in my network.
+
+15:51.080 --> 15:54.120
+So I cannot talk to them using link directly.
+
+15:54.120 --> 16:03.080
+So now that we have an IP address, assuming I am in my the IP, I want to talk to like this guy.
+
+16:03.760 --> 16:05.080
+I want to talk to this.
+
+16:06.720 --> 16:08.840
+These two machines want to talk to each other.
+
+16:09.600 --> 16:14.680
+Well, now you only have the IP address as a form of communication.
+
+16:14.920 --> 16:21.480
+You no longer need to memorize Mac addresses which are longer, long, even more random.
+
+16:21.480 --> 16:23.040
+You have IP addresses.
+
+16:23.040 --> 16:32.360
+So to communicate with IP addresses, well, you still need the Mac because now you need to translate
+
+16:32.360 --> 16:35.280
+the IP back to a mac address.
+
+16:35.560 --> 16:37.080
+Well, how do you do that?
+
+16:37.120 --> 16:47.480
+Meet ARP Address Resolution Protocol, which converts the IP address to a Mac address.
+
+16:47.520 --> 16:47.920
+How?
+
+16:49.280 --> 16:49.960
+Nothing magic.
+
+16:49.960 --> 16:50.360
+Here.
+
+16:50.360 --> 16:54.000
+We just ask another layer two question.
+
+16:54.040 --> 16:56.600
+Say, hey, broadcast.
+
+16:57.280 --> 17:08.520
+If it's actually Fdfdfdfdfdfdff six or more 12 FS, you just send send it say hey, who has this IP
+
+17:08.520 --> 17:08.880
+address?
+
+17:08.880 --> 17:10.760
+192168.115.
+
+17:11.080 --> 17:13.240
+It will the the switch will get sent.
+
+17:13.400 --> 17:13.720
+All right.
+
+17:13.760 --> 17:15.800
+Since this is a broadcast I'm going to send it here.
+
+17:15.800 --> 17:17.840
+I'm going to send it here I'm going to send it here.
+
+17:18.240 --> 17:19.320
+Go send it everywhere.
+
+17:19.440 --> 17:20.600
+You just send it everywhere.
+
+17:21.560 --> 17:25.000
+And whoever has it will say, oh, that's actually me.
+
+17:25.400 --> 17:31.680
+So what the the device checks is, well, I received a broadcast message, so I need to read it.
+
+17:32.040 --> 17:33.400
+So you read them?
+
+17:33.400 --> 17:34.360
+Because it's a broadcast.
+
+17:34.360 --> 17:35.880
+Everybody should read it.
+
+17:36.280 --> 17:37.920
+It literally means for everybody.
+
+17:38.640 --> 17:40.840
+You get this and you see an IP address.
+
+17:41.520 --> 17:44.680
+So this IP address, hey, it's actually me.
+
+17:45.000 --> 17:46.160
+That is my IP address.
+
+17:46.840 --> 17:47.400
+It's five.
+
+17:47.800 --> 17:54.480
+So what you do is you reply back and say, hey, by the way, 192168.11.5 is actually me, right?
+
+17:54.520 --> 17:55.760
+And this is my Mac.
+
+17:57.240 --> 17:59.640
+And then boom, you reply back.
+
+18:00.160 --> 18:02.520
+And now you just link.
+
+18:02.560 --> 18:04.360
+You update some sort of a table.
+
+18:04.960 --> 18:06.840
+Whoever asked this, which is this guy?
+
+18:07.880 --> 18:11.680
+Create update some sort of a table says all right, all right.
+
+18:11.680 --> 18:12.000
+Got it.
+
+18:12.000 --> 18:14.280
+19216815 is actually be.
+
+18:14.280 --> 18:23.400
+Now you just turn around and then send that message the first like like we talked about in the first
+
+18:23.400 --> 18:26.960
+slide knowing the Mac address you just send a message.
+
+18:27.200 --> 18:29.640
+Now I want you to think about this as I'm talking.
+
+18:29.640 --> 18:32.560
+I'm just moving from the bottom up, right.
+
+18:32.600 --> 18:33.680
+Building slowly.
+
+18:33.880 --> 18:40.160
+Like think of how a back end application responds to a front end, or how a front end sends a Get request,
+
+18:40.160 --> 18:40.920
+for example.
+
+18:40.960 --> 18:48.120
+Now, if you go to any of your Linux machines, if you do IP neighbor show, you can see the actual
+
+18:48.480 --> 18:51.360
+ARP table which links I say this is the.
+
+18:51.400 --> 18:54.400
+This IP address is from this.
+
+18:54.400 --> 18:56.000
+Net network address.
+
+18:56.000 --> 18:58.880
+Network interface has this Mac address.
+
+18:58.880 --> 19:02.480
+Here's one note that is very important to understand with ARP.
+
+19:02.960 --> 19:05.720
+ARP only works on the same subnet.
+
+19:05.720 --> 19:08.000
+It does not work on a different subnet.
+
+19:08.160 --> 19:13.440
+Like you can try to ask like hey 192168.14.
+
+19:14.120 --> 19:21.920
+If it tries to ask for ten 002 Mac, it will not even send the packet because that that's silly.
+
+19:21.960 --> 19:24.440
+It's just like, hey, this is not in my subnet.
+
+19:24.440 --> 19:25.760
+I'm not going to ask it.
+
+19:25.800 --> 19:28.480
+Now this is how ARP has been designed.
+
+19:28.480 --> 19:32.750
+So the implementation of ARB in the client side.
+
+19:32.750 --> 19:34.070
+Does that check?
+
+19:34.110 --> 19:37.510
+And it will never send the ARP request to begin with, right?
+
+19:37.670 --> 19:42.270
+So now this begs the question how do we communicate with different networks?
+
+19:43.110 --> 19:44.470
+In this particular case, right.
+
+19:44.510 --> 19:51.470
+If I can't talk to someone outside of my network directly using Lync, then how do I talk to it?
+
+19:51.750 --> 19:53.870
+Well, meet the gateway.
+
+19:53.910 --> 19:55.030
+Meet the gateway.
+
+19:55.430 --> 20:03.550
+You always need a gateway as a proxy between two networks to proxy you to another network.
+
+20:03.750 --> 20:12.350
+So if you have any other network, you need this router, this gateway to route your packets to different
+
+20:12.350 --> 20:12.950
+network.
+
+20:13.390 --> 20:18.710
+This is exactly how the entire internet works.
+
+20:18.710 --> 20:22.190
+The entire internet just is an expansion of this.
+
+20:23.150 --> 20:30.070
+But as just like slowly between different networks, Is just this.
+
+20:30.070 --> 20:32.030
+Just take it and zoom it out.
+
+20:32.430 --> 20:35.470
+That is the entire internet.
+
+20:35.910 --> 20:36.990
+How it's based on.
+
+20:37.150 --> 20:38.910
+It's just the concept of a gateway.
+
+20:39.310 --> 20:41.990
+You to talk to out something outside me.
+
+20:42.750 --> 20:45.310
+I send it to the gateway, right?
+
+20:45.310 --> 20:47.230
+Or I send it to a gateway.
+
+20:47.230 --> 20:49.030
+It doesn't have to be one gateway.
+
+20:49.030 --> 20:51.310
+And we're going to talk about this in a minute as well.
+
+20:51.750 --> 20:52.270
+Okay.
+
+20:52.390 --> 20:57.070
+So that's very important to understand you guys.
+
+20:57.110 --> 20:58.030
+Very critical.
+
+20:58.030 --> 21:01.470
+So now the gateway has many names.
+
+21:01.470 --> 21:05.670
+Gateway sometimes it's called next hop sometimes called the router.
+
+21:06.350 --> 21:15.870
+But essentially it's it's if you don't know where this packet goes should go it's outside your network.
+
+21:17.070 --> 21:18.630
+Then you just send it to the gateway.
+
+21:18.830 --> 21:23.470
+And your gateway must be in your network.
+
+21:23.710 --> 21:24.870
+It must be.
+
+21:24.910 --> 21:27.790
+It has to have a link Direct link to the gateway.
+
+21:28.030 --> 21:28.470
+Right.
+
+21:28.510 --> 21:32.950
+And this is a classic example where you have a router between two networks.
+
+21:32.990 --> 21:33.430
+Right.
+
+21:33.470 --> 21:42.310
+So there is some sort of a let's say you have a I don't know, this router happen to have two routers,
+
+21:42.310 --> 21:43.390
+just another machine.
+
+21:43.430 --> 21:43.670
+Right.
+
+21:43.710 --> 21:46.070
+It's just not really magic right.
+
+21:46.150 --> 21:48.030
+It doesn't have to be look like a router.
+
+21:48.030 --> 21:55.030
+You can have a machine and make it a router and literally have two network cards, one configured to
+
+21:55.070 --> 21:59.950
+be this IP address and another one that has another IP address, another network.
+
+22:00.510 --> 22:12.070
+So this and because each network is assigned a mac address, that is how we uniquely identifies the
+
+22:12.070 --> 22:14.830
+link address of every single machine.
+
+22:15.190 --> 22:15.510
+Right.
+
+22:15.550 --> 22:21.110
+So in this particular case the router has two link addresses z and x.
+
+22:21.110 --> 22:24.270
+And the gateway belongs to both network in this particular case.
+
+22:25.270 --> 22:28.950
+And the next thing is, you might.
+
+22:28.950 --> 22:30.390
+You might say, Hussein, you said that.
+
+22:30.390 --> 22:30.910
+Okay.
+
+22:30.950 --> 22:36.190
+If I don't know if this machine is not in my network, then I have to send it to the gateway.
+
+22:36.230 --> 22:37.550
+How do I know my gateway?
+
+22:39.350 --> 22:40.950
+This is also configuration.
+
+22:41.670 --> 22:43.230
+This is part of the.
+
+22:43.310 --> 22:46.270
+You can have it hard coded as part of your configuration.
+
+22:46.270 --> 22:53.190
+Or you can have another protocol that configure you something called DHCP, not in the topic of today's
+
+22:53.550 --> 22:57.750
+presentation, but assume you just know.
+
+22:58.110 --> 23:02.870
+You can look at your network and you'll find that there is always a default gateway.
+
+23:03.670 --> 23:06.350
+So in this particular case this is my gateway.
+
+23:06.670 --> 23:07.710
+This machine is called a.
+
+23:07.710 --> 23:09.590
+This is the IP address 1.4.
+
+23:09.710 --> 23:11.590
+This machine is called B 1.5.
+
+23:11.590 --> 23:12.630
+And this is the gateway.
+
+23:12.910 --> 23:13.990
+There is a switch here.
+
+23:14.670 --> 23:18.390
+And this this router has this IP address.
+
+23:19.110 --> 23:21.830
+And this router also has another IP address.
+
+23:21.830 --> 23:24.500
+Another network ten 001Z.
+
+23:25.180 --> 23:30.140
+And this machine default gateway is Z ten 001.
+
+23:30.220 --> 23:32.140
+This machine is ten 001.
+
+23:32.300 --> 23:32.820
+And see.
+
+23:32.820 --> 23:38.460
+So let's just take an example where everybody just identifies each other.
+
+23:39.580 --> 23:41.140
+Everybody is connected to the network.
+
+23:41.180 --> 23:43.940
+And then just like hey, it's me.
+
+23:44.580 --> 23:48.820
+And when we do that the same logic still applies.
+
+23:48.900 --> 23:54.300
+Hey this is a so port one on the switch right.
+
+23:54.500 --> 23:56.860
+This is a different switch than this right.
+
+23:56.900 --> 24:02.060
+So this machine goes and says, all right this is a so port one is now marked as a.
+
+24:02.580 --> 24:04.900
+This is B port two is marked as B.
+
+24:05.580 --> 24:08.020
+And now router also does the same thing right.
+
+24:08.020 --> 24:09.540
+Because it's just another machine.
+
+24:10.580 --> 24:13.060
+This is X from this side.
+
+24:13.060 --> 24:17.260
+Remember now port three is x from the other side.
+
+24:17.860 --> 24:23.780
+The router also broadcasts its presence on the other network.
+
+24:23.820 --> 24:30.780
+Think of it like you almost like have two network cards and two Ethernet plug in on each, right?
+
+24:30.820 --> 24:34.860
+One one Ethernet are plugged in on each router.
+
+24:34.900 --> 24:35.180
+Okay.
+
+24:35.180 --> 24:39.020
+So now the other hand Z broadcast itself.
+
+24:39.060 --> 24:41.260
+Now port one has Z right.
+
+24:41.460 --> 24:42.420
+This is a different switch.
+
+24:42.460 --> 24:47.820
+Of course there's port different port one and D is this guy and Z is this guy.
+
+24:48.100 --> 24:48.740
+All right.
+
+24:48.860 --> 24:50.100
+Everybody's connected.
+
+24:50.260 --> 24:50.820
+Good.
+
+24:51.020 --> 24:52.220
+Let's take some examples.
+
+24:52.460 --> 24:57.020
+Now let's take an example where we're talking about link networking example.
+
+24:57.060 --> 24:57.420
+Right.
+
+24:58.060 --> 25:03.820
+So 192.168.1.4 wants to talk to 192.168.1.5.
+
+25:04.020 --> 25:06.180
+It only knows the IP address.
+
+25:06.700 --> 25:08.300
+And how does it know the IP address.
+
+25:08.340 --> 25:12.860
+Well someone in the code wrote hey I want to talk to 192168115.
+
+25:12.900 --> 25:19.900
+Well, how did or maybe you did a DNS and you found the IP address which is a host name hostname Him
+
+25:20.260 --> 25:24.780
+of the machine always translates to one or more IP addresses.
+
+25:24.780 --> 25:28.820
+This is not a DNS topic, but it's a different beast DNS.
+
+25:30.620 --> 25:31.700
+Well, what do we do?
+
+25:31.980 --> 25:36.700
+Well, is is 1.5 is the same as my network?
+
+25:36.700 --> 25:38.780
+Well let's check what's my subnet mask.
+
+25:38.780 --> 25:40.260
+Oh this is my subnet mask okay.
+
+25:40.260 --> 25:41.260
+Let's apply it.
+
+25:42.060 --> 25:47.460
+And and I get 192168.1.0 which is the same network as me.
+
+25:47.460 --> 25:54.100
+Because if I apply this one four on the same network, I get the same as I same network.
+
+25:54.100 --> 25:55.820
+So they are in the same network.
+
+25:55.860 --> 26:02.380
+And if this is the same network, I'm allowed to ARP, I am allowed to ARP, and I'm allowed to talk
+
+26:02.380 --> 26:05.060
+directly to it because it's in my same subnet.
+
+26:06.140 --> 26:09.700
+So we do we talk directly and then what do we do.
+
+26:10.420 --> 26:14.100
+We just ask for them, hey, what's my Mac?
+
+26:14.100 --> 26:17.460
+We do an ARP and we send a broadcast says, hey, who has that one?
+
+26:17.460 --> 26:19.460
+1.5 because I know I am.
+
+26:19.500 --> 26:23.500
+I'm supposed to talk to it directly, but I have no idea what the Mac address is.
+
+26:23.500 --> 26:28.540
+So we send this, uh, the router gets it right because again, we don't know.
+
+26:28.820 --> 26:29.060
+Right.
+
+26:29.300 --> 26:30.220
+It's a broadcast.
+
+26:30.220 --> 26:35.780
+So we send it to this, the router gets it, the router will say, no, that's not me.
+
+26:35.780 --> 26:37.540
+The switch also sends it to another port.
+
+26:37.540 --> 26:39.420
+It says this gets it.
+
+26:39.420 --> 26:41.140
+It says oh yeah this is actually me.
+
+26:41.140 --> 26:42.140
+Let me reply back.
+
+26:42.300 --> 26:42.580
+Now.
+
+26:42.580 --> 26:50.860
+We reply back 192115 replies and says, hey, it's actually be the switch gets it.
+
+26:51.260 --> 26:54.780
+The destination is where a because whoever sent it before right.
+
+26:54.820 --> 26:59.900
+Whoever sent it was a so it just flips it and says, all right, send this to a please.
+
+27:00.100 --> 27:02.980
+So the switch knows that oh A is actually on P1.
+
+27:03.540 --> 27:08.340
+So it only sends it on P1 on the port P1.
+
+27:08.780 --> 27:11.020
+So why did it send it to this.
+
+27:11.380 --> 27:13.180
+Well because the switch is smart.
+
+27:13.220 --> 27:13.900
+It knows that.
+
+27:13.900 --> 27:15.860
+Hey you want to go to A?
+
+27:15.860 --> 27:18.220
+Only A is on this guy on this porch.
+
+27:18.260 --> 27:24.340
+I'm only going to send it here, and then we just resume the communication.
+
+27:24.380 --> 27:25.900
+What is the communication here?
+
+27:25.940 --> 27:27.100
+Well, here's what we do.
+
+27:27.300 --> 27:32.580
+Well, the frame we talked about the concept of the frame, the layer two frame, which has the destination
+
+27:32.580 --> 27:33.020
+Mac.
+
+27:33.500 --> 27:37.980
+Now that I know it's B, the source Mac, which is me.
+
+27:39.020 --> 27:47.340
+Now, what we put in it is, is another layer three packet, which we didn't talk about before, which
+
+27:47.340 --> 27:54.060
+is called the IP packet, which has a different destination address and a different source address.
+
+27:54.060 --> 27:56.980
+The source address in this case is the IP address.
+
+27:56.980 --> 28:00.740
+And the destination address is the destination IP address.
+
+28:00.820 --> 28:09.900
+So I want to go to 192168.1.5 and 192168.114, and that in itself has data in it.
+
+28:09.900 --> 28:15.660
+And it becomes like this matryoshka doll, the Russian doll thing, if you if you've ever seen it before.
+
+28:15.730 --> 28:17.210
+So like a doll inside.
+
+28:17.250 --> 28:20.810
+Nested inside another doll inside another inside another doll.
+
+28:20.850 --> 28:27.770
+So this IP packet you put your data inside which like in this case of a TCP, you put a different TCP
+
+28:27.810 --> 28:34.650
+segment inside this IP packet which has a destination port and a source port, which then you put your
+
+28:34.690 --> 28:41.370
+HTTP protocol or your other SSH protocol or any other on top of TCP, right.
+
+28:41.410 --> 28:46.210
+So it's just like layers on top of layers, but the IP is only the only thing you need to understand.
+
+28:46.370 --> 28:50.170
+Anything on top of that is just data quote unquote data.
+
+28:51.090 --> 28:57.450
+So now we just throw this and say, all right, go there, send it to this destination.
+
+28:57.770 --> 28:59.410
+Again, we're looking at the frame.
+
+28:59.410 --> 29:03.610
+Now forget that we have the data IP here.
+
+29:03.970 --> 29:06.450
+We send it to be this which is smart.
+
+29:06.490 --> 29:09.770
+It says all right you're going to be I'm only going to send it to port two.
+
+29:09.810 --> 29:10.290
+Good.
+
+29:11.490 --> 29:14.490
+Be gets it and says all right this is for me.
+
+29:14.850 --> 29:17.250
+And I'm going to unpack the frame.
+
+29:17.250 --> 29:18.890
+And I found an IP packet.
+
+29:19.770 --> 29:25.930
+And this IP packet is actually in fact me 192168.1.5.
+
+29:25.970 --> 29:26.690
+That is me.
+
+29:27.250 --> 29:28.690
+So it will just unpack it.
+
+29:28.690 --> 29:36.170
+And whatever the instruction has in the IP packet, whether it's TCP or UDP or something else, it will
+
+29:36.170 --> 29:37.610
+just deliver it.
+
+29:37.610 --> 29:39.730
+And that's a whole different discussion.
+
+29:40.330 --> 29:43.010
+I talk about that in detail in my operating system course.
+
+29:43.050 --> 29:47.330
+Like the kernel gets involved here and all sorts of things happen, right?
+
+29:47.370 --> 29:49.770
+That is if you want connections.
+
+29:49.810 --> 29:56.610
+And we have, you know, TCP stack, TCP IP stack kicks in and does a lot of stuff.
+
+29:56.690 --> 29:58.490
+We're talking about just the routing aspect.
+
+29:58.530 --> 29:59.810
+We and we achieved it.
+
+29:59.850 --> 30:00.770
+We got it.
+
+30:01.850 --> 30:09.210
+Now let's talk about inter network communication or inter network internet is just the whole thing.
+
+30:09.250 --> 30:13.330
+Inter network is like I want to talk about two machines.
+
+30:13.330 --> 30:14.650
+Two different machines.
+
+30:14.650 --> 30:16.050
+How do I do that?
+
+30:16.610 --> 30:20.330
+So 192168.1.5 I want to talk to ten 0002.
+
+30:20.610 --> 30:25.210
+Well, I can do ARP because these are not in the same network.
+
+30:25.930 --> 30:27.170
+There's no direct link.
+
+30:28.210 --> 30:29.490
+There is no link directly.
+
+30:29.530 --> 30:34.410
+I'm not allowed to because technically it's not in the same network.
+
+30:34.930 --> 30:38.210
+And that's the that's the rule that we made, guys.
+
+30:38.610 --> 30:44.650
+We made a rule that if you want to ARP and you want to use direct link, i.e. Mac address, you have
+
+30:44.650 --> 30:45.970
+to be in the same network.
+
+30:45.970 --> 30:46.810
+That's the rule.
+
+30:47.890 --> 30:48.690
+Who made the rule?
+
+30:48.730 --> 30:50.730
+Whoever designed the ARP, can you break it?
+
+30:50.770 --> 30:52.370
+You go build your own stuff.
+
+30:53.010 --> 30:54.570
+You don't have to use any of this stuff.
+
+30:54.570 --> 31:01.090
+By the way, guys always have this open minded when you design stuff, when you've used this is what
+
+31:01.090 --> 31:02.490
+what people built.
+
+31:02.530 --> 31:03.850
+Go and build your own thing.
+
+31:03.850 --> 31:10.290
+If you don't trust in any of the build, if you're building like something local, you don't even need
+
+31:10.290 --> 31:11.250
+to use IP.
+
+31:11.770 --> 31:15.570
+Just use the Mac addresses and build your own frame.
+
+31:15.570 --> 31:21.490
+You probably build a much more efficient and networking solution that way.
+
+31:21.930 --> 31:22.370
+Right.
+
+31:22.410 --> 31:23.370
+So keep that in mind.
+
+31:23.810 --> 31:25.850
+This is this is what we're doing today.
+
+31:25.850 --> 31:29.410
+You can trash all of this scrap and build your own.
+
+31:29.730 --> 31:30.130
+Right.
+
+31:30.450 --> 31:33.250
+Always have that as a backup.
+
+31:33.290 --> 31:33.690
+Okay.
+
+31:35.010 --> 31:35.530
+Okay.
+
+31:35.810 --> 31:39.890
+So now not on my network, which is true, right?
+
+31:40.410 --> 31:42.410
+This thing is not the same network.
+
+31:42.530 --> 31:43.410
+So what do I do?
+
+31:44.770 --> 31:47.370
+We're going to talk about the concept of default gateway.
+
+31:47.490 --> 31:49.090
+Default route.
+
+31:51.210 --> 31:55.050
+If you don't know where to send this, send it to the default gateway.
+
+31:56.170 --> 32:02.130
+And we're going to learn later that are multiple routes not necessarily default but the default here
+
+32:02.130 --> 32:06.450
+says, hey, if you don't know what to do, send it to this 1.1.1.
+
+32:06.610 --> 32:08.130
+That's your default gateway.
+
+32:08.290 --> 32:10.840
+And if there is no nothing configured at default gateway.
+
+32:10.880 --> 32:11.560
+You're stuck.
+
+32:12.360 --> 32:13.080
+But yeah, this.
+
+32:13.360 --> 32:14.320
+This guy will know.
+
+32:15.160 --> 32:15.960
+Might know.
+
+32:17.000 --> 32:17.520
+He will know.
+
+32:17.560 --> 32:18.280
+Might know.
+
+32:19.040 --> 32:19.560
+Right?
+
+32:19.600 --> 32:21.640
+So, hey, go ahead and do that.
+
+32:21.840 --> 32:22.240
+So.
+
+32:22.360 --> 32:24.280
+Well, well, how do we do that though?
+
+32:24.320 --> 32:26.280
+Same exact thing.
+
+32:26.280 --> 32:30.920
+Well, because I don't know ten 002.
+
+32:30.960 --> 32:32.400
+Yeah, I don't know that.
+
+32:32.640 --> 32:37.600
+But I can talk to 11921011.1.
+
+32:37.600 --> 32:39.960
+I'm supposed to talk to this, but who is this?
+
+32:40.240 --> 32:43.000
+Yes, he is in the same network as me.
+
+32:43.040 --> 32:44.440
+That means I can ARP.
+
+32:45.160 --> 32:48.560
+That means I need to ARP to talk to the router.
+
+32:48.560 --> 32:52.400
+So even to talk to the router itself, that's also an ARP.
+
+32:52.720 --> 32:54.920
+And this is where attacks can happen.
+
+32:55.120 --> 32:56.960
+Like ARP poisoning attacks can happen.
+
+32:56.960 --> 32:59.000
+Someone can pretend to be the router.
+
+32:59.520 --> 32:59.880
+Right.
+
+33:00.040 --> 33:02.920
+So what we do is like all right who has .1.1.
+
+33:02.960 --> 33:05.120
+Same story right.
+
+33:05.160 --> 33:06.600
+The router gets it.
+
+33:06.640 --> 33:07.800
+This guy gets it.
+
+33:07.920 --> 33:09.600
+he says, no, that's not me.
+
+33:09.600 --> 33:14.480
+And if there's a hacker, he will say, actually, yeah, wink wink, this is actually me.
+
+33:14.640 --> 33:18.360
+And it will send the Mac address pretending to be the router.
+
+33:19.000 --> 33:19.440
+Right.
+
+33:19.480 --> 33:24.280
+And then you essentially you would be talking to the to the wrong router.
+
+33:24.840 --> 33:27.680
+And that's how ARP poisoning happens if you're interested.
+
+33:28.160 --> 33:31.240
+But yeah I know the gateway.
+
+33:31.280 --> 33:34.680
+Now I know the IP address of the gateway.
+
+33:34.960 --> 33:37.560
+So the Mac address of the gateway it's X right.
+
+33:38.040 --> 33:45.320
+So now we answered the gateway answers that hey .1.1 is actually x.
+
+33:46.200 --> 33:49.880
+And then we just were ready to send the actual data.
+
+33:49.880 --> 33:55.400
+So what we do now is we create a frame destined to X which is my gateway.
+
+33:55.560 --> 34:00.000
+But the IP packet is a different address.
+
+34:00.040 --> 34:02.360
+And boy this is the whole power here.
+
+34:03.240 --> 34:12.720
+The Mac address changes but the IP remains, you go to zero two, which is where we want to go, and
+
+34:12.720 --> 34:14.600
+you say, hey, I'm .14.
+
+34:14.800 --> 34:19.920
+I just shorten it a little bit because it's very hard to type in.
+
+34:19.920 --> 34:25.440
+192.168.1.4 and you say say go, go go, go.
+
+34:25.920 --> 34:28.840
+So because we're going to X, the the switch is smart.
+
+34:28.840 --> 34:31.960
+It will send it only on port three and it will get it.
+
+34:32.320 --> 34:33.840
+The router will get it and it says all right.
+
+34:33.840 --> 34:35.040
+Oh that is actually me.
+
+34:35.680 --> 34:40.040
+From a layer two perspective, this frame is destined to me as a router.
+
+34:40.040 --> 34:40.880
+As a machine.
+
+34:41.400 --> 34:42.440
+Router is just a machine.
+
+34:42.480 --> 34:42.840
+Right.
+
+34:43.000 --> 34:43.960
+And it's just all right.
+
+34:44.560 --> 34:47.040
+It's it's all excited that our gateway is all excited.
+
+34:47.080 --> 34:48.880
+Says, oh I got something.
+
+34:48.880 --> 34:52.160
+So it cracks open the frame and it opens it.
+
+34:52.160 --> 34:53.640
+Um, the doll inside.
+
+34:54.160 --> 34:55.560
+That's not for you, my friend.
+
+34:56.400 --> 34:57.640
+This is not for you.
+
+34:57.800 --> 35:00.800
+This is for zero 210 002 is like what?
+
+35:01.080 --> 35:04.040
+That's not I don't have any IP address ten 002.
+
+35:05.600 --> 35:09.000
+But I'm a router.
+
+35:09.480 --> 35:16.360
+I'm a Linux machine that has enabled the bit that is called IP forwarding, right?
+
+35:16.400 --> 35:19.760
+There is literally a bit called IP forward equal true.
+
+35:19.800 --> 35:22.800
+If you set that to true, your machine becomes a router.
+
+35:23.680 --> 35:30.720
+And it will just say instead of checking your local interfaces for the IP address of that you receive,
+
+35:30.880 --> 35:38.800
+you will actually be configured to repeat the same IP packet into all your network interfaces or or
+
+35:38.840 --> 35:41.880
+the network interfaces that matches what you have.
+
+35:42.280 --> 35:43.520
+And that's what the router does.
+
+35:43.560 --> 35:48.320
+So what you're going to do this is this frame is for me x.
+
+35:48.320 --> 35:50.320
+But the IP packet is not for me.
+
+35:50.840 --> 35:51.800
+But I am a router.
+
+35:51.840 --> 35:56.160
+That means I need to forward this which you can enable if you want on any machine.
+
+35:57.200 --> 35:59.360
+And that says oh ten 002.
+
+35:59.400 --> 36:00.160
+What is this?
+
+36:00.200 --> 36:04.910
+Well, I have another network that happened to be in the same network as the thing that you're trying
+
+36:04.910 --> 36:05.350
+to go.
+
+36:05.710 --> 36:07.870
+Ten 002 is my ten 001.
+
+36:07.870 --> 36:09.750
+It's the same network, right?
+
+36:09.790 --> 36:10.990
+So the router does that.
+
+36:11.190 --> 36:11.750
+All right.
+
+36:11.790 --> 36:17.630
+The best network to send it to is this network is this Ethernet cable.
+
+36:17.670 --> 36:18.790
+Is this Wi-Fi.
+
+36:19.070 --> 36:22.430
+And I'm just like all right let me do the magic here.
+
+36:22.430 --> 36:28.670
+So it does forwards the same IP packet on the other hand.
+
+36:28.670 --> 36:29.550
+But wait a minute.
+
+36:29.590 --> 36:33.710
+As we said in the normal situation this this this is just dropped right.
+
+36:33.750 --> 36:34.390
+Nothing.
+
+36:34.430 --> 36:35.790
+There is nothing there for me.
+
+36:35.830 --> 36:36.390
+Right.
+
+36:36.430 --> 36:41.150
+But the host kernel has enabled IP forwarding in this particular case for this router.
+
+36:41.510 --> 36:48.390
+So you receive the packet and you will just forward it on the other interface that happens to match
+
+36:48.670 --> 36:50.630
+the IP address that you're going to.
+
+36:50.670 --> 36:51.990
+And this is all right.
+
+36:52.190 --> 36:55.190
+But we cannot just forward an IP packet naked.
+
+36:55.630 --> 36:57.110
+That doesn't make any sense.
+
+36:57.110 --> 36:59.510
+We need to what do we do.
+
+36:59.670 --> 37:02.550
+We need to we need to go to somewhere.
+
+37:02.550 --> 37:03.990
+We need a mac address.
+
+37:04.390 --> 37:06.950
+What's the Mac address of ten 002?
+
+37:07.830 --> 37:09.750
+I can ask this question.
+
+37:10.030 --> 37:14.270
+The router can ask this ARP question.
+
+37:14.270 --> 37:14.750
+Why?
+
+37:14.950 --> 37:21.430
+Because the router is does belong to the same network as the machine.
+
+37:21.470 --> 37:24.070
+As the machine we're trying to connect to ten 002.
+
+37:24.110 --> 37:25.150
+Who has this ARP.
+
+37:25.150 --> 37:26.670
+And we just do the same thing.
+
+37:26.910 --> 37:28.630
+Same exact dance.
+
+37:28.910 --> 37:31.470
+Do an ARP everyone.
+
+37:31.510 --> 37:33.910
+Hey who has ten 002 everyone?
+
+37:34.670 --> 37:38.990
+The router probably has the value cached, but let's let's entertain that.
+
+37:38.990 --> 37:44.550
+So the router now will set its own Mac address which is Z not x.
+
+37:44.590 --> 37:46.910
+That's a different Mac different network.
+
+37:46.910 --> 37:47.390
+Right.
+
+37:47.430 --> 37:50.390
+So it says all right whoever have it please reply to me.
+
+37:50.430 --> 37:51.790
+Of course this guy gets it.
+
+37:51.790 --> 37:54.990
+This guy gets it and will reply back and says all right it's actually D.
+
+37:55.510 --> 37:58.110
+Now we know that ten 002 is actually D.
+
+37:58.350 --> 38:00.270
+And we reply and we go, Whoa!
+
+38:00.310 --> 38:01.510
+Let's go, let's go, let's go.
+
+38:01.710 --> 38:03.790
+This is continue.
+
+38:04.350 --> 38:12.550
+Now I can encapsulate this IP packet that this guy sent, and I put the destination as D because I know
+
+38:12.550 --> 38:14.270
+and the source as Z.
+
+38:15.070 --> 38:15.470
+Okay.
+
+38:16.070 --> 38:20.750
+And I just send it and it will just arrive.
+
+38:21.390 --> 38:26.510
+And that's how we do routing across networks.
+
+38:27.030 --> 38:29.590
+We kept the source IP address in this particular case.
+
+38:30.350 --> 38:32.590
+And I want you to be careful with this.
+
+38:33.310 --> 38:36.230
+The IP address the source we kept, we didn't change it.
+
+38:37.510 --> 38:39.790
+There are some cases where you absolutely need to change it.
+
+38:39.790 --> 38:47.190
+Like if you're going to the internet you cannot send like my IP address say ten 002 right in my laptop.
+
+38:47.190 --> 38:48.510
+And I want to talk to Google.
+
+38:48.510 --> 38:54.990
+You cannot just the router cannot just send the source IP and keep it on the internet as ten 002 because
+
+38:55.030 --> 38:57.310
+Google have no idea what ten 002.
+
+38:57.350 --> 38:58.950
+It's a private IP address.
+
+38:59.270 --> 38:59.590
+Right?
+
+38:59.630 --> 39:04.430
+And we don't talk about it, but there are like sets of known, well known private IP addresses.
+
+39:04.550 --> 39:09.510
+192168. x dot x ten zero zero 24.
+
+39:09.550 --> 39:15.950
+That's also private and also 172. 168I think something like that.
+
+39:15.990 --> 39:17.430
+These are private addresses.
+
+39:17.430 --> 39:24.310
+So in this particular case the network router needs to change the source IP.
+
+39:24.310 --> 39:26.110
+And that's called network address translation.
+
+39:26.110 --> 39:28.270
+I have many videos about that topic right.
+
+39:28.710 --> 39:30.390
+But here we keep it as is.
+
+39:32.030 --> 39:33.270
+The machine receives it.
+
+39:33.310 --> 39:36.150
+It says all right thank you I actually got it.
+
+39:36.190 --> 39:38.550
+It's actually for me the Mac addresses for me D.
+
+39:38.830 --> 39:41.470
+And the IP address is also for me.
+
+39:42.310 --> 39:44.710
+And the kernel just delivers it to the application.
+
+39:44.710 --> 39:46.750
+And I talk about this in my network.
+
+39:47.350 --> 39:49.990
+Sorry the OS course if you're interested in that.
+
+39:50.030 --> 39:51.350
+So how do I reply.
+
+39:52.390 --> 39:53.350
+I want to reply.
+
+39:55.590 --> 39:58.740
+Up until here you probably can finish the story.
+
+39:59.780 --> 40:00.660
+How do we reply?
+
+40:00.660 --> 40:02.500
+Well, I just changed the IP address.
+
+40:02.500 --> 40:03.740
+Now it flips, right?
+
+40:03.780 --> 40:10.060
+I want to talk to .14, which is this guy 192168.1.4.
+
+40:10.100 --> 40:12.460
+And my source IP is ten 002.
+
+40:12.700 --> 40:13.460
+Same story.
+
+40:13.460 --> 40:21.660
+Well, 110 002 said well this is not my network, so I need to talk to my router.
+
+40:21.700 --> 40:25.900
+And so it talks to this gateway and it just like say all right.
+
+40:26.260 --> 40:27.340
+Uh I don't know.
+
+40:27.340 --> 40:30.020
+So I'll talk to Z which is my gateway.
+
+40:30.060 --> 40:35.460
+It says, all right, hey Z, tell me how to get deliver this for me.
+
+40:35.940 --> 40:38.820
+And it will just send it here and the router will send it.
+
+40:38.860 --> 40:41.060
+Will does its own thing here.
+
+40:41.380 --> 40:47.660
+Uh, does our ARP found out that it's actually b oh, did I, I think I messed up here.
+
+40:48.900 --> 40:49.060
+Yeah.
+
+40:49.060 --> 40:49.620
+That's wrong.
+
+40:49.820 --> 40:51.940
+This should be should this should go here.
+
+40:51.940 --> 40:52.260
+All right.
+
+40:52.260 --> 40:53.620
+So I just fixed it.
+
+40:53.620 --> 40:55.580
+So we're going to one four Okay.
+
+40:55.620 --> 40:56.300
+Not this guy.
+
+40:56.340 --> 40:56.780
+This guy.
+
+40:56.820 --> 40:58.700
+So B is the correct one.
+
+40:58.700 --> 41:00.380
+We're coming from X.
+
+41:00.780 --> 41:04.900
+All of this stuff is same story, right?
+
+41:05.220 --> 41:07.580
+You can find it C going this way.
+
+41:08.300 --> 41:09.100
+Go to Z.
+
+41:09.780 --> 41:14.500
+Then I do the IP forwarding but on to another network.
+
+41:14.660 --> 41:22.700
+Now I have to change my Mac as a as the router because the source Mac is now X and the destination is
+
+41:22.740 --> 41:23.100
+B.
+
+41:23.140 --> 41:29.660
+Assuming I have this ARP cache and I go and then we receive it over here.
+
+41:30.860 --> 41:33.500
+But here's here's an interesting thing guys.
+
+41:34.940 --> 41:38.300
+You technically you can have multiple gateways.
+
+41:39.300 --> 41:45.220
+No I mean it's not usual in normal home setups to have multiple gateways.
+
+41:45.300 --> 41:46.500
+You only have one gateway.
+
+41:46.500 --> 41:48.340
+And that that takes you to the internet.
+
+41:48.580 --> 41:57.220
+But in the internet there is always multiple gateways like like take, tik, tik tik, Verizon or or
+
+41:57.460 --> 42:06.180
+or frontier or these ISPs, you know, each of these have network of different routers and each router
+
+42:06.180 --> 42:09.300
+has like different subnets.
+
+42:10.020 --> 42:13.980
+And each one has like a you can go to this subnet.
+
+42:13.980 --> 42:17.820
+And this subnet is reserved for this particular ISP.
+
+42:18.100 --> 42:20.660
+And the rest is just the same really.
+
+42:21.100 --> 42:26.580
+So you can have multiple gateways with one default gateway.
+
+42:26.620 --> 42:29.140
+Things doesn't always work.
+
+42:29.140 --> 42:30.700
+We need this granularity.
+
+42:30.980 --> 42:36.660
+We need the ability to send like well if I'm going here then go to this machine or this router.
+
+42:36.660 --> 42:41.060
+If you're going to this site then go to this because they they are connected differently, right?
+
+42:41.060 --> 42:42.900
+You cannot have just one gateway.
+
+42:43.180 --> 42:50.740
+And that's why the routing table was invented to solve this problem and make it just a generic way.
+
+42:50.740 --> 42:52.740
+There is no more just default gateway.
+
+42:53.060 --> 43:01.340
+There is a gateway, and if you want to go here, then go through this guy.
+
+43:01.580 --> 43:03.460
+So let's explain how this works.
+
+43:04.020 --> 43:05.380
+Let's add more networks.
+
+43:05.380 --> 43:09.100
+And I'm going to disappear for a second because I'm adding a different network.
+
+43:09.140 --> 43:10.700
+Another private one by the way.
+
+43:11.140 --> 43:11.500
+Right.
+
+43:11.860 --> 43:17.220
+172.16.6.2 Mac address M.
+
+43:17.580 --> 43:19.180
+This is its default gateway.
+
+43:19.220 --> 43:20.380
+.6.1.
+
+43:20.780 --> 43:27.420
+This is the network .6.1 and its Mac address is in this guy.
+
+43:27.460 --> 43:33.340
+Now all of a sudden it's a router, which is just another machine that happens to have two two network
+
+43:33.700 --> 43:35.020
+cards, right?
+
+43:35.060 --> 43:39.940
+Which you can just create unlimited number of network cards if you want virtual NICs.
+
+43:39.940 --> 43:40.340
+Right.
+
+43:40.900 --> 43:43.740
+And then we have this the similar guy.
+
+43:44.100 --> 43:46.540
+We have the similar guy similar set up here.
+
+43:46.900 --> 43:48.460
+But let's solve this.
+
+43:48.820 --> 43:51.420
+Try having ten 002.
+
+43:51.460 --> 43:54.260
+This guy wants to talk to this guy.
+
+43:54.820 --> 43:55.860
+How does that happen?
+
+43:56.860 --> 43:57.900
+How does this happen?
+
+43:58.420 --> 44:01.300
+Well, if we don't do anything.
+
+44:01.340 --> 44:10.100
+Assuming the same configuration will, ten 002 will say, well, you want to talk to 1726.6.2.
+
+44:10.140 --> 44:12.860
+Well, I don't know where that is.
+
+44:13.700 --> 44:18.620
+So I'm going to talk to my router to my default gateway and it will send it.
+
+44:18.980 --> 44:19.660
+Indeed.
+
+44:20.420 --> 44:20.820
+Right.
+
+44:22.020 --> 44:22.820
+It will send it.
+
+44:22.860 --> 44:24.020
+So 062.
+
+44:24.580 --> 44:27.580
+All right I'm going to see because my router will know.
+
+44:27.900 --> 44:31.500
+And we'll we'll go here to this router which is incorrect.
+
+44:31.860 --> 44:33.140
+And this router will say wait a minute.
+
+44:33.180 --> 44:33.620
+Yeah.
+
+44:34.020 --> 44:36.420
+This is for me from a data link perspective.
+
+44:36.420 --> 44:40.340
+But 621722 16 .6.2.
+
+44:40.580 --> 44:42.300
+I have no idea what that is.
+
+44:42.940 --> 44:44.220
+It's not in my network.
+
+44:44.220 --> 44:45.300
+It's not this one.
+
+44:45.860 --> 44:48.700
+So it will just say, hey, I'm sorry, I'm going to drop it.
+
+44:49.930 --> 44:51.970
+and we'll just drop it right there and then.
+
+44:52.330 --> 44:53.490
+So how do we solve it?
+
+44:54.690 --> 44:56.050
+Meet the routing table.
+
+44:56.450 --> 45:01.530
+So what we do is we create a bunch of fields, a table with a bunch of fields that says, all right,
+
+45:01.530 --> 45:02.330
+where do you want to go?
+
+45:02.370 --> 45:03.290
+Which network?
+
+45:03.610 --> 45:05.970
+That is the network with the subnet mask.
+
+45:06.490 --> 45:09.210
+And if you want to go here, which gateway?
+
+45:09.250 --> 45:10.610
+What is your next hop?
+
+45:10.610 --> 45:13.130
+What is the thing that is in my network?
+
+45:13.250 --> 45:14.570
+The link address.
+
+45:15.170 --> 45:15.570
+Right.
+
+45:15.610 --> 45:17.330
+Things that I can talk to directly.
+
+45:17.330 --> 45:20.650
+If it's if it's not in my access that I cannot talk to it directly.
+
+45:20.690 --> 45:21.050
+Right.
+
+45:21.730 --> 45:22.770
+What's your gateway?
+
+45:22.770 --> 45:24.250
+Which gateway should I send it to?
+
+45:24.410 --> 45:26.130
+Is this a direct link or not?
+
+45:27.490 --> 45:28.930
+Can I talk to it directly?
+
+45:29.530 --> 45:30.530
+And what?
+
+45:30.570 --> 45:32.250
+What is the weight of this?
+
+45:32.250 --> 45:33.970
+Because now we have multiple paths.
+
+45:33.970 --> 45:34.930
+Multiple routes.
+
+45:35.170 --> 45:36.410
+Which one do you prefer?
+
+45:36.450 --> 45:37.730
+What's the priority?
+
+45:37.770 --> 45:41.690
+You can have a number here, a value that says, oh, this route is better than this.
+
+45:42.170 --> 45:43.890
+And which interface should I go to?
+
+45:43.930 --> 45:44.690
+Is it Ethernet?
+
+45:44.690 --> 45:45.850
+Should I go to Wi-Fi?
+
+45:45.890 --> 45:48.050
+Should I go to this Docker interface.
+
+45:48.050 --> 45:48.650
+Which one.
+
+45:49.050 --> 45:49.370
+Right.
+
+45:49.410 --> 45:51.610
+So that's basically the routing table.
+
+45:51.610 --> 45:55.130
+And this is just an example as usual.
+
+45:55.170 --> 45:59.370
+Because nobody talks to each other and everyone does things by own.
+
+45:59.410 --> 46:02.490
+The Linux have its own routing table with different columns.
+
+46:02.690 --> 46:05.690
+Mac will have its own, windows will have its own.
+
+46:05.930 --> 46:07.570
+But essentially that's the gist.
+
+46:07.570 --> 46:14.770
+What I summarized from all the three guys, it's always the next hop, the network, whether it's link
+
+46:14.770 --> 46:15.330
+or not.
+
+46:15.370 --> 46:19.530
+Wait, and the network interface card.
+
+46:20.210 --> 46:22.650
+So let's go through these example.
+
+46:23.050 --> 46:26.450
+This is just an example routing table here that I have.
+
+46:27.210 --> 46:30.090
+And it says line three.
+
+46:30.130 --> 46:41.450
+If you're going to any network, the star you will see sometimes represented as 0.0.0.0.
+
+46:41.610 --> 46:43.450
+That means anything.
+
+46:43.570 --> 46:44.450
+That's what it means.
+
+46:44.450 --> 46:52.490
+Anything if you're going to anywhere, then you go through this next hop, which is the gateway.
+
+46:53.450 --> 46:57.130
+If you don't know where to go, if you're going to Google, which is eight, eight, eight, eight,
+
+46:57.170 --> 47:01.490
+let's say this is the DNS for Google, just don't send it to this guy.
+
+47:01.530 --> 47:02.410
+This guy will know.
+
+47:03.010 --> 47:09.130
+And that's someone who wrote this route in this routing table and says, all right, just go there and
+
+47:09.130 --> 47:09.930
+it will follow.
+
+47:10.490 --> 47:11.930
+And you can change this thing.
+
+47:12.250 --> 47:13.930
+You can do whatever you want.
+
+47:14.250 --> 47:21.410
+You can have the route to take you to a machine you can have such that, uh, if you're visiting Google,
+
+47:21.410 --> 47:23.010
+you always go through this machine.
+
+47:23.050 --> 47:26.770
+For example, for some reason you want to monitor all the traffic.
+
+47:26.810 --> 47:33.010
+You can send the traffic to a machine, monitor it, and then have that machine be a router that forwards
+
+47:33.010 --> 47:38.890
+all the packets back to the actual router and have all the things route logged.
+
+47:39.450 --> 47:43.850
+That's how the networking folks do do tricks by understanding all this stuff.
+
+47:43.850 --> 47:46.890
+Tough line for if you want to go to the machine.
+
+47:47.730 --> 47:54.410
+This one machine on 192168.1.0 slash 24.
+
+47:54.450 --> 47:56.290
+Does any machine on this network now?
+
+47:56.290 --> 47:57.170
+It's a network.
+
+47:57.690 --> 48:00.290
+Then there is no gateway.
+
+48:00.530 --> 48:01.730
+There is no next hop.
+
+48:02.210 --> 48:03.730
+It's a direct link.
+
+48:04.170 --> 48:05.730
+You can just talk to it directly.
+
+48:05.730 --> 48:06.770
+You know how to do it.
+
+48:06.770 --> 48:07.490
+But how?
+
+48:07.730 --> 48:09.130
+Well, through this interface.
+
+48:09.170 --> 48:10.010
+Ethernet one.
+
+48:10.930 --> 48:16.450
+Ethernet one is your IP address interface that happened to be in one of these.
+
+48:16.450 --> 48:17.850
+So you can talk direct directly.
+
+48:17.850 --> 48:20.370
+You can just ARP and have fun.
+
+48:21.490 --> 48:27.810
+Well, if you want to go to this network then you use the other interface because that's the interface.
+
+48:27.970 --> 48:30.170
+You have an IP address on that matches this.
+
+48:30.170 --> 48:31.850
+And you can use link directly.
+
+48:31.850 --> 48:38.530
+And it's it's the lower the number the higher the metric the better.
+
+48:38.570 --> 48:40.370
+That means this route is preferred.
+
+48:42.330 --> 48:42.960
+And let's go.
+
+48:43.000 --> 48:43.600
+Let's fix this.
+
+48:43.600 --> 48:44.560
+How do we fix this?
+
+48:45.000 --> 48:46.280
+So how do we fix it?
+
+48:46.880 --> 48:52.680
+Here's a sample routing table to fix this exact problem.
+
+48:54.560 --> 48:56.760
+And this is the routing table for this.
+
+48:56.760 --> 48:58.120
+That's one way to fix it.
+
+48:58.120 --> 49:00.600
+By the way guys there's so many other ways to fix it.
+
+49:00.600 --> 49:07.120
+But if you want to go anywhere send it to your default gateway.
+
+49:07.840 --> 49:16.480
+This you can remove you can delete this now because that line replaces this default gateway concept.
+
+49:16.480 --> 49:18.960
+Because it's actually what a default gateway means.
+
+49:19.000 --> 49:25.320
+Literally anywhere you want to go, go here except when you go to this particular IP address.
+
+49:25.320 --> 49:27.160
+Now I hard coded the IP address.
+
+49:27.800 --> 49:33.800
+If you want to go to this, actually your next hop, your gateway should be 0.6.
+
+49:34.160 --> 49:36.360
+Like what this guy over here.
+
+49:36.400 --> 49:36.880
+Yeah.
+
+49:37.800 --> 49:39.040
+And how do I do that?
+
+49:39.080 --> 49:40.000
+Well, simple.
+
+49:40.240 --> 49:43.960
+Just, uh, send it to see.
+
+49:44.000 --> 49:46.320
+Of course, you need to ARP because it's in your network.
+
+49:46.320 --> 49:50.800
+So you just do an ARP and go your merry way.
+
+49:50.800 --> 49:52.600
+And now we're going to send it here.
+
+49:53.440 --> 50:00.560
+This machine will will receive it, of course, because the destination is C and the source is zero
+
+50:00.560 --> 50:00.880
+two.
+
+50:01.120 --> 50:03.800
+Now this machine has IP forwarding enabled.
+
+50:03.840 --> 50:04.840
+Same logic.
+
+50:04.880 --> 50:08.200
+It knows how to get to .6.2.
+
+50:08.560 --> 50:16.240
+And we'll just send it and we'll of course now change the source IP source Mac to be N, which is now
+
+50:16.520 --> 50:22.320
+the Mac address of the other network, and the destination becomes M.
+
+50:22.640 --> 50:24.560
+And then how do we reply back?
+
+50:24.600 --> 50:27.400
+Can M reply back if it wants to?
+
+50:27.720 --> 50:29.800
+Well, it can because the default gateway.
+
+50:29.840 --> 50:38.280
+So saves us here because hey, if you want to go to ten 002 in this particular case just send it and
+
+50:38.280 --> 50:44.440
+it will know because it only has one gateway, and it happens to be a gateway that that knows how to
+
+50:44.480 --> 50:45.440
+talk back to this.
+
+50:45.840 --> 50:54.640
+If it couldn't, then we need to have added a route to actually explicitly talk to that and go directly
+
+50:54.640 --> 50:55.480
+to that route.
+
+50:56.080 --> 51:00.640
+And we can go see see what we did there.
+
+51:01.280 --> 51:03.080
+It's very interesting you guys.
+
+51:03.080 --> 51:07.160
+You can and how do we else how else we can you fix it.
+
+51:07.200 --> 51:09.240
+Well here's another way to fix it guys.
+
+51:09.240 --> 51:16.600
+Just think through this and tell me another way is to have there instead.
+
+51:17.280 --> 51:18.760
+What's the problem with this solution?
+
+51:18.760 --> 51:22.600
+The problem is you have to configure each machine with this routing rule.
+
+51:22.640 --> 51:23.120
+Right?
+
+51:23.160 --> 51:27.680
+Because if you have another machine over here, you have to have the same route, right?
+
+51:27.840 --> 51:32.800
+If you have another machine, you have to have the same route added to every one of them.
+
+51:33.680 --> 51:34.080
+Okay.
+
+51:34.760 --> 51:37.920
+So what we can do instead is add this.
+
+51:39.440 --> 51:44.640
+here to the actual gateway of the default gateway of these guys.
+
+51:45.600 --> 51:50.280
+So what will happen is it's like, hey, if you want to talk to this, just go.
+
+51:51.000 --> 51:53.240
+If anyone wants to go to this network.
+
+51:53.280 --> 51:53.800
+Of course not.
+
+51:53.800 --> 51:54.440
+This one.
+
+51:54.680 --> 51:55.160
+Right.
+
+51:55.520 --> 51:58.000
+Then go talk to 006.
+
+51:58.320 --> 52:01.720
+So what will happen is that gateway.
+
+52:01.880 --> 52:08.880
+If I go back, that machine will send it to its default gateway normally.
+
+52:10.000 --> 52:14.040
+But instead of dropping it, the router will check its rule.
+
+52:14.040 --> 52:18.680
+Says, oh, this guy wants to go to 172.16.6.1.
+
+52:19.440 --> 52:26.800
+Well, I have a route that says, hey, if you want to go to this network, not even just host any host
+
+52:26.800 --> 52:29.240
+of this network, just go to this machine.
+
+52:29.240 --> 52:30.360
+1006.
+
+52:30.400 --> 52:31.200
+It knows.
+
+52:31.480 --> 52:39.110
+So it will talk to that in a link way and it will send it to the IP address and then the path will be
+
+52:39.110 --> 52:39.870
+something like this.
+
+52:39.870 --> 52:40.590
+Go here.
+
+52:40.870 --> 52:50.670
+And then this will go here which is slower than going of course here here here.
+
+52:50.710 --> 52:50.910
+Right.
+
+52:50.950 --> 52:52.230
+Because that's slower.
+
+52:52.510 --> 52:53.550
+This is faster.
+
+52:53.790 --> 52:55.950
+So there's always a trade off in software engineering.
+
+52:55.950 --> 52:57.550
+And network engineering is no different.
+
+52:57.590 --> 52:58.470
+There's always trade offs.
+
+52:58.470 --> 52:59.670
+Which one is faster.
+
+52:59.670 --> 53:05.870
+You can have less configuration by putting it in one place here and have everything goes through the
+
+53:05.870 --> 53:06.470
+router.
+
+53:06.830 --> 53:16.110
+Or you can make it faster, configure every machine to have this route and just do you go this way and
+
+53:17.270 --> 53:20.310
+the the the the world is your oyster.
+
+53:20.630 --> 53:27.710
+Now anything is basically just bunch of rules that you play with them.
+
+53:27.950 --> 53:34.150
+Sometimes you send a there's a lot of bugs like that where we send a packet, it arrives, but it doesn't
+
+53:34.150 --> 53:36.550
+know how to send it back, right?
+
+53:36.590 --> 53:39.430
+This is where things like Nat can be playing.
+
+53:39.470 --> 53:42.430
+You need routes on the other end, right.
+
+53:43.310 --> 53:44.430
+To play with this.
+
+53:45.630 --> 53:46.150
+All right.
+
+53:48.070 --> 53:49.590
+So keep this video short.
+
+53:49.590 --> 53:50.190
+So what.
+
+53:50.230 --> 53:51.510
+Updates the routing table.
+
+53:51.510 --> 53:54.830
+Literally everything updates the routing table.
+
+53:55.110 --> 53:56.150
+There is the kernel.
+
+53:56.670 --> 54:03.430
+There is the DHCP dynamic Host Control protocol which assigns the IP address for us if you don't want.
+
+54:03.470 --> 54:11.910
+To statically configure IP address there is the OSPF the open shortest path first I think.
+
+54:12.310 --> 54:18.310
+That's what's called BGP Border Gateway protocol which is what the internet runs on all of these guys.
+
+54:19.230 --> 54:22.150
+If you learn them first you'll be so confused.
+
+54:22.150 --> 54:26.470
+But now they are makes perfect sense all.
+
+54:26.510 --> 54:30.030
+What those guys do is just update the routing table.
+
+54:31.230 --> 54:32.110
+End of the story.
+
+54:32.110 --> 54:32.710
+That's it.
+
+54:33.590 --> 54:39.030
+All what these protocols does is just they write routes to your routing table.
+
+54:39.030 --> 54:40.350
+That's all what they do.
+
+54:41.670 --> 54:46.070
+And by understanding that they become so easy because they just play tricks.
+
+54:46.070 --> 54:51.990
+They are applications running on user space processes that does stuff.
+
+54:52.430 --> 54:55.070
+Open shortest protocol first.
+
+54:55.070 --> 55:00.430
+It's just it's a scary name, but what it does is like, hey, I'm connected to this network and this
+
+55:00.430 --> 55:06.670
+is my machine and this is another network, and this is this is bandwidth of 100 megabits.
+
+55:06.710 --> 55:07.910
+This is one gigabit.
+
+55:07.910 --> 55:14.590
+And it just makes a list of a database of all possible links that it can talk to directly.
+
+55:15.110 --> 55:20.790
+It says, hey, I can reach this network through this interface, I can reach this and it will propagate
+
+55:20.790 --> 55:23.030
+this knowledge across everyone.
+
+55:23.030 --> 55:31.590
+Eventually it says, all right, based on that knowledge, the shortest path is this, and it will write
+
+55:31.590 --> 55:35.470
+the shortest path in the routing table only.
+
+55:35.910 --> 55:36.310
+Right.
+
+55:37.550 --> 55:43.630
+Based on the knowledge of the graph, that's just like a short description of that.
+
+55:43.630 --> 55:48.550
+And what the what the kernel will do is just we'll look up the routing table and follow the instructions
+
+55:48.550 --> 55:48.910
+there.
+
+55:49.870 --> 55:54.470
+And it happens to be that the best route is written in the route table.
+
+55:54.710 --> 55:58.790
+It could be that the wrong route is written in the routing table.
+
+55:59.790 --> 56:00.270
+Right?
+
+56:00.910 --> 56:04.950
+BGP another beast, but eventually does the very similar thing.
+
+56:04.950 --> 56:13.830
+If you want to go to certain network that happen to be Google or Facebook, go through this IP address
+
+56:13.870 --> 56:22.790
+and it just you will find multiple networks and routers that are configured, their routing tables configured
+
+56:22.790 --> 56:27.270
+so that they can follow the path of the autonomous networks.
+
+56:27.270 --> 56:29.070
+And we'll talk about this in another video.
+
+56:29.350 --> 56:30.350
+Better okay.
+
+56:30.430 --> 56:32.990
+But yeah, eventually everything pours into the routing table.
+
+56:32.990 --> 56:36.670
+Let's do some, uh, some some demos.
+
+56:36.870 --> 56:37.790
+We're gonna rest.
+
+56:38.030 --> 56:39.030
+Rest the routing table.
+
+56:39.030 --> 56:39.750
+I'm just gonna.
+
+56:39.830 --> 56:44.830
+This is how you list all the routes, by the way, in different networks on windows, you do route print
+
+56:44.830 --> 56:49.470
+for some reason, but the prettiest output is windows.
+
+56:49.950 --> 56:51.510
+The rest are just atrocious.
+
+56:52.470 --> 56:53.430
+Linux and Mac.
+
+56:53.870 --> 56:54.270
+Right.
+
+56:54.270 --> 56:59.590
+But I like the windows one because it prints the headers and it tells you clean.
+
+56:59.630 --> 57:01.870
+It's a cleaner way of viewing the table.
+
+57:02.390 --> 57:09.190
+Uh, Linux you do IP route show or netstat RN also works on both Mac and Linux.
+
+57:09.190 --> 57:14.910
+You can do it this way, and you can list your current route and read it and understand what it does.
+
+57:15.350 --> 57:21.390
+So what I'm going to do is I'm going to have for some reason, if you want to go to Google or example.com,
+
+57:22.030 --> 57:28.420
+I'll, I'll, I'll, I'll force a route to go through the wi fi Iffy.
+
+57:28.540 --> 57:36.140
+And instead of the the Ethernet, because you'll see that I'll show you my network card and I'll have
+
+57:36.140 --> 57:40.860
+two networks cards, one Wi-Fi, and I have an IP address on the Wi-Fi.
+
+57:40.940 --> 57:42.860
+And I have also an Ethernet.
+
+57:42.860 --> 57:45.740
+And also I have another IP address on the same network.
+
+57:46.260 --> 57:46.500
+Right.
+
+57:46.540 --> 57:52.460
+But I'm like, think of it like as one machine pretending to be two machines, right.
+
+57:52.500 --> 57:52.860
+Let's go.
+
+57:52.900 --> 57:53.740
+Let's go through it.
+
+57:53.900 --> 57:54.300
+Okay.
+
+57:54.300 --> 57:55.700
+Now I am on my machine.
+
+57:55.700 --> 57:57.860
+I'm going to do IP route show and show.
+
+57:57.900 --> 57:59.820
+Let's explain these things again.
+
+57:59.860 --> 58:02.540
+Every routing table will be will be different.
+
+58:02.540 --> 58:06.100
+But the gist is the same essentially right.
+
+58:06.980 --> 58:11.500
+So we have the default gateway here on 192168.4.1.
+
+58:12.100 --> 58:17.940
+And and this is my default gateway on, on my machine on my network .4.1.
+
+58:17.980 --> 58:18.300
+Right.
+
+58:18.340 --> 58:20.420
+That's the same gateway.
+
+58:20.420 --> 58:25.220
+But I have an Ethernet network, the device Ethernet network on.
+
+58:25.740 --> 58:27.900
+And then I have also a Wi-Fi network.
+
+58:28.060 --> 58:28.300
+Right.
+
+58:28.340 --> 58:30.940
+59 is zero and 60 is zero.
+
+58:31.260 --> 58:31.620
+Okay.
+
+58:31.780 --> 58:32.980
+And this is the protocol.
+
+58:33.020 --> 58:36.020
+It was assigned by DHCP protocol.
+
+58:36.060 --> 58:39.140
+That means this was assigned by DHCP for me right.
+
+58:39.180 --> 58:45.580
+So the dynamic host control protocol the router assigned this IP address for me.
+
+58:45.700 --> 58:51.940
+And if you the IP address for my Ethernet network is 179.
+
+58:51.980 --> 58:54.980
+The IP address for my Wi-Fi is 122.
+
+58:55.220 --> 58:55.700
+Okay.
+
+58:56.140 --> 58:57.820
+And this is the source IP address.
+
+58:57.980 --> 59:04.220
+And of course, uh, my metric is 100 for the Ethernet and 600 for the Wi-Fi.
+
+59:04.340 --> 59:12.940
+That means if you want to go anywhere, the default anywhere, prefer this this interface over this.
+
+59:12.940 --> 59:14.900
+That's what the colonel's saying.
+
+59:15.180 --> 59:15.580
+Okay.
+
+59:15.620 --> 59:19.180
+Because, of course, Ethernet is faster than Wi-Fi, right?
+
+59:19.220 --> 59:21.340
+That's the that's the reasoning behind that.
+
+59:21.340 --> 59:23.900
+But I can of course I can override that and change it.
+
+59:24.780 --> 59:26.740
+And there is I have a Docker interface.
+
+59:26.740 --> 59:33.740
+So of course also I have an IP address assigned on 1721.7.01.
+
+59:33.780 --> 59:41.020
+On my Docker network virtual interface and it says, hey, if you want to go to this network, go through
+
+59:41.020 --> 59:42.180
+this, right.
+
+59:42.500 --> 59:47.020
+And this is a link, you can directly talk to it directly.
+
+59:47.060 --> 59:48.100
+This means the link.
+
+59:48.420 --> 59:54.460
+Or if you want to go to this, then you go through this other network which is apparently I have another
+
+59:54.700 --> 59:56.580
+network here that I don't know about.
+
+59:56.980 --> 01:00:00.820
+And you can use this particular IP address, right?
+
+01:00:01.340 --> 01:00:02.300
+Here's another one.
+
+01:00:02.980 --> 01:00:14.740
+You can you can directly talk to any IP address on 19668.4.0 22 here, not 24.
+
+01:00:14.940 --> 01:00:15.340
+Right.
+
+01:00:15.660 --> 01:00:18.340
+So the the network size is 22 bits.
+
+01:00:19.020 --> 01:00:21.740
+So that means it's a little bit smaller.
+
+01:00:21.860 --> 01:00:23.700
+That allows me to add more hosts.
+
+01:00:23.740 --> 01:00:24.340
+Of course.
+
+01:00:25.260 --> 01:00:29.860
+And you can go through this network and this is preferred.
+
+01:00:30.220 --> 01:00:37.580
+So and the same thing here you can directly reach it through a link this network.
+
+01:00:37.580 --> 01:00:40.340
+So just do an ARP and do your malware.
+
+01:00:40.460 --> 01:00:45.380
+Or you can do the same network exactly through the Wi-Fi.
+
+01:00:45.700 --> 01:00:46.940
+But this is slower.
+
+01:00:47.220 --> 01:00:48.740
+So 600 okay.
+
+01:00:49.420 --> 01:00:53.660
+And you you use your IP address if you want to go there.
+
+01:00:53.700 --> 01:00:56.780
+Your source IP should be this one okay.
+
+01:00:56.820 --> 01:00:59.260
+If you want to visit this, your source IP should be this.
+
+01:00:59.300 --> 01:01:01.980
+If you want to visit this, your source IP should be this okay.
+
+01:01:01.980 --> 01:01:05.780
+Because you can have different IP addresses of course per network.
+
+01:01:06.300 --> 01:01:09.060
+And of course I have a direct link.
+
+01:01:09.220 --> 01:01:12.380
+Say if you want to go to this you can just directly reach it.
+
+01:01:12.380 --> 01:01:14.860
+That's another link direct link here.
+
+01:01:14.860 --> 01:01:16.460
+So what I'm doing here.
+
+01:01:16.500 --> 01:01:16.980
+All right guys.
+
+01:01:16.980 --> 01:01:21.820
+So I thought the best way to do this actually to explain a problem that I'm trying to solve.
+
+01:01:21.820 --> 01:01:23.330
+So here I have a machine.
+
+01:01:23.890 --> 01:01:25.050
+It's a Docker machine.
+
+01:01:25.450 --> 01:01:25.770
+Okay.
+
+01:01:25.770 --> 01:01:31.570
+So ubuntu this is the IP address that is publicly available publicly in a sense that is in the same
+
+01:01:31.570 --> 01:01:33.930
+network that I'm trying to connect to.
+
+01:01:34.130 --> 01:01:37.010
+Then there is inside this there is a Docker host.
+
+01:01:37.370 --> 01:01:37.770
+Right.
+
+01:01:37.810 --> 01:01:48.090
+And there is a Docker IP, a Docker network with a single Docker container that is of this IP address
+
+01:01:48.090 --> 01:01:50.330
+that belongs to the Docker network.
+
+01:01:50.690 --> 01:01:53.010
+One 7217 011.
+
+01:01:53.050 --> 01:01:53.450
+Okay.
+
+01:01:54.210 --> 01:01:58.890
+So this machine can easily access this IP address.
+
+01:01:58.890 --> 01:02:07.490
+172.7.0.2 because, well, there is a route that says in this, hey, if you want to go to 17, any
+
+01:02:07.490 --> 01:02:14.010
+network, go through the gateway that is the Docker zero, uh, gateway Virtual and you'll be able to
+
+01:02:14.050 --> 01:02:16.010
+access the Postgres machine.
+
+01:02:16.050 --> 01:02:16.490
+Okay.
+
+01:02:16.530 --> 01:02:19.370
+Which I'm going to demonstrate in a minute right here.
+
+01:02:19.410 --> 01:02:21.490
+Here is the machine.
+
+01:02:21.970 --> 01:02:22.490
+If I do.
+
+01:02:22.530 --> 01:02:24.650
+Telnet one 717
+
+01:02:26.490 --> 01:02:31.370
+172.7.0.2 on 5432.
+
+01:02:33.450 --> 01:02:34.970
+Which is the postgres port?
+
+01:02:34.970 --> 01:02:37.330
+You can see that I'm connected to Postgres.
+
+01:02:37.730 --> 01:02:39.170
+Okay, so it works.
+
+01:02:39.170 --> 01:02:49.490
+I can connect to Postgres from this machine and if I do config grep 192 you can see this is my IP address.
+
+01:02:49.490 --> 01:02:51.530
+I have two IP addresses here on this machine.
+
+01:02:51.530 --> 01:02:53.250
+But this is it 179.
+
+01:02:53.290 --> 01:02:53.690
+Okay.
+
+01:02:53.890 --> 01:02:59.370
+So what I want to do is I want to go on this machine, which is my Mac, which is outside this machine,
+
+01:02:59.370 --> 01:03:01.410
+and I want to be able to access this guy.
+
+01:03:01.690 --> 01:03:06.530
+Currently I cannot, of course, because this is not aware of this network.
+
+01:03:06.570 --> 01:03:07.050
+Right.
+
+01:03:07.090 --> 01:03:08.210
+So let's let's try it.
+
+01:03:09.730 --> 01:03:10.130
+Indeed.
+
+01:03:10.130 --> 01:03:11.530
+This is my IP address.
+
+01:03:11.770 --> 01:03:22.570
+And if I do telnet 170 keep forgetting 172 dot 17 .0.25432.
+
+01:03:24.650 --> 01:03:30.170
+Of course it's going to keep trying and there is no way, no path to this network.
+
+01:03:30.250 --> 01:03:31.170
+What does it do?
+
+01:03:31.210 --> 01:03:31.730
+It will.
+
+01:03:32.250 --> 01:03:33.250
+Technically it will.
+
+01:03:33.290 --> 01:03:34.370
+What will try?
+
+01:03:34.650 --> 01:03:40.450
+It will try to talk to probably my default gateway, which of course there is no path there.
+
+01:03:40.770 --> 01:03:41.010
+Right.
+
+01:03:41.530 --> 01:03:45.250
+And if I do try to actually try it.
+
+01:03:45.850 --> 01:03:46.250
+Uh.
+
+01:03:50.370 --> 01:03:51.290
+Oh, n.
+
+01:03:53.330 --> 01:03:58.010
+You can see that it tried to go to my default gateway and it went to my public IP address, which I'm
+
+01:03:58.010 --> 01:03:58.970
+going to blur here.
+
+01:03:59.370 --> 01:04:00.890
+And of course, it went.
+
+01:04:00.890 --> 01:04:01.250
+No way.
+
+01:04:01.250 --> 01:04:03.170
+Because there is no way out there.
+
+01:04:03.490 --> 01:04:07.570
+This is a this is a network that exists in my in my other machine.
+
+01:04:07.650 --> 01:04:08.930
+So how do I fix this?
+
+01:04:10.530 --> 01:04:11.570
+How do I fix this?
+
+01:04:11.810 --> 01:04:15.370
+How can I make telnet work?
+
+01:04:15.450 --> 01:04:20.490
+How can I connect from my other machine from here all the way here.
+
+01:04:20.610 --> 01:04:23.850
+Well, we learned it's a nothing but a network.
+
+01:04:23.890 --> 01:04:24.930
+This guy knows.
+
+01:04:25.130 --> 01:04:29.930
+So what if I added a row that says, hey, if you want to go to this, go through this.
+
+01:04:30.530 --> 01:04:32.090
+Literally that.
+
+01:04:32.170 --> 01:04:33.530
+So how do I do that?
+
+01:04:34.050 --> 01:04:40.610
+So this is the command sudo root n add network.
+
+01:04:40.730 --> 01:04:44.290
+If you want to go to this go through this.
+
+01:04:44.290 --> 01:04:45.970
+That literally is this is the means.
+
+01:04:45.970 --> 01:04:48.730
+This is the gateway or the next hop.
+
+01:04:48.850 --> 01:04:52.650
+If you ever want to go to this now this is a specific IP address.
+
+01:04:52.650 --> 01:04:54.490
+You can change it to a network.
+
+01:04:54.490 --> 01:05:02.050
+But by adding that and of course as an administrator operation, just like that, I added a route that
+
+01:05:02.050 --> 01:05:05.850
+says, hey, if you want to go to that, then go through this.
+
+01:05:06.050 --> 01:05:11.490
+Now if I do, a telnet works.
+
+01:05:12.530 --> 01:05:14.210
+So what what happened here?
+
+01:05:15.130 --> 01:05:17.360
+Now if I close it and I do a trace route.
+
+01:05:19.440 --> 01:05:20.400
+Look what happened.
+
+01:05:20.680 --> 01:05:23.200
+The traceroute clearly tells me that.
+
+01:05:23.200 --> 01:05:24.520
+Oh, we took a different path.
+
+01:05:24.520 --> 01:05:25.760
+Maybe we took.
+
+01:05:25.800 --> 01:05:32.520
+We went through 179, and now we immediately, once we got to 179, we.
+
+01:05:32.680 --> 01:05:34.000
+179.
+
+01:05:34.640 --> 01:05:39.720
+Uh, of course, I had to do one more thing, which I forgot to mention is I had.
+
+01:05:39.760 --> 01:05:43.200
+IP forwarding enabled here on this machine.
+
+01:05:43.640 --> 01:05:46.960
+And you can do it, uh, via vim.
+
+01:05:47.200 --> 01:05:47.640
+Yeah.
+
+01:05:51.080 --> 01:05:52.040
+This baby.
+
+01:05:55.920 --> 01:06:00.120
+If this was not enabled, that forwarding would not have happened.
+
+01:06:00.120 --> 01:06:00.400
+Why?
+
+01:06:00.440 --> 01:06:09.120
+Because the machine will receive it and say, well, I did receive your IP, your Mac, and it's not
+
+01:06:09.120 --> 01:06:10.440
+for me, it's for me.
+
+01:06:10.440 --> 01:06:14.320
+But the IP packet was not for me, so I dropped it.
+
+01:06:14.320 --> 01:06:22.560
+But by enabling IP forward, you can essentially allow people to communicate.
+
+01:06:22.560 --> 01:06:24.640
+So yeah, that's what I wanted to talk about.
+
+01:06:25.120 --> 01:06:26.400
+Very cool stuff.
+
+01:06:26.400 --> 01:06:30.360
+That's essentially the idea of networking.
+
+01:06:30.800 --> 01:06:37.160
+As a summary, we talked about each device has a unique link address and that is the Mac address.
+
+01:06:37.160 --> 01:06:39.160
+That is the network card address.
+
+01:06:39.560 --> 01:06:44.040
+And even you can have a virtual one, which we showed in Docker in the Docker case.
+
+01:06:44.040 --> 01:06:44.440
+Right.
+
+01:06:45.200 --> 01:06:49.280
+And devices can talk to each other via direct link.
+
+01:06:50.200 --> 01:06:53.440
+Direct link can't scale for large number of devices.
+
+01:06:53.440 --> 01:06:55.680
+We needed the idea of IP.
+
+01:06:56.400 --> 01:06:58.960
+Then of course the idea of network was born.
+
+01:06:58.960 --> 01:07:04.000
+Then we idea of routing basically based on the network.
+
+01:07:04.040 --> 01:07:06.600
+You can route it or if you want to go here, you go here.
+
+01:07:06.600 --> 01:07:08.160
+If you want to go here then you go here.
+
+01:07:08.560 --> 01:07:10.880
+And that's basically the concept of routing.
+
+01:07:10.920 --> 01:07:12.080
+Hope you enjoyed this video.
+
+01:07:12.600 --> 01:07:13.560
+I'll see you in the next one.
+
+01:07:13.760 --> 01:07:14.120
+Goodbye.
