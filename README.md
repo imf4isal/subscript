@@ -1,0 +1,221 @@
+# Make-Note 🎓
+
+Extract and consolidate video course subtitles into study-ready documents. Transform scattered subtitle files into organized study materials perfect for AI-powered note generation.
+
+## Features ✨
+
+- **🔍 Smart Extraction**: Recursively finds subtitle files in any nested directory structure
+- **📝 Dual Output**: Generates both clean markdown and timestamped raw text
+- **🎯 Multiple Formats**: Supports SRT, VTT, ASS, SSA, SUB, SBV, TTML, and more
+- **🧠 LLM-Ready**: Clean formatted output perfect for ChatGPT, Claude, or other AI tools
+- **📁 Organized Output**: Course-specific directories with logical structure
+- **⚡ Edge Case Handling**: Robust parsing for malformed subtitles, encoding issues, multi-line blocks
+- **🎨 Clean Naming**: Intelligent course and lesson name extraction
+
+## Quick Start 🚀
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/make-note.git
+   cd make-note
+   ```
+
+2. **Install Python 3.6+** (if not already installed)
+
+3. **Run the tool**
+   ```bash
+   python3 main.py "/path/to/your/course/folder" --consolidate
+   ```
+
+### Basic Usage
+
+Extract subtitles from a course folder:
+```bash
+# Basic extraction (individual files only)
+python3 main.py "/Users/john/Downloads/Python Course"
+
+# Full processing with consolidated output
+python3 main.py "/Users/john/Downloads/Python Course" --consolidate
+
+# Preview what would be extracted
+python3 main.py "/Users/john/Downloads/Python Course" --dry-run
+```
+
+## Output Structure 📁
+
+The tool creates organized output in the `data/output/` directory:
+
+```
+data/
+└── output/
+    └── Python_Course/
+        ├── combined/
+        │   ├── formatted.md    # Clean text for LLM processing
+        │   └── raw.txt         # Original subtitles with timestamps
+        └── extracted/
+            ├── 01_Introduction_1_Welcome.srt
+            ├── 01_Introduction_2_Setup.srt
+            └── ... (all individual subtitle files)
+```
+
+## Output Formats 📋
+
+### 1. Formatted Markdown (`formatted.md`)
+Clean, structured document perfect for AI processing:
+```markdown
+# Python Course
+
+## Introduction
+
+### Welcome
+
+Welcome to this comprehensive Python course. In this lesson we'll cover...
+
+### Course Setup
+
+Let's start by setting up your development environment...
+```
+
+### 2. Raw Text (`raw.txt`)
+Original subtitles with timestamps preserved:
+```
+=== Introduction 1 Welcome ===
+
+WEBVTT
+
+00:00.150 --> 00:02.460
+Welcome to this comprehensive Python course.
+
+00:02.460 --> 00:10.710
+In this lesson we'll cover the fundamental concepts...
+```
+
+## Supported Formats 🎬
+
+| Format | Extension | Description |
+|--------|-----------|-------------|
+| SubRip | `.srt` | Most common subtitle format |
+| WebVTT | `.vtt` | Web standard, used by YouTube |
+| Advanced SubStation Alpha | `.ass/.ssa` | Feature-rich with styling |
+| MicroDVD | `.sub` | Frame-based timing |
+| YouTube | `.sbv` | YouTube's simple format |
+| TTML | `.ttml` | XML-based format |
+| Scenarist | `.scc` | Closed captions |
+| Others | `.stl/.sup/.idx/.usf` | Various proprietary formats |
+
+## Command Options 🛠️
+
+```bash
+python3 main.py <source_directory> [options]
+```
+
+### Options:
+- `--consolidate`: Create consolidated markdown and raw text files
+- `--dry-run`: Preview what files would be extracted without copying
+- `-h, --help`: Show help message
+
+### Examples:
+```bash
+# Extract from course with spaces in name
+python3 main.py "/Users/jane/Courses/Machine Learning Bootcamp" --consolidate
+
+# Preview extraction
+python3 main.py "~/Downloads/React Course" --dry-run
+
+# Basic extraction only
+python3 main.py "./course-materials"
+```
+
+## Use Cases 💡
+
+### 1. AI-Powered Study Notes
+Copy `formatted.md` content to ChatGPT/Claude:
+```
+"Please create comprehensive study notes from this course transcript, 
+including key concepts, examples, and practice questions."
+```
+
+### 2. Course Summaries
+Generate chapter summaries and main takeaways for quick review.
+
+### 3. Searchable Content
+Convert video courses into searchable text documents.
+
+### 4. Subtitle Editing
+Use `raw.txt` with timestamps for subtitle editing or sync verification.
+
+## Project Structure 🏗️
+
+```
+make-note/
+├── main.py                     # CLI entry point
+├── find_subtitle_files.py      # Recursive file discovery
+├── extract_subtitles.py        # File extraction and organization
+├── parse_subtitle_content.py   # Format-specific parsing
+├── consolidate_subtitles.py    # Markdown generation
+├── create_raw_combined.py      # Raw text with timestamps
+├── config.py                   # Settings and file extensions
+└── data/
+    ├── test/                   # Test data and samples
+    └── output/                 # Generated output files
+```
+
+## Troubleshooting 🔧
+
+### Common Issues:
+
+**"No subtitle files found"**
+- Check that your course folder contains subtitle files (.srt, .vtt, etc.)
+- Verify the path is correct and accessible
+
+**"Encoding errors"**
+- The tool handles multiple encodings automatically (UTF-8, Latin-1, CP1252, UTF-16)
+- Malformed files are gracefully skipped with error messages
+
+**"Permission denied"**
+- Ensure you have read access to the source directory
+- Check write permissions for the output location
+
+### Getting Help:
+1. Run with `--dry-run` to preview the extraction
+2. Check the console output for specific error messages
+3. Verify your course folder structure matches expected patterns
+
+## Contributing 🤝
+
+Contributions are welcome! Here's how you can help:
+
+1. **Bug Reports**: Open an issue with details about the problem
+2. **Feature Requests**: Suggest new functionality or improvements
+3. **Code Contributions**: Fork, create a feature branch, and submit a PR
+4. **Documentation**: Help improve this README or add code comments
+
+### Development Setup:
+```bash
+git clone https://github.com/yourusername/make-note.git
+cd make-note
+# Make your changes
+python3 main.py "test/sample_course" --consolidate  # Test your changes
+```
+
+## License 📄
+
+MIT License - see [LICENSE](LICENSE) file for details.
+
+## Roadmap 🛣️
+
+Future enhancements being considered:
+- Direct LLM API integration for automatic note generation
+- Web interface for easier usage
+- Batch processing for multiple courses
+- PDF export functionality
+- Speaker identification in multi-speaker courses
+- Audio/video sync validation
+
+---
+
+**Made with ❤️ for learners everywhere**
+
+*Turn your video courses into powerful study materials in seconds!*
