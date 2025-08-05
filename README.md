@@ -194,28 +194,12 @@ Contributions are welcome! Here's how you can help:
 
 ### Development Setup:
 ```bash
-git clone https://github.com/yourusername/make-note.git
+git clone https://github.com/imf4isal/subscript.git
 cd make-note
 # Make your changes
-python3 main.py "test/sample_course" --consolidate  # Test your changes
+python3 main.py "test/sample_course" --consolidate  
 ```
 
-## License 📄
-
-MIT License - see [LICENSE](LICENSE) file for details.
-
-## Roadmap 🛣️
-
-Future enhancements being considered:
-- Direct LLM API integration for automatic note generation
-- Web interface for easier usage
-- Batch processing for multiple courses
-- PDF export functionality
-- Speaker identification in multi-speaker courses
-- Audio/video sync validation
 
 ---
 
-**Made with ❤️ for learners everywhere**
-
-*Turn your video courses into powerful study materials in seconds!*
